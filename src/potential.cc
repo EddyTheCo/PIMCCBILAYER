@@ -3,18 +3,18 @@
 #include"position.hh"
 #include"site.hh"
 const position potential::k=ReadFromInput<position>(12);
-const double potential::CLieb=ReadFromInput<double>(19);
-const double potential::CDip=ReadFromInput<double>(19);
-const double potential::V_0Softcore=ReadFromInput<double>(19);
-const double potential::SigmaBonin=ReadFromInput<double>(19);
+const double potential::CLieb=ReadFromInput<double>(18);
+const double potential::CDip=ReadFromInput<double>(18);
+const double potential::V_0Softcore=ReadFromInput<double>(18);
+const double potential::SigmaBonin=ReadFromInput<double>(18);
 const bool potential::harmonic=ReadFromInput<string>(16)=="harmonic";
 const bool potential::freeExt=ReadFromInput<string>(16)=="free";
-const bool potential::freeInt=ReadFromInput<string>(18)=="free";
+const bool potential::freeInt=ReadFromInput<string>(17)=="free";
 const bool potential::infinteWell=ReadFromInput<string>(16)=="infinteWell";
-const bool potential::LiebLin=ReadFromInput<string>(18)=="LiebLiniger";
-const bool potential::Dipola=ReadFromInput<string>(18)=="Dipolar";
-const bool potential::Softcor=ReadFromInput<string>(18)=="Softcore";
-const bool potential::Bonin=ReadFromInput<string>(18)=="Bonin";
+const bool potential::LiebLin=ReadFromInput<string>(17)=="LiebLiniger";
+const bool potential::Dipola=ReadFromInput<string>(17)=="Dipolar";
+const bool potential::Softcor=ReadFromInput<string>(17)=="Softcore";
+const bool potential::Bonin=ReadFromInput<string>(17)=="Bonin";
 using namespace std;
 
 

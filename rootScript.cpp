@@ -2,6 +2,8 @@
 #include <fstream>
 
 using namespace std;
+#define TYP TH3D
+#define PLOTXY
 
 
 TVectorD *v=nullptr;
@@ -10,7 +12,7 @@ TFile *MyFile = new TFile("RootFile.root","UPDATE");
 TH3D * Average (int &ini)
 {
     gROOT->SetBatch(kTRUE);
-        TH3D * Ave =nullptr;
+        TYP * Ave =nullptr;
 
     size_t stp=0;
 
@@ -24,13 +26,13 @@ TH3D * Average (int &ini)
 
     for(int i=ini;i<=(*v)[0];i++)
         {
-            TH3D* hist = nullptr;
-            hist=(TH3D* )gDirectory->Get(("pos" + to_string(i)).c_str());
+            TYP* hist = nullptr;
+            hist=(TYP* )gDirectory->Get(("pos" + to_string(i)).c_str());
             if(hist!=nullptr)
             {   
                 if(var)
                 {   
-                    Ave=(TH3D*)hist->Clone();
+                    Ave=(TYP*)hist->Clone();
                     var=0;
 			stp++;	
                 }
@@ -58,7 +60,7 @@ TH3D * Average (int &ini)
 
 
 }
-TH1 * XZProj (TH3D * hist,int center, int num,int NT)
+TH1 * XZProj (TYP * hist,int center, int num,int NT)
 {
         gROOT->SetBatch(kTRUE);
          TH1 * xzProj =nullptr;
@@ -79,7 +81,7 @@ xzProj->GetXaxis()->SetTitle("z");
     c1->Print("xzProj.png");
     return xzProj;
 }
-TH1 * XYProj (TH3D * hist,int center, int num, int NT)
+TH1 * XYProj (TYP * hist,int center, int num, int NT)
 {
         gROOT->SetBatch(kTRUE);
     TH1 * xyProj =nullptr;
@@ -102,12 +104,13 @@ void rootScript (int NT, int starte)
 {
         gStyle->SetPalette(1);
         TVectorD * v = (TVectorD*)gDirectory->Get("v");
-       // int start=((*v)[0]);
        int start=starte;
 	if(start==0)start=((*v)[0]);
         Average (start);
-         TH3D * hist=(TH3D* )gDirectory->Get("Ave");
+         TYP * hist=(TYP* )gDirectory->Get("Ave");
+#ifdef PLOTXY
         XYProj(hist,0,100,NT*start);
         XZProj(hist,0,100,NT*start);
+#endif
 }
 

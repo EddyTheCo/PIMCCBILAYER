@@ -10,7 +10,7 @@ using namespace std;
 using namespace Constants;
 
 
-const bool Site::fourthOrder=ReadFromInput<string>(20)=="true";
+const bool Site::fourthOrder=ReadFromInput<string>(19)=="true";
 size_t Site::NParti_=(restart)?ReadFromInput<size_t>(1,".restart.conf"):ReadFromInput<size_t>(1);
 
 const double landa=ReadFromInput<double>(4);
