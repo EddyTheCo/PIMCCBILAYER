@@ -272,7 +272,7 @@ inline size_t  CalculateNoWormLenght(void)const
 
  }
     const static bool fourthOrder;
-inline void ChangeInU(const int & isRemove, double& dU ,double & U )const
+inline void ChangeInU(const bool & isRemove, double& dU ,double & U )const
 {
     const bool isEven=this->TimeSliceOnBead%2==0;
     position gU=position(0.);
