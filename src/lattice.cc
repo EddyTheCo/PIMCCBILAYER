@@ -229,15 +229,14 @@ void lattice::PrintConfiguration (
 #endif
                RestartPtrConf<<var.left->ParticleOnBead<<" "<<var.left->TimeSliceOnBead<<" "<<var.right->ParticleOnBead<<" "<<var.right->TimeSliceOnBead<<" ";
 #ifdef USEROOT
-            if(!(step%SAMPLING)&&step!=0)
-            {
+
                 if(d==3)
                 ((TH3D*)hpos)->Fill(grid->at(i).at(j).pos.perio(0),grid->at(i).at(j).pos.perio(1),grid->at(i).at(j).pos.perio(2));
                 if(d==2)
                 ((TH2D*)hpos)->Fill(grid->at(i).at(j).pos.perio(0),grid->at(i).at(j).pos.perio(1));
                 if(d==1)
                 ((TH1D*)hpos)->Fill(grid->at(i).at(j).pos.perio(0));
-            }
+
 
 #endif
             }
@@ -253,14 +252,13 @@ void lattice::PrintConfiguration (
 #ifdef USEROOT
     (*v)[0] = step;
 
-   if(!(step%SAMPLING)&&step!=0)
-   {
+
 
        (*v).Write("v",TObject::kOverwrite);
 
        hpos->Write(("pos" + to_string(step)).c_str());
         hpos->Reset("ICESM");
-   }
+
    gDirectory->Write("", TObject::kOverwrite);
 #endif
 
