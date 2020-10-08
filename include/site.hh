@@ -91,7 +91,7 @@ while(del>1)
 return true;
  }
 
- inline bool NfindHead(size_t del,const int & isRight)const
+ inline bool NfindHead(size_t del,const bool & isRight)const
  {
     if(isRight)
     {
@@ -158,7 +158,7 @@ inline size_t  CalculateNoWormLenght(void)const
      bool Wiggle(double dU);
      bool shiftParticle(double dU, const position& shift, const Site * const &str)const;
      void PrepareSwap(void)const;
-     bool swap(Site * const , const double& SumI, const double& SumZ, double dU, const int &isRight);
+     bool swap(Site * const , const double& SumI, const double& SumZ, double dU, const bool &isRight);
 
 
 
@@ -364,7 +364,7 @@ inline void ChangeInU(const int & isRemove, double& dU ,double & U )const
             step++;
         }
     }
-    inline Site* searchBead(const int &isRight, size_t step)const
+    inline Site* searchBead(const bool &isRight, size_t step)const
     {
         Site* var=nullptr;
         if(isRight)
@@ -383,7 +383,7 @@ inline void ChangeInU(const int & isRemove, double& dU ,double & U )const
 
         return var;
     }
-    inline Site* searchBeadForced(const int &isRight, size_t step)const
+    inline Site* searchBeadForced(const bool &isRight, size_t step)const
     {
         Site* var=nullptr;
         if(isRight)

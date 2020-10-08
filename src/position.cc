@@ -63,7 +63,7 @@ position::position(const string str)
         }
 }
 
-position::position(const int &isRight, const Site * const bead)
+position::position(const bool &isRight, const Site * const bead)
 {
     const Site* edge;
     double ab;

@@ -670,7 +670,7 @@ void Site::PrepareSwap(void)const
 
 
 }
-bool Site::swap(Site* const zeta,const double& SumI,const double& SumZ,double dU, const  int & isRight)
+bool Site::swap(Site* const zeta,const double& SumI,const double& SumZ,double dU, const  bool & isRight)
 {
 
 if(isRight)
