@@ -91,9 +91,9 @@ while(del>1)
 return true;
  }
 
- inline bool NfindHead(size_t del,const bool & isRight)const
+ inline bool NfindHead(size_t del,const string str)const
  {
-    if(isRight)
+    if(str=="right")
     {
         const Site* ptr=Rbead->right;
         while(del>0)
@@ -158,7 +158,7 @@ inline size_t  CalculateNoWormLenght(void)const
      bool Wiggle(double dU);
      bool shiftParticle(double dU, const position& shift, const Site * const &str)const;
      void PrepareSwap(void)const;
-     bool swap(Site * const , const double& SumI, const double& SumZ, double dU, const bool &isRight);
+     bool swap(Site * const , const double& SumI, const double& SumZ, double dU, const string &direction);
 
 
 
@@ -242,7 +242,7 @@ inline size_t  CalculateNoWormLenght(void)const
         switch ( giveRanI(4) ) {
                 case 0:
             {
-                   if(NfindHead(del,1))
+                    if(NfindHead(del,"right"))
                     Rbead->deleteToRight(del,0);
                     break;
             }
@@ -256,7 +256,7 @@ inline size_t  CalculateNoWormLenght(void)const
                 case 2:
             {
 
-                    if(NfindHead(del,0))
+                    if(NfindHead(del,"left"))
                     Lbead->deleteToLeft(del,0);
                     break;
             }
@@ -272,7 +272,7 @@ inline size_t  CalculateNoWormLenght(void)const
 
  }
     const static bool fourthOrder;
-inline void ChangeInU(const bool & isRemove, double& dU ,double & U )const
+inline void ChangeInU(const string str, double& dU ,double & U )const
 {
     const bool isEven=this->TimeSliceOnBead%2==0;
     position gU=position(0.);
@@ -287,12 +287,12 @@ inline void ChangeInU(const bool & isRemove, double& dU ,double & U )const
         var=tao*U;
     }
 
-        if(isRemove)
+    if(str=="remove")
         {
             dU+=var;
              return ;
         }
-        if(!isRemove)
+        if(str=="insert")
         {            
             dU-=var;
              return ;
@@ -364,36 +364,36 @@ inline void ChangeInU(const bool & isRemove, double& dU ,double & U )const
             step++;
         }
     }
-    inline Site* searchBead(const bool &isRight, size_t step)const
+    inline Site* searchBead(const string str, size_t step)const
     {
         Site* var=nullptr;
-        if(isRight)
+        if(str=="right")
          var=this->right;
-        if(!isRight)
+        if(str=="left")
             var=this->left;
         while (step>0) {
             if(var==Rbead||var==Lbead)
                 return nullptr;
-            if(isRight)
+            if(str=="right")
              var=var->right;
-            if(!isRight)
+            if(str=="left")
                 var=var->left;
             step--;
         }
 
         return var;
     }
-    inline Site* searchBeadForced(const bool &isRight, size_t step)const
+    inline Site* searchBeadForced(const string str, size_t step)const
     {
         Site* var=nullptr;
-        if(isRight)
+        if(str=="right")
          var=this->right;
-        if(!isRight)
+        if(str=="left")
             var=this->left;
         while (step>0) {
-            if(isRight)
+            if(str=="right")
              var=var->right;
-            if(!isRight)
+            if(str=="left")
                 var=var->left;
             step--;
         }
