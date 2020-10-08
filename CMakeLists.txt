@@ -13,8 +13,8 @@ endif()
 if(USEROOT)
     message( STATUS "This build is USING ROOT")
 add_definitions(-DUSEROOT)
-set(ROOT_INSTALL ~/GEANT4/ROOT/build/)
-include_directories(${ROOT_INSTALL}include)
+set(ROOT_INSTALL /home/camelud/GEANT4/ROOT/build)
+include_directories(${ROOT_INSTALL}/include)
 endif()
 
 
@@ -45,7 +45,7 @@ file(GLOB headers ${PROJECT_SOURCE_DIR}/include/*.hh)
 add_executable(PIMCC PIMCC.cc ${sources} ${headers}  )
 
 if(USEROOT)
-target_link_libraries(PIMCC -lstdc++ -L${ROOT_INSTALL}lib  -lCore -lRIO -lNet -lHist -lGraf -lGraf3d -lGpad -lTree -lRint -lPostscript -lMatrix -lPhysics -lMathCore -lThread -lm -ldl -rdynamic)
+target_link_libraries(PIMCC -lstdc++ -L${ROOT_INSTALL}/lib  -lCore -lRIO -lNet -lHist -lGraf -lGraf3d -lGpad -lTree -lRint -lPostscript -lMatrix -lPhysics -lMathCore -lThread -lm -ldl -rdynamic)
 endif()
 #if(CMAKE_COMPILER_IS_GNUCXX)
  #   set(CMAKE_CXX_FLAGS "-O3")        ## Optimize
@@ -71,6 +71,7 @@ foreach(_script ${SCRIPTS})
     COPYONLY
     )
 endforeach()
+file(COPY ${CMAKE_SOURCE_DIR}/TESTS DESTINATION ${PROJECT_BINARY_DIR})
 
 #----------------------------------------------------------------------------
 # Install the executable to 'bin' directory under CMAKE_INSTALL_PREFIX

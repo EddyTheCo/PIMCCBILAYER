@@ -257,7 +257,7 @@ void lattice::PrintConfiguration (
    {
 
        (*v).Write("v",TObject::kOverwrite);
-      // hpos->Scale(1./(SAMPLING*NTimeSlices));
+
        hpos->Write(("pos" + to_string(step)).c_str());
         hpos->Reset("ICESM");
    }

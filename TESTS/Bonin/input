@@ -1,0 +1,20 @@
+1              #OfParticles, doesnt do nothing if restart
+0.1         #Tao
+3.2              #beta
+0.5              #landa
+100000            #OfBlocks
+3               #dimension
+1 1 1             #L d numbers
+1           #NumberOfsweepsInABlock
+-0.1             #mu
+start           #start or restart
+GrandCanonical       # GrandCanonical or Canonical
+1 1 1          #K d numbers from (k1*x1^2+..)/2
+1               #eta factor
+periodic        #free or periodic
+32              #MBar
+free           #free or harmonic or infinteWell
+Bonin            #LiebLiniger or free or Dipolar or Softcore or Bonin
+0.12               #CLieb or CDip or V_0Softcore or SigmaBonin
+false               #FourOrderPotential true or false
+4                   #of Sampling

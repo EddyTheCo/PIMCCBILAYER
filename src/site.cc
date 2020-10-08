@@ -65,7 +65,7 @@ bool Site::OpenWorm(const size_t step, const size_t ab, double dU, const positio
     if(step>0)
     {
         double U=0;
-        right->ChangeInU("remove",dU,U);
+        right->ChangeInU(1,dU,U);
 
         if(right->OpenWorm(step-1,ab,dU,start))
         {            
@@ -107,9 +107,9 @@ bool Site::CloseWorm(double dU)
     if(this->TimeSliceOnBead!=Rbead->left->TimeSliceOnBead)
     {
 
-        right->pos=position("right",this);
+        right->pos=position(1,this);
         double U=0;
-        right->ChangeInU("insert",dU,U);
+        right->ChangeInU(0,dU,U);
 
 
         if(right->CloseWorm(dU))
@@ -153,13 +153,13 @@ right->oldpos=right->pos;
         TEnergyVar-=Dist.norm();
         TWindingVar=TWindingVar+Dist;
         double U=0;
-        right->ChangeInU("remove",dU,U);
+        right->ChangeInU(1,dU,U);
 
         TPotentialVar+=U;
 
-        right->pos=position("right",this);
+        right->pos=position(1,this);
 
-        right->ChangeInU("insert",dU,U);
+        right->ChangeInU(0,dU,U);
 
         if(right->Wiggle(dU))
         {
@@ -206,7 +206,7 @@ bool Site::deleteToRight(const size_t step, double dU)
 
 dU+=-mu*tao;
 double U=0;
-ChangeInU("remove",dU,U);
+ChangeInU(1,dU,U);
 
 
         if(step>0)
@@ -253,7 +253,7 @@ bool Site::deleteToLeft(const size_t step,double dU)
 
 dU+=-mu*tao;
 double U=0;
-ChangeInU("remove",dU,U);
+ChangeInU(1,dU,U);
             if(step>0)
             {
                 if(left->deleteToLeft(step-1,dU))
@@ -308,7 +308,7 @@ bool Site::insertToRight(const size_t step,double dU)
 dU+=mu*tao;
 right->pos=position(pos,variance);
 double U=0;
-right->ChangeInU("insert",dU,U);
+right->ChangeInU(0,dU,U);
 
             if(step>0)
             {
@@ -387,7 +387,7 @@ bool Site::insertToLeft(const size_t step,double dU)
 dU+=mu*tao;
     left->pos=position(pos,variance);
     double U=0;
-    left->ChangeInU("insert",dU,U);
+    left->ChangeInU(0,dU,U);
             if(step>0)
             {
 
@@ -532,7 +532,7 @@ insertParticle();
 
 
     double U=0,dU=0;
-    Rbead->ChangeInU("insert",dU,U);
+    Rbead->ChangeInU(0,dU,U);
         if(Rbead->insertToLeft(var2,dU+log(eta)))
         {
             NInsert++;
@@ -625,18 +625,18 @@ void Site::PrepareSwap(void)const
         Site* alpha, *zeta;
         if ( giveRanI(1) )
         {
-            const auto NewRbead=oldLbead->searchBeadForced("right",vae);
+            const auto NewRbead=oldLbead->searchBeadForced(1,vae);
             alpha=NewRbead->chooseTheBead(SumI,vae+1,oldLbead);
 
             if(alpha==nullptr)return;
 
-            zeta=alpha->searchBead("left",vae);
+            zeta=alpha->searchBead(0,vae);
             if (zeta==nullptr||zeta==Rbead||zeta==Lbead)return;
 
 
                 NewRbead->chooseTheBead(SumZ,vae+1,zeta);
                 Rbead=alpha;
-                if(Lbead->swap(zeta,SumI,SumZ,0,"right"))
+                if(Lbead->swap(zeta,SumI,SumZ,0,1))
                 {
                     Lbead=zeta;
                 }
@@ -645,7 +645,7 @@ void Site::PrepareSwap(void)const
          }
         else
         {
-            const auto NewLbead=oldRbead->searchBeadForced("left",vae);
+            const auto NewLbead=oldRbead->searchBeadForced(0,vae);
             if(NewLbead==nullptr)return;
 
 
@@ -654,12 +654,12 @@ void Site::PrepareSwap(void)const
             if(alpha==nullptr)return;
 
 
-            zeta=alpha->searchBead("right",vae);
+            zeta=alpha->searchBead(1,vae);
             if (zeta==nullptr||zeta==Rbead||zeta==Lbead)return;
 
             NewLbead->chooseTheBead(SumZ,vae+1,zeta);
             Lbead=alpha;
-            if(Rbead->swap(zeta,SumI,SumZ,0,"left"))
+            if(Rbead->swap(zeta,SumI,SumZ,0,0))
             {
                  Rbead=zeta;
             }
@@ -670,10 +670,10 @@ void Site::PrepareSwap(void)const
 
 
 }
-bool Site::swap(Site* const zeta,const double& SumI,const double& SumZ,double dU, const string &direction)
+bool Site::swap(Site* const zeta,const double& SumI,const double& SumZ,double dU, const  int & isRight)
 {
 
-if(direction=="right")
+if(isRight)
 {
     static bool aParticleisInserted=false;
     static Site* ri;
@@ -700,13 +700,13 @@ if(direction=="right")
             }
         }
 
-        right->pos=position("right",this);
+        right->pos=position(1,this);
         double Ualpha=0,Uzeta=0;
         theZeta=zeta->right;
-        right->ChangeInU("insert",dU,Ualpha);
-        zeta->right->ChangeInU("remove",dU,Uzeta);
+        right->ChangeInU(0,dU,Ualpha);
+        zeta->right->ChangeInU(1,dU,Uzeta);
 
-        if(right->swap(zeta->right,SumI,SumZ,dU,"right"))
+        if(right->swap(zeta->right,SumI,SumZ,dU,1))
         {
             this->right->active=true;
             zeta->right->active=false;
@@ -793,13 +793,13 @@ else {
             }
         }
 
-        left->pos=position("left",this);
+        left->pos=position(0,this);
         double Ualpha=0,Uzeta=0;
         theZeta=zeta->left;
-        left->ChangeInU("insert",dU,Ualpha);
-        zeta->left->ChangeInU("remove",dU,Uzeta);
+        left->ChangeInU(0,dU,Ualpha);
+        zeta->left->ChangeInU(1,dU,Uzeta);
 
-        if(left->swap(zeta->left,SumI,SumZ,dU,"left"))
+        if(left->swap(zeta->left,SumI,SumZ,dU,0))
         {
             this->left->active=true;
             zeta->left->active=false;
@@ -869,11 +869,11 @@ bool Site::shiftParticle(double dU, const position& shift, const Site * const &s
 {
     right->oldpos=right->pos;
     double U=0;
-    right->ChangeInU("remove",dU,U);
+    right->ChangeInU(1,dU,U);
     TPotentialVar+=U;
     right->pos=right->pos-(shift*-1);  //the minus sign is in order to propose new position using Pbc
 
-    right->ChangeInU("insert",dU,U);
+    right->ChangeInU(0,dU,U);
 
         if(this!=str->left)
         {

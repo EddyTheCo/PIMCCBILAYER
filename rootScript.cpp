@@ -9,12 +9,42 @@ using namespace std;
 TVectorD *v=nullptr;
 TFile *MyFile = new TFile("RootFile.root","UPDATE");
 
-TH3D * Average (int &ini)
+TH1 * StrucFact(TH1 * hist,double &val, int & binMax)
+{
+    hist->Scale(1./hist->GetEntries());
+    TVirtualFFT::SetTransform(0);
+    TH1 *hm =0;
+
+    hm = hist->FFT(hm, "MAG R2C M");
+    hm->Multiply(hm);
+    hm->SetBinContent(1,1,0);
+    binMax=hm->GetMaximumBin();
+    val=hm->GetBinContent(binMax);
+    return hm;
+
+}
+
+TH1 * CalStruFactXY(TYP * hist)
+{
+    TH1 * xyProj=hist->Project3D("xy");
+    ofstream  theMaxXY("theMaxXY",std::ofstream::out | std::ofstream::app);
+    double val;
+    int binMax;
+    TH1 * h1=StrucFact(xyProj,val,binMax);
+    theMaxXY<<val<<" "<<binMax<<endl;
+    return h1;
+
+}
+
+TYP * Average (int &ini)
 {
     gROOT->SetBatch(kTRUE);
         TYP * Ave =nullptr;
+        TH1 * AveStru =nullptr;
 
     size_t stp=0;
+    int bin;
+    int binSum=0;
 
     v = (TVectorD*)gDirectory->Get("v");
 
@@ -33,14 +63,17 @@ TH3D * Average (int &ini)
                 if(var)
                 {   
                     Ave=(TYP*)hist->Clone();
+                    AveStru=(TH1*)(CalStruFactXY(hist))->Clone();
                     var=0;
 			stp++;	
                 }
                 else
                 {  
+                    AveStru->Add(CalStruFactXY(hist));
                    Ave->Add(hist);
 			stp++;
                 }
+                delete gROOT->FindObject("out_MAG R2C M");
             }
             delete hist;
         }
@@ -56,10 +89,26 @@ TH3D * Average (int &ini)
     Ave->Write("Ave");
     gDirectory->Write("", TObject::kOverwrite);
 
+    TCanvas* c2 = new TCanvas("c2", "c2", 1300,1000);
+    gStyle->SetOptStat(0);
+
+    AveStru->Scale(1.0/stp);
+
+    AveStru->SetTitle("Structure Factor");
+    AveStru->GetXaxis()->SetTitle("Kx");
+    AveStru->GetYaxis()->SetTitle("Ky");
+
+    AveStru->GetYaxis()->CenterTitle(true);
+
+    AveStru->GetXaxis()->CenterTitle(true);
+    AveStru->Draw("CONT4Z");
+    c1->Print("AverStruc.png");
+
     return Ave;
 
 
 }
+#ifdef PLOTXY
 TH1 * XZProj (TYP * hist,int center, int num,int NT)
 {
         gROOT->SetBatch(kTRUE);
@@ -100,14 +149,15 @@ TH1 * XYProj (TYP * hist,int center, int num, int NT)
     c1->Print("xyProj.png");
     return xyProj;
 }
+#endif
 void rootScript (int NT, int starte)
 {
         gStyle->SetPalette(1);
         TVectorD * v = (TVectorD*)gDirectory->Get("v");
        int start=starte;
 	if(start==0)start=((*v)[0]);
-        Average (start);
-         TYP * hist=(TYP* )gDirectory->Get("Ave");
+
+         TYP * hist=Average (start);
 #ifdef PLOTXY
         XYProj(hist,0,100,NT*start);
         XZProj(hist,0,100,NT*start);

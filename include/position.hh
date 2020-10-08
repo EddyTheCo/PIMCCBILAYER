@@ -19,7 +19,7 @@ class position
 {
 	public:
 
-    position(const string str, const Site *const bead);
+    position(const int &isRight, const Site *const bead);
 static  ifstream PosiConf;
 static  ifstream RestartConf;
 static  ifstream *inFile;

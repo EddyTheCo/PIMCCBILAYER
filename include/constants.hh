@@ -60,7 +60,7 @@ template <class myType>
        getline(myfilein,linestr);
      }
      myfilein>>A>>linestr;
-    // cout<<linestr<<"="<<A<<endl;
+     //cout<<linestr<<"="<<A<<endl;
      myfilein.close();
     return A;
 }

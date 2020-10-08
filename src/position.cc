@@ -21,7 +21,7 @@ double position::foovar=position::foo();
 position::position(const double &a)
 {
 
-    for(size_t i=0;i< ReadFromInput<size_t>(6);i++)
+    for(size_t i=0;i<d;i++)
     {
         x.push_back(a);
     }
@@ -63,11 +63,11 @@ position::position(const string str)
         }
 }
 
-position::position(const string str, const Site * const bead)
+position::position(const int &isRight, const Site * const bead)
 {
     const Site* edge;
     double ab;
-    if(str=="right")
+    if(isRight)
     {
          edge=bead->Rbead;
          ab=edge->TimeSliceOnBead-static_cast<double>(bead->TimeSliceOnBead);
