@@ -2,9 +2,10 @@
 #include <fstream>
 
 using namespace std;
-#define TYP TH3D
-#define PLOTXY
 
+
+#define D1
+#define TYP TH1D
 
 TVectorD *v=nullptr;
 TFile *MyFile = new TFile("RootFile.root","UPDATE");
@@ -24,9 +25,14 @@ TH1 * StrucFact(TH1 * hist,double &val, int & binMax)
 
 }
 
-TH1 * CalStruFactXY(TYP * hist)
+TH1 * CalStruFact(TYP * hist)
 {
+#ifdef D3
     TH1 * xyProj=hist->Project3D("xy");
+#else
+    TH1 * xyProj=hist;
+#endif
+
     ofstream  theMaxXY("theMaxXY",std::ofstream::out | std::ofstream::app);
     double val;
     int binMax;
@@ -63,13 +69,13 @@ TYP * Average (int &ini)
                 if(var)
                 {   
                     Ave=(TYP*)hist->Clone();
-                    AveStru=(TH1*)(CalStruFactXY(hist))->Clone();
+                    AveStru=(TH1*)(CalStruFact(hist))->Clone();
                     var=0;
 			stp++;	
                 }
                 else
                 {  
-                    AveStru->Add(CalStruFactXY(hist));
+                    AveStru->Add(CalStruFact(hist));
                    Ave->Add(hist);
 			stp++;
                 }
@@ -108,7 +114,7 @@ TYP * Average (int &ini)
 
 
 }
-#ifdef PLOTXY
+#ifdef D3
 TH1 * XZProj (TYP * hist,int center, int num,int NT)
 {
         gROOT->SetBatch(kTRUE);
@@ -158,7 +164,7 @@ void rootScript (int NT, int starte)
 	if(start==0)start=((*v)[0]);
 
          TYP * hist=Average (start);
-#ifdef PLOTXY
+#ifdef D3
         XYProj(hist,0,100,NT*start);
         XZProj(hist,0,100,NT*start);
 #endif
