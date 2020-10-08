@@ -30,7 +30,7 @@ TH1 * CalStruFact(TYP * hist)
 #ifdef D3
     TH1 * xyProj=hist->Project3D("xy");
 #else
-    TH1 * xyProj=hist;
+    TH1 * xyProj=(TH1 *)hist->Clone();
 #endif
 
     ofstream  theMaxXY("theMaxXY",std::ofstream::out | std::ofstream::app);
@@ -66,6 +66,7 @@ TYP * Average (int &ini)
             hist=(TYP* )gDirectory->Get(("pos" + to_string(i)).c_str());
             if(hist!=nullptr)
             {   
+
                 if(var)
                 {   
                     Ave=(TYP*)hist->Clone();
