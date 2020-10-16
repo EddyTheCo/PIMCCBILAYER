@@ -19,7 +19,7 @@ class position
 {
 	public:
 
-   position(const bool & isRight, const Site *const bead);
+   position(const bool & isRight, const Site *const bead, const double &posZ);
 static  ifstream PosiConf;
 static  ifstream RestartConf;
 static  ifstream *inFile;
@@ -37,6 +37,7 @@ position()
 {
 
 }
+
 static const double volumen;
 inline static double getVolumen(void)
 {
@@ -76,12 +77,21 @@ position(const vector<double> &a)
     }
 }
 position(const double &a);
-position(const position& prevPos, const double &var)
+position(const position& prevPos, const double &var, const double & posZ)
 {
+
     for(size_t i=0;i<d;i++)
     {
-        x.push_back(prevPos.x.at(i)+Constants::giveRanDNormal(0,sqrt(var)));
+        if(i!=2)
+        {
+            x.push_back(prevPos.x.at(i)+Constants::giveRanDNormal(0,sqrt(var)));
+        }
+        else
+        {
+            x.push_back(posZ);
+        }
     }
+
 }
 position(const string str);
 
@@ -126,7 +136,7 @@ position operator*(const double &a)const
 }
 inline double perio(const size_t &i)const
 {
-    if(periodic)
+    if(periodic&&i!=2)
     {
             auto pro=x.at(i);
             pro/=L.x.at(i);
@@ -184,7 +194,7 @@ const position operator-(const position & rhs) const
     {
         double pro=x.at(i) - rhs.x.at(i);
 
-       if(periodic)
+       if(periodic&&i!=2)
         {
 
                 pro/=L.x.at(i);
@@ -195,7 +205,7 @@ const position operator-(const position & rhs) const
         else
        {
            var.push_back(pro);
-        }
+       }
     }
     return position(var);
 }

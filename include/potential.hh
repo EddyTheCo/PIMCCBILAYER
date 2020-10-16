@@ -24,7 +24,7 @@ public:
     void Softcore(double & dU,position& graddU,const Site* const bead,const Site* const ptr)const;
     void BoninPot(double & dU,position& graddU,const Site* const bead,const Site* const ptr)const;
 
-    static const bool harmonic,freeExt,infinteWell;
+    static const bool harmonic,freeExt,infinteWell,triangular;
     static const bool LiebLin, Dipola,Softcor,Bonin,freeInt;
     static const double CLieb,CDip,V_0Softcore,SigmaBonin;
     static const position k;

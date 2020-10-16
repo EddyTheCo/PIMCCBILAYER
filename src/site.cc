@@ -13,10 +13,11 @@ using namespace Constants;
 const bool Site::fourthOrder=ReadFromInput<string>(19)=="true";
 size_t Site::NParti_=(restart)?ReadFromInput<size_t>(1,".restart.conf"):ReadFromInput<size_t>(1);
 
+size_t NpartiUp=0;
 const double landa=ReadFromInput<double>(4);
 const double tao=ReadFromInput<double>(2);
 const double beta=ReadFromInput<double>(3);
-
+const double dplanes=ReadFromInput<double>(21);
 double Site::mu=ReadFromInput<double>(9);
 double Site::eta=ReadFromInput<double>(13);
 
@@ -53,7 +54,7 @@ Site::Site(const size_t i,const size_t j):pos(position("ini")),oldpos(pos),activ
 
 
 }
-Site::Site(const size_t i,const size_t j,const string var):active(false),TimeSliceOnBead(j),ParticleOnBead(i),left(nullptr),right(nullptr),up(nullptr),down(nullptr)
+Site::Site(const size_t i,const size_t j,const string var):active(false),pos(position(var)),TimeSliceOnBead(j),ParticleOnBead(i),left(nullptr),right(nullptr),up(nullptr),down(nullptr)
 {
 
 
@@ -107,7 +108,7 @@ bool Site::CloseWorm(double dU)
     if(this->TimeSliceOnBead!=Rbead->left->TimeSliceOnBead)
     {
 
-        right->pos=position(true,this);
+        right->pos=position(true,this,right->pos.TheZ());
         double U=0;
         right->ChangeInU(false,dU,U);
 
@@ -157,7 +158,7 @@ right->oldpos=right->pos;
 
         TPotentialVar+=U;
 
-        right->pos=position(true,this);
+        right->pos=position(true,this,right->pos.TheZ());
 
 
         right->ChangeInU(false,dU,U);
@@ -189,12 +190,12 @@ right->oldpos=right->pos;
             Rbead=nullptr;
             TPotentialVar=0;
             TEnergyVar=0;
-            TWindingVar=position(0);
+            TWindingVar=position(0.);
             return true;
         }
         TPotentialVar=0;
         TEnergyVar=0;
-        TWindingVar=position(0);
+        TWindingVar=position(0.);
 
         return false;
     }
@@ -307,7 +308,7 @@ bool Site::insertToRight(const size_t step,double dU)
     }
 
 dU+=mu*tao;
-right->pos=position(pos,variance);
+right->pos=position(pos,variance,right->pos.TheZ());
 double U=0;
 right->ChangeInU(false,dU,U);
 
@@ -387,7 +388,10 @@ bool Site::insertToLeft(const size_t step,double dU)
     }
 
 dU+=mu*tao;
-    left->pos=position(pos,variance);
+
+    left->pos=position(pos,variance,left->pos.TheZ());
+
+
     double U=0;
     left->ChangeInU(false,dU,U);
             if(step>0)
@@ -527,7 +531,7 @@ insertParticle();
     Lbead=Rbead;
         const auto var2=giveRanI(MBar-2);
 
-        Rbead->pos=position("random");
+
 
         Rbead->active=true;
     NInsertP++;
@@ -535,6 +539,7 @@ insertParticle();
 
     double U=0,dU=0;
     Rbead->ChangeInU(false,dU,U);
+
         if(Rbead->insertToLeft(var2,dU+log(eta)))
         {
             NInsert++;
@@ -547,14 +552,15 @@ insertParticle();
             removeLastParticle();
 
         }
+
 }
 void Site::insertParticle(void)const
 {
-
+bool va=giveRanI(1);
     for(size_t i=0;i<NTimeSlices;i++)
     {
 
-        theParticles->at(i).push_back(Site(NParti_,i,"flat 0"));
+        theParticles->at(i).push_back(Site(NParti_,i,(va)?"up":"down"));
 
 
         theParticles->at(i).back().up=&(theParticles->at(i).front());
@@ -702,7 +708,7 @@ if(isRight)
             }
         }
 
-        right->pos=position(true,this);
+        right->pos=position(true,this,right->pos.TheZ());
         double Ualpha=0,Uzeta=0;
         theZeta=zeta->right;
         right->ChangeInU(false,dU,Ualpha);
@@ -795,7 +801,7 @@ else {
             }
         }
 
-        left->pos=position(false,this);
+        left->pos=position(false,this,left->pos.TheZ());
         double Ualpha=0,Uzeta=0;
         theZeta=zeta->left;
         left->ChangeInU(false,dU,Ualpha);

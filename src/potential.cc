@@ -8,6 +8,7 @@ const double potential::CDip=ReadFromInput<double>(18);
 const double potential::V_0Softcore=ReadFromInput<double>(18);
 const double potential::SigmaBonin=ReadFromInput<double>(18);
 const bool potential::harmonic=ReadFromInput<string>(16)=="harmonic";
+const bool potential::triangular=ReadFromInput<string>(16)=="triangular";
 const bool potential::freeExt=ReadFromInput<string>(16)=="free";
 const bool potential::freeInt=ReadFromInput<string>(17)=="free";
 const bool potential::infinteWell=ReadFromInput<string>(16)=="infinteWell";
@@ -46,6 +47,10 @@ if(infinteWell)
         graddU=graddU+position(10000000000000000.0);
     }
     return;
+}
+if(triangular)
+{
+    cout<<"hey";
 }
 //cout<<"##ERROR error in the potential"<<endl;
 }
@@ -104,10 +109,18 @@ inline void potential::LiebLini(double & dU,position& graddU,const Site* const b
 }
 inline void potential::Dipolar(double & dU, position& graddU, const Site * const bead, const Site * const ptr)const
 {
+    const position dif=bead->pos-ptr->pos;
+   dU+= 1./pow(dif.norm(),1.5);
+    if(bead->pos.TheZ()!=ptr->pos.TheZ())
+    {
+        dU+=((dif).norm()-2*dplanes*dplanes)/pow((dif).norm()+dplanes*dplanes,2.5);
+    }
+   graddU=graddU+(dif)*(-1./pow((dif).norm(),2.5)) ;
+   if(bead->pos.TheZ()!=ptr->pos.TheZ())
+   {
+       graddU=graddU-dif*(2*(1.5*dif.norm()-4*dplanes*dplanes)/pow(dif.norm()+dplanes*dplanes,3.5));
+   }
 
-   dU+= 3./pow((bead->pos-ptr->pos).norm(),1.5)+CDip/pow((bead->pos-ptr->pos).norm(),6);
-
-   graddU=graddU+(bead->pos-ptr->pos)*(-9./pow((bead->pos-ptr->pos).norm(),2.5)) -(bead->pos-ptr->pos)*(12.*CDip/pow((bead->pos-ptr->pos).norm(),7));
 }
 inline void potential::Softcore(double & dU, position& graddU, const Site * const bead, const Site * const ptr)const
 {

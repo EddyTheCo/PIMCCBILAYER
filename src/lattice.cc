@@ -61,6 +61,7 @@ lattice::lattice()
 
 
     }
+
 #ifdef USEROOT
  if (RootFile->IsZombie()) {
       cout << "Error opening file" << endl;

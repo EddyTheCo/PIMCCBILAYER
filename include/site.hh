@@ -12,9 +12,10 @@ using namespace std;
 
 #include"potential.hh"
 
-const extern double beta,tao,landa,variance;
+const extern double beta,tao,landa,variance,dplanes;
 const extern size_t NTimeSlices,d, MBar;
 extern const bool restart;
+extern size_t NpartiUp;
 
 class Site
 {
@@ -22,7 +23,7 @@ class Site
     Site();
     ~Site(){}
     Site(const size_t i,const size_t j);
-    Site(const size_t i,const size_t j,const string var);
+    Site(const size_t i, const size_t j, const string var);
     static Site* Lbead;
     static Site* Rbead;
     friend ostream & operator << (ostream &out, const Site & obj)
@@ -333,7 +334,7 @@ inline void ChangeInU(const bool & isRemove, double& dU ,double & U )const
         else
             cout<<"#errorSite.hh"<<Rbead->TimeSliceOnBead<<" "<<Lbead->TimeSliceOnBead<<endl;
 
-    ;}
+    }
     inline size_t NActiveLinks(void)const{
         if(Rbead!=nullptr&&Lbead!=nullptr)
         {
@@ -349,7 +350,7 @@ inline void ChangeInU(const bool & isRemove, double& dU ,double & U )const
         else
             cout<<"#errorSite.hh"<<Rbead->TimeSliceOnBead<<" "<<Lbead->TimeSliceOnBead<<endl;
 
-    ;}
+    }
     void insertParticle(void)const;
     inline void removeLastParticle(void)const
     {
@@ -402,8 +403,8 @@ inline void ChangeInU(const bool & isRemove, double& dU ,double & U )const
     }
     void printLattice(void)const
     {
-        cout<<"###"<<TEnergy<<" cara"<<TPotential<<endl;
-        cout<<"NParticles="<<NParti_<<endl;
+
+
         Site var;
         for(size_t j=0;j<NParti_;j++)
          {

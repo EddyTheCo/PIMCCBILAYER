@@ -29,12 +29,24 @@ position::position(const double &a)
 
 position::position(const string str)
 {
+    static bool upPart=true;
     if(str=="random")
+    {
         for(size_t i=0;i<d;i++)
         {
-            x.push_back(Constants::giveRanD(L.x.at(i))-L.x.at(i)/2);
+            if(i!=2)
+            {
+                x.push_back(Constants::giveRanD(L.x.at(i))-L.x.at(i)/2);
+            }
+            else
+            {
+                x.push_back((giveRanI(1)?-dplanes/2:dplanes/2));
+            }
+
         }
+    }
     if(str=="ini")
+    {
         for(size_t i=0;i<d;i++)
         {
             if(restart)
@@ -50,9 +62,18 @@ position::position(const string str)
                 //     (*inFile)>>var;
                  //     x.push_back(var);
                 //x.push_back(0.);
-               if(i==2)
+            if(i==2)
 	       {
-		       x.push_back(0.0);
+                if(upPart)
+                {
+                    x.push_back(dplanes/2);
+                    upPart=!upPart;
+                }
+                else
+                {
+                    x.push_back(-dplanes/2);
+                    upPart=!upPart;
+                }
 	       }
 	       else
 	       {
@@ -61,9 +82,41 @@ position::position(const string str)
             }
 
         }
+    }
+    if(str=="up")
+    {
+        for(size_t i=0;i<d;i++)
+        {
+            if(i!=2)
+            {
+                 x.push_back(Constants::giveRanD(L.x.at(i))-L.x.at(i)/2);
+            }
+            else
+            {
+                x.push_back(dplanes/2);
+            }
+        }
+    }
+    if(str=="down")
+    {
+        for(size_t i=0;i<d;i++)
+        {
+            if(i!=2)
+            {
+                 x.push_back(Constants::giveRanD(L.x.at(i))-L.x.at(i)/2);
+            }
+            else
+            {
+                x.push_back(-dplanes/2);
+            }
+        }
+    }
+
 }
 
-position::position(const bool & isRight, const Site * const bead)
+
+
+position::position(const bool & isRight, const Site * const bead, const double &posZ)
 {
     const Site* edge;
     double ab;
@@ -89,7 +142,15 @@ position::position(const bool & isRight, const Site * const bead)
 
     for(size_t i=0;i<d;i++)
     {
-        x.push_back(edge->pos.x.at(i)+mult*(aveVect.x.at(i))+Constants::giveRanDNormal(0,sqrt(var)));
+        if(i!=2)
+        {
+            x.push_back(edge->pos.x.at(i)+mult*(aveVect.x.at(i))+Constants::giveRanDNormal(0,sqrt(var)));
+        }
+        else
+        {
+           x.push_back(posZ);
+        }
+
     }
 
 
