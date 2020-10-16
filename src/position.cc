@@ -63,11 +63,11 @@ position::position(const string str)
         }
 }
 
-position::position(const string str, const Site * const bead)
+position::position(const bool & isRight, const Site * const bead)
 {
     const Site* edge;
     double ab;
-    if(str=="right")
+    if(isRight)
     {
          edge=bead->Rbead;
          ab=edge->TimeSliceOnBead-static_cast<double>(bead->TimeSliceOnBead);

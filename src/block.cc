@@ -129,7 +129,7 @@ while(step<NSweeps)
                         start->Lbead=&(particles->at(posiTimes).at(posiParti)); //LBEAD is proposed (but dosent mean theres is a worm)
                         const size_t var2= giveRanI(MBar-3)+1;
 
-                        start->Rbead=start->Lbead->searchBead("right",var2);
+                        start->Rbead=start->Lbead->searchBead(true,var2);
                         start->Lbead->oldpos=start->Lbead->pos;
 
                         start->Lbead->Wiggle(0);

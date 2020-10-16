@@ -37,6 +37,7 @@ TH1 * CalStruFact(TYP * hist)
     double val;
     int binMax;
     TH1 * h1=StrucFact(xyProj,val,binMax);
+    delete xyProj;
     theMaxXY<<val<<" "<<binMax<<endl;
     return h1;
 
