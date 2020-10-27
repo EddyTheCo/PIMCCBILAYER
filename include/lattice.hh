@@ -75,6 +75,7 @@ inline double getRemoveRatio(void)const
 #ifdef USEROOT
     static TFile *RootFile;
     static TH1* hpos;
+    static TH1D * PCFUp,*PCFDown,*PCFMix;
     static TH2D *Greens;
 
 static TVectorD * v;
