@@ -184,7 +184,7 @@ inline size_t  CalculateNoWormLenght(void)const
 
     size_t TimeSliceOnBead,ParticleOnBead;
     static double TEnergy,mu,TPotential,eta;
-    static position TWinding;
+    static position TWindingUp,TWindingDown;
     static double TEnergyVar,TPotentialVar;
     static position TWindingVar;
 

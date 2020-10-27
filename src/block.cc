@@ -35,7 +35,7 @@ while(step<NSweeps)
 
 
 //start->printLattice();
-//cout<<start->NParti_<<" "<<step<<endl;
+cout<<start->NParti_<<" "<<step<<endl;
 
 
          if(start->ThereIsAWorm)
