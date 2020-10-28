@@ -24,15 +24,19 @@ class block
 
     ~block();
 
-    double SumofDisplacement, NumberOfParticles,SumOfPotential;
+    double SumofDisplacement, NumberOfParticles,NumberOfParticlesUp,SumOfPotential;
     double Wormlenght;
-    double SumofWinding;
+    double SumofWindingUp,SumofWindingDown;
     inline double getKineticEnergy(void)const{
         return (NumberOfParticles*d*0.5/tao-SumofDisplacement/(4*landa*tao*tao*NTimeSlices));
         }
-    inline double getSuperfluidDensity(void)const{
-        return SumofWinding/(d*2*landa*beta*NumberOfParticles);
+    inline double getSuperfluidDensityUp(void)const{
+        return SumofWindingUp/(d*landa*beta*NumberOfParticlesUp);
         }
+    inline double getSuperfluidDensityDown(void)const{
+        return SumofWindingDown/(d*landa*beta*(NumberOfParticles-NumberOfParticlesUp));
+        }
+
 
 
 private:

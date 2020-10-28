@@ -22,9 +22,9 @@ block::block(array<vector<Site>,10000>* particles, const size_t &NTimeSlices, co
 {
 
 
-double TSumOfdisplacement=0,TSumOfPotential=0,TNumberOfParticles=0;
+double TSumOfdisplacement=0,TSumOfPotential=0,TNumberOfParticles=0,TNumberOfParticlesUp=0;
 size_t TWormlenght=0,step=0,measureCounter=0,measureCounter1=0;
-double TWinding=0;
+double TWindingUp=0,TWindingDown=0;
 Site* const start=&(particles->at(0).at(0));
 
 
@@ -35,7 +35,7 @@ while(step<NSweeps)
 
 
 //start->printLattice();
-//cout<<start->NParti_<<" "<<step<<endl;
+//cout<<start->NParti_<<" * "<<start->Nparti_UpxNT/NTimeSlices<<" "<<step<<endl;
 
 
          if(start->ThereIsAWorm)
@@ -79,7 +79,7 @@ while(step<NSweeps)
             case 3:
             {
 
-               // cout<<"removeWorm"<<endl;
+                //cout<<"removeWorm"<<endl;
                 start->removeWorm();
                 break;
             }
@@ -96,7 +96,9 @@ while(step<NSweeps)
                 TSumOfdisplacement+=start->TEnergy;
                 TSumOfPotential+=start->TPotential;
                 TNumberOfParticles+=start->NParti_;
-                TWinding+=start->TWinding.norm();
+                TNumberOfParticlesUp+=start->Nparti_UpxNT/NTimeSlices;
+                TWindingUp+=start->TWindingUp.normxy();
+                TWindingDown+=start->TWindingDown.norm();
                 measureCounter++;
             }
 
@@ -142,7 +144,7 @@ while(step<NSweeps)
             }
               case 2:
              {
-                // cout<<"insertworminclose "<<endl;
+                 //cout<<"insertworminclose "<<endl;
                  start->insertWorm();
                  break;
              }
@@ -159,8 +161,10 @@ if(realB)
         SumofDisplacement=TSumOfdisplacement/measureCounter;
         SumOfPotential=TSumOfPotential/measureCounter;
         NumberOfParticles=TNumberOfParticles/measureCounter;
+        NumberOfParticlesUp=TNumberOfParticlesUp/measureCounter;
         Wormlenght=1.*TWormlenght/measureCounter1;
-        SumofWinding=TWinding/measureCounter;
+        SumofWindingUp=TWindingUp/measureCounter;
+        SumofWindingDown=TWindingDown/measureCounter;
 }
 
 }

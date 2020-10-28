@@ -14,6 +14,10 @@ using namespace Constants;
 class Site;
 
 const extern   size_t d;
+
+
+
+
 const extern bool periodic;
 class position
 {
@@ -96,8 +100,8 @@ position(const position& prevPos, const double &var, const double & posZ)
 position(const string str);
 
 double TheX  (void) const {return x.at(0);}
-double TheY  (void) const {return (d==2)?x.at(1):0;}
-double TheZ  (void) const {return (d==3)?x.at(2):0;}
+double TheY  (void) const {return x.at(1);}
+double TheZ  (void) const {return x.at(2);}
 
 friend std::ostream & operator << (std::ostream &out, const position & obj)
 {

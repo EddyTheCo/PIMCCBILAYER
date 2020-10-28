@@ -166,7 +166,7 @@ void lattice::move()const
 {
 
 
-if(!restart)thesweep<< left << setw(12) <<"KEnergy"<< left << setw(12) <<"PEnergy"<< left << setw(12) <<"TEnergy"<< left << setw(12) <<"WormLenght"<< left << setw(12) <<"SuperFlDens"<< right << setw(12) <<"NParti"<</* right << setw(12) <<"S(k,w=0)"<<*/endl;
+if(!restart)thesweep<< left << setw(16) <<"KEnergy"<< left << setw(16) <<"PEnergy"<< left << setw(16) <<"TEnergy"<< left << setw(16) <<"WoLen"<< left << setw(16) <<"SFDUp"<< left << setw(16) <<"SFDDown"<< left << setw(16) <<"NpartiUp"<< right << setw(16) <<"NParti"<</* right << setw(12) <<"S(k,w=0)"<<*/endl;
 
 theratios<< left << setw(12)<<"Ropen"<<left << setw(12)<<"RClose"<<left << setw(12)<<"Rmove"<<left << setw(12)<<"Rswap"<<left << setw(12)<<"RInsert"<<left << setw(12)<<"RRmove"<<endl;
     for(size_t step=0;step<NRep;step++)
@@ -184,9 +184,10 @@ cout<<"finished block "<<step<<endl;
 #endif
   );
 
-thesweep << left << setw(12) << myBlock.getKineticEnergy()<<" "<< left << setw(12) <<myBlock.SumOfPotential/(NTimeSlices)
-         <<" "<< left << setw(12) << myBlock.getKineticEnergy()+myBlock.SumOfPotential/(NTimeSlices)
-          <<" "<<left << setw(12)    << myBlock.Wormlenght/(NTimeSlices-1)<<" "<<left << setw(12)    << myBlock.getSuperfluidDensity()<<" "<<right << setw(12)    <<myBlock.NumberOfParticles<</*" "<<right << setw(12)    <<StructureFactor<<*/endl;
+thesweep << left << setw(16) << myBlock.getKineticEnergy()<<" "<< left << setw(16) <<myBlock.SumOfPotential/(NTimeSlices)
+         <<" "<< left << setw(16) << myBlock.getKineticEnergy()+myBlock.SumOfPotential/(NTimeSlices)
+          <<" "<<left << setw(16)    << myBlock.Wormlenght/(NTimeSlices-1)<<" "<<left << setw(16)    << myBlock.getSuperfluidDensityUp()
+         <<" "<<left << setw(16)    << myBlock.getSuperfluidDensityDown()<<" "<<left << setw(16)    << myBlock.NumberOfParticlesUp<<" "<<right << setw(16)    <<myBlock.NumberOfParticles<</*" "<<right << setw(12)    <<StructureFactor<<*/endl;
 
 
        theratios<< left << setw(12) <<getOpenRatio()<< left << setw(12) <<getCloseRatio()<< left << setw(12) <<getMoveRatio()<< left << setw(12)
@@ -250,26 +251,28 @@ void lattice::PrintConfiguration (
                 ((TH2D*)hpos)->Fill(grid->at(i).at(j).pos.perio(0),grid->at(i).at(j).pos.perio(1));
                 if(d==1)
                 ((TH1D*)hpos)->Fill(grid->at(i).at(j).pos.perio(0));
-
+                if(Site::NParti_>4)
                 for(size_t k = 0; k<grid->at(0).at(0).NParti_; k++)
                 {
                     if(j!=k)
                     {
-                        const double dis=sqrt((grid->at(i).at(j).pos-grid->at(i).at(k).pos).norm()-grid->at(i).at(j).pos.TheZ()*grid->at(i).at(j).pos.TheZ());
-                        const double bin=PCFUp->GetBinWidth(1);
+                        const double dis=sqrt((grid->at(i).at(j).pos-grid->at(i).at(k).pos).norm()-dplanes*dplanes);
+                        const double binUp=PCFUp->GetBinWidth(1)*(grid->at(0).at(0).NParti_/2-1)*NTimeSlices*(grid->at(0).at(0).NParti_/2)/position::L.TheX()/position::L.TheY();
+                        const double binMix=PCFUp->GetBinWidth(1)*(grid->at(0).at(0).NParti_/2)*NTimeSlices*(grid->at(0).at(0).NParti_/2)/position::L.TheX()/position::L.TheY();
+
                     if(grid->at(i).at(j).pos.TheZ()!=grid->at(i).at(k).pos.TheZ())
                     {
-                        PCFMix->Fill(dis,1.0/(grid->at(0).at(0).NParti_*pi*dis*bin));
+                        PCFMix->Fill(dis,1.0/(pi*dis*binMix));
                     }
                     else
                     {
                         if(grid->at(i).at(j).pos.TheZ()>0)
                         {
-                            PCFUp->Fill(dis,1.0/(grid->at(0).at(0).NParti_*pi*dis*bin));
+                            PCFUp->Fill(dis,1.0/(pi*dis*binUp));
                         }
                         else
                         {
-                            PCFDown->Fill(dis,1.0/(grid->at(0).at(0).NParti_*pi*dis*bin));
+                            PCFDown->Fill(dis,1.0/(pi*dis*binUp));
                         }
                     }
                     }

@@ -6,6 +6,8 @@
 
 using namespace std;
 
+
+
 const size_t d=ReadFromInput<size_t>(6);
 const bool periodic=ReadFromInput<string>(14)=="periodic";
 
@@ -45,7 +47,7 @@ position::position(const string str)
 
         }
     }
-    if(str=="ini")
+    if(str=="ini Up")
     {
         for(size_t i=0;i<d;i++)
         {
@@ -68,6 +70,7 @@ position::position(const string str)
                 {
                     x.push_back(dplanes/2);
                     upPart=!upPart;
+                    Site::Nparti_UpxNT++;
                 }
                 else
                 {
@@ -90,10 +93,12 @@ position::position(const string str)
             if(i!=2)
             {
                  x.push_back(Constants::giveRanD(L.x.at(i))-L.x.at(i)/2);
+
             }
             else
             {
                 x.push_back(dplanes/2);
+                Site::Nparti_UpxNT++;
             }
         }
     }
@@ -111,6 +116,55 @@ position::position(const string str)
             }
         }
     }
+    if(str=="ini down")
+    {
+        for(size_t i=0;i<d;i++)
+        {
+            if(restart)
+            {
+                double var;
+                (*inFile)>>var;
+                x.push_back(var);
+            }
+            else
+            {
+
+                if(i!=2)
+                {
+                     x.push_back(Constants::giveRanD(L.x.at(i))-L.x.at(i)/2);
+                }
+                else
+                {
+                    x.push_back(-dplanes/2);
+                }
+            }
+        }
+    }
+    if(str=="ini up")
+    {
+        for(size_t i=0;i<d;i++)
+        {
+            if(restart)
+            {
+                double var;
+                (*inFile)>>var;
+                x.push_back(var);
+            }
+            else
+            {
+
+                if(i!=2)
+                {
+                     x.push_back(Constants::giveRanD(L.x.at(i))-L.x.at(i)/2);
+                }
+                else
+                {
+                    x.push_back(dplanes/2);
+                }
+            }
+        }
+    }
+
 
 }
 

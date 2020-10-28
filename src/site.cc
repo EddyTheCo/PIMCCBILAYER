@@ -12,8 +12,8 @@ using namespace Constants;
 
 const bool Site::fourthOrder=ReadFromInput<string>(19)=="true";
 size_t Site::NParti_=(restart)?ReadFromInput<size_t>(1,".restart.conf"):ReadFromInput<size_t>(1);
+size_t Site::Nparti_UpxNT=0;
 
-size_t NpartiUp=0;
 const double landa=ReadFromInput<double>(4);
 const double tao=ReadFromInput<double>(2);
 const double beta=ReadFromInput<double>(3);
@@ -41,15 +41,17 @@ array<vector<Site>,10000>* Site::theParticles=nullptr;
 
 Site* Site::Lbead=nullptr;
 Site* Site::Rbead=nullptr;
-position Site::TWinding=position(0.);
-position Site::TWindingVar=position(0.);
+position Site::TWindingUp=position(0.);
+position Site::TWindingDown=position(0.);
+position Site::TWindingVarUp=position(0.);
+position Site::TWindingVarDown=position(0.);
 size_t Site::NClose=1,Site::NOpen=1,Site::NMove=1,Site::NSwap=1,Site::NCloseP=1,Site::NOpenP=1,Site::NMoveP=1,Site::NSwapP=1,Site::NInsertP=1,Site::NInsert=1,Site::NRemoP=1,Site::NRemo=1;
 Site::Site():pos(position(1.0))
 {
 
 
 }
-Site::Site(const size_t i,const size_t j):pos(position("ini")),oldpos(pos),active(true),TimeSliceOnBead(j),ParticleOnBead(i),left(nullptr),right(nullptr),up(nullptr),down(nullptr)
+Site::Site(const size_t i,const size_t j):pos((i%2)?position("ini up"):position("ini down")),oldpos(pos),active(true),TimeSliceOnBead(j),ParticleOnBead(i),left(nullptr),right(nullptr),up(nullptr),down(nullptr)
 {
 
 
@@ -74,7 +76,8 @@ bool Site::OpenWorm(const size_t step, const size_t ab, double dU, const positio
             right->active=false;
             const auto Dist=pos-right->pos;
             TEnergy-=Dist.norm();
-            TWinding=TWinding+Dist;
+
+            (pos.TheZ()>0)?TWindingUp=TWindingUp+Dist:TWindingDown=TWindingDown+Dist;
             TPotential-=U;
             return true;
         }
@@ -89,7 +92,7 @@ bool Site::OpenWorm(const size_t step, const size_t ab, double dU, const positio
         {
             const auto Dist=pos-right->pos;
             TEnergy-=Dist.norm();
-            TWinding=TWinding+Dist;
+            (pos.TheZ()>0)?TWindingUp=TWindingUp+Dist:TWindingDown=TWindingDown+Dist;
             Rbead=this->right;
             ThereIsAWorm=true;
             Lbead=this;
@@ -118,7 +121,7 @@ bool Site::CloseWorm(double dU)
             right->active=true;
             const auto Dist=right->pos-pos;
             TEnergy+=Dist.norm();
-            TWinding=TWinding+Dist;
+            (pos.TheZ()>0)?TWindingUp=TWindingUp+Dist:TWindingDown=TWindingDown+Dist;
             TPotential+=U;
 
             return true;
@@ -133,7 +136,7 @@ bool Site::CloseWorm(double dU)
         {
             const auto Dist=right->pos-pos;
             TEnergy+=Dist.norm();
-            TWinding=TWinding+Dist;
+           (pos.TheZ()>0)?TWindingUp=TWindingUp+Dist:TWindingDown=TWindingDown+Dist;
             Rbead=nullptr;
             Lbead=nullptr;
             ThereIsAWorm=false;
@@ -152,7 +155,8 @@ right->oldpos=right->pos;
     {
         const auto Dist=oldpos-right->pos;
         TEnergyVar-=Dist.norm();
-        TWindingVar=TWindingVar+Dist;
+
+        (pos.TheZ()>0)?TWindingVarUp=TWindingVarUp+Dist:TWindingVarDown=TWindingVarDown+Dist;
         double U=0;
         right->ChangeInU(true,dU,U);
 
@@ -167,7 +171,7 @@ right->oldpos=right->pos;
         {
             const auto Dist=right->pos-pos;
             TEnergy+=Dist.norm();
-            TWinding=TWinding+Dist;
+            (pos.TheZ()>0)?TWindingUp=TWindingUp+Dist:TWindingDown=TWindingDown+Dist;
             TPotential+=U;
 
             return true;
@@ -179,23 +183,24 @@ right->oldpos=right->pos;
     {
         const auto Dist=oldpos-right->pos;
         TEnergyVar-=Dist.norm();
-        TWindingVar=TWindingVar+Dist;
+        (pos.TheZ()>0)?TWindingVarUp=TWindingVarUp+Dist:TWindingVarDown=TWindingVarDown+Dist;
         if(exp(dU)>giveRanD(1.))
         {
             TPotential-=TPotentialVar;
             const auto Dist=right->pos-pos;
             TEnergy+=TEnergyVar+Dist.norm();
-            TWinding=TWinding+TWindingVar+Dist;
+
+            (pos.TheZ()>0)?TWindingUp=TWindingUp+Dist+TWindingVarUp:TWindingDown=TWindingDown+Dist+TWindingVarDown;
             Lbead=nullptr;
             Rbead=nullptr;
             TPotentialVar=0;
             TEnergyVar=0;
-            TWindingVar=position(0.);
+            (pos.TheZ()>0)?TWindingVarUp=position(0.):TWindingVarDown=position(0.);
             return true;
         }
         TPotentialVar=0;
         TEnergyVar=0;
-        TWindingVar=position(0.);
+        (pos.TheZ()>0)?TWindingVarUp=position(0.):TWindingVarDown=position(0.);
 
         return false;
     }
@@ -218,7 +223,7 @@ ChangeInU(true,dU,U);
                 active=false;
                 const auto Dist=pos-right->pos;
                 TEnergy-=Dist.norm();
-                TWinding=TWinding+Dist;
+                (pos.TheZ()>0)?TWindingUp=TWindingUp+Dist:TWindingDown=TWindingDown+Dist;
                 TPotential-=U;
                 return true;
             }
@@ -237,7 +242,7 @@ ChangeInU(true,dU,U);
                 {
                     const auto Dist=pos-right->pos;
                     TEnergy-=Dist.norm();
-                    TWinding=TWinding+Dist;
+                    (pos.TheZ()>0)?TWindingUp=TWindingUp+Dist:TWindingDown=TWindingDown+Dist;
                 }
                 active=false;
                 TPotential-=U;
@@ -261,9 +266,9 @@ ChangeInU(true,dU,U);
                 if(left->deleteToLeft(step-1,dU))
                 {
                     active=false;
-                    const auto Dis=left->pos-pos;
-                    TEnergy-=Dis.norm();
-                    TWinding=TWinding+Dis;
+                    const auto Dist=left->pos-pos;
+                    TEnergy-=Dist.norm();
+                    (pos.TheZ()>0)?TWindingUp=TWindingUp+Dist:TWindingDown=TWindingDown+Dist;
                     TPotential-=U;
                     return true;
                 }
@@ -277,9 +282,9 @@ ChangeInU(true,dU,U);
                 {
                     active=false;
                     TPotential-=U;
-                    const auto Dis=left->pos-pos;
-                    TEnergy-=Dis.norm();
-                    TWinding=TWinding+Dis;
+                    const auto Dist=left->pos-pos;
+                    TEnergy-=Dist.norm();
+                    (pos.TheZ()>0)?TWindingUp=TWindingUp+Dist:TWindingDown=TWindingDown+Dist;
                     Lbead=this->left;
                     NMove++;
                     return true;
@@ -297,7 +302,7 @@ bool Site::insertToRight(const size_t step,double dU)
         if(!isGrandCanonical)
             return false;
         else {
-            insertParticle();
+            insertParticle(pos.TheZ());
             aParticleisInserted=true;
             right=theParticles->at(TimeSliceOnBead).back().right;
             auto var=right->left;
@@ -318,9 +323,9 @@ right->ChangeInU(false,dU,U);
                 if(right->insertToRight(step-1,dU))
                 {
                     right->active=true;
-                    const auto Dis=right->pos-pos;
-                    TEnergy+=Dis.norm();
-                    TWinding=TWinding+Dis;
+                    const auto Dist=right->pos-pos;
+                    TEnergy+=Dist.norm();
+                    (pos.TheZ()>0)?TWindingUp=TWindingUp+Dist:TWindingDown=TWindingDown+Dist;
                     TPotential+=U;
                     return true;
                 }
@@ -334,9 +339,9 @@ right->ChangeInU(false,dU,U);
                 if(exp(dU)>giveRanD(1.))
                 {
                     right->active=true;
-                    const auto Dis=right->pos-pos;
-                    TEnergy+=Dis.norm();
-                    TWinding=TWinding+Dis;
+                    const auto Dist=right->pos-pos;
+                    TEnergy+=Dist.norm();
+                    (pos.TheZ()>0)?TWindingUp=TWindingUp+Dist:TWindingDown=TWindingDown+Dist;
                     TPotential+=U;
                     Lbead=this->right;
                     if(aParticleisInserted)
@@ -376,7 +381,7 @@ bool Site::insertToLeft(const size_t step,double dU)
             return false;
         else {
 
-            insertParticle();
+            insertParticle(pos.TheZ());
 
             aParticleisInserted=true;
             left=theParticles->at(TimeSliceOnBead).back().left;
@@ -400,11 +405,11 @@ dU+=mu*tao;
                 if(left->insertToLeft(step-1,dU))
                 {
                     left->active=true;
-                    const auto Dis=pos-left->pos;
-                    TEnergy+=Dis.norm();
+                    const auto Dist=pos-left->pos;
+                    TEnergy+=Dist.norm();
 
 
-                    TWinding=TWinding+Dis;
+                    (pos.TheZ()>0)?TWindingUp=TWindingUp+Dist:TWindingDown=TWindingDown+Dist;
 
                     TPotential+=U;
                     return true;
@@ -419,11 +424,11 @@ dU+=mu*tao;
                 if(exp(dU)>giveRanD(1.))
                 {
                     left->active=true;
-                    const auto Dis=pos-left->pos;
-                    TEnergy+=Dis.norm();
+                    const auto Dist=pos-left->pos;
+                    TEnergy+=Dist.norm();
 
 
-                    TWinding=TWinding+Dis;
+                    (pos.TheZ()>0)?TWindingUp=TWindingUp+Dist:TWindingDown=TWindingDown+Dist;
 
                     TPotential+=U;
                     Rbead=this->left;
@@ -457,6 +462,8 @@ void Site::removeWorm(void)
     if(wormLenght>=MBar)
         return;
 
+
+const bool isup=(Rbead->pos.TheZ()>0)?true:false;
 
     if(Rbead->deleteToRight(wormLenght,-log(eta)))
     {
@@ -511,6 +518,8 @@ void Site::removeWorm(void)
         }while(1);
 
         NParti_-=step/NTimeSlices;
+
+        if(isup)Nparti_UpxNT-=step;
         Lbead=nullptr;
         Rbead=nullptr;
         ThereIsAWorm=false;
@@ -524,6 +533,8 @@ void Site::insertWorm(void)
 {
 
 insertParticle();
+
+
 
     const size_t posiTimes=giveRanI(NTimeSlices-1) ;
 
@@ -549,6 +560,7 @@ insertParticle();
         }
         else
         {
+
             removeLastParticle();
 
         }
@@ -557,6 +569,7 @@ insertParticle();
 void Site::insertParticle(void)const
 {
 bool va=giveRanI(1);
+
     for(size_t i=0;i<NTimeSlices;i++)
     {
 
@@ -584,6 +597,39 @@ bool va=giveRanI(1);
     theParticles->at(NTimeSlices-1).back().right=&(theParticles->at(0).back());
     theParticles->at(0).back().left=&(theParticles->at(NTimeSlices-1).back());
 }
+
+void Site::insertParticle(const double &theZ)const
+{
+bool va=(theZ>0)?true:false;
+
+    for(size_t i=0;i<NTimeSlices;i++)
+    {
+
+        theParticles->at(i).push_back(Site(NParti_,i,(va)?"up":"down"));
+
+
+        theParticles->at(i).back().up=&(theParticles->at(i).front());
+
+        if(theParticles->at(i).size()>1)
+            theParticles->at(i).back().down=&(theParticles->at(i).back())-1;
+        else {
+            theParticles->at(i).back().down=&(theParticles->at(i).back());
+        }
+        theParticles->at(i).back().down->up=&(theParticles->at(i).back());
+        theParticles->at(i).back().up->down=&(theParticles->at(i).back());
+
+        if(i)
+        {
+            theParticles->at(i).back().left=&(theParticles->at(i-1).back());
+            theParticles->at(i).back().left->right=&(theParticles->at(i).back());
+        }
+
+    }
+
+    theParticles->at(NTimeSlices-1).back().right=&(theParticles->at(0).back());
+    theParticles->at(0).back().left=&(theParticles->at(NTimeSlices-1).back());
+}
+
 Site* Site::chooseTheBead(double &SumI, const size_t& vae, const Site * const startBead)const
 {
      multimap <double, Site*> prop;
@@ -594,8 +640,9 @@ Site* Site::chooseTheBead(double &SumI, const size_t& vae, const Site * const st
     {
 
 
-        if(ptr->active&&ptr!=Rbead&&ptr!=Lbead)
+        if(ptr->active&&ptr!=Rbead&&ptr!=Lbead&&ptr->pos.TheZ()==startBead->pos.TheZ())
         {
+
             var=propagator(startBead->pos,ptr->pos,vae);
             if(var>0){
                 SumI+=var;
@@ -696,7 +743,7 @@ if(isRight)
                 return false;
            }
             else {
-                insertParticle();
+                insertParticle(pos.TheZ());
                 aParticleisInserted=true;
                 //cout<<"seinserto aparticle"<<endl;
                 ri=right;
@@ -721,7 +768,8 @@ if(isRight)
             const auto Dist1=right->pos-pos;
             const auto Dist2=zeta->pos-zeta->right->pos;
             TEnergy+=Dist1.norm()-Dist2.norm();
-            TWinding=TWinding+Dist1+Dist2;
+
+            (pos.TheZ()>0)?TWindingUp=TWindingUp+Dist1+Dist2:TWindingDown=TWindingDown+Dist1+Dist2;
             TPotential+=Ualpha;
             TPotential-=Uzeta;
 
@@ -741,7 +789,8 @@ if(isRight)
              const auto Dist1=right->pos-pos;
              const auto Dist2=zeta->pos-zeta->right->pos;
              TEnergy+=Dist1.norm()-Dist2.norm();
-             TWinding=TWinding+Dist1+Dist2;
+
+             (pos.TheZ()>0)?TWindingUp=TWindingUp+Dist1+Dist2:TWindingDown=TWindingDown+Dist1+Dist2;
             zeta->right=prev;
             zeta->right->left=zeta;
             this->right->left=this;
@@ -788,7 +837,7 @@ else {
 
             }
             else {
-                insertParticle();
+                insertParticle(pos.TheZ());
                 aParticleisInserted=true;
                 //cout<<"seinserto aparticle"<<endl;
                 le=left;
@@ -814,7 +863,8 @@ else {
             const auto Dist1=pos-left->pos;
             const auto Dist2=zeta->left->pos-zeta->pos;
             TEnergy+=Dist1.norm()-Dist2.norm();
-            TWinding=TWinding+Dist1+Dist2;
+
+            (pos.TheZ()>0)?TWindingUp=TWindingUp+Dist1+Dist2:TWindingDown=TWindingDown+Dist1+Dist2;
             TPotential+=Ualpha;
             TPotential-=Uzeta;
 
@@ -834,7 +884,8 @@ else {
              const auto Dist1=pos-left->pos;
              const auto Dist2=zeta->left->pos-zeta->pos;
              TEnergy+=Dist1.norm()-Dist2.norm();
-             TWinding=TWinding+Dist1+Dist2;
+
+             (pos.TheZ()>0)?TWindingUp=TWindingUp+Dist1+Dist2:TWindingDown=TWindingDown+Dist1+Dist2;
             zeta->left=prev;
             zeta->left->right=zeta;
             this->left->right=this;

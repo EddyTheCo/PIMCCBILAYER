@@ -68,7 +68,7 @@ inline double getRemoveRatio(void)const
   static array<vector<Site>,10000>*  const grid;
 
     static ofstream  thesweep,theratios;
-    static size_t NParti;
+
 
 
     static const size_t NRep,NSweeps;

@@ -15,7 +15,7 @@ using namespace std;
 const extern double beta,tao,landa,variance,dplanes;
 const extern size_t NTimeSlices,d, MBar;
 extern const bool restart;
-extern size_t NpartiUp;
+
 
 class Site
 {
@@ -184,9 +184,9 @@ inline size_t  CalculateNoWormLenght(void)const
 
     size_t TimeSliceOnBead,ParticleOnBead;
     static double TEnergy,mu,TPotential,eta;
-    static position TWinding;
+    static position TWindingUp,TWindingDown;
     static double TEnergyVar,TPotentialVar;
-    static position TWindingVar;
+    static position TWindingVarUp,TWindingVarDown;
 
 
     Site* chooseTheBead(double &SumI, const size_t &vae, const Site * const startBead) const;
@@ -226,7 +226,7 @@ inline size_t  CalculateNoWormLenght(void)const
     {
 
         TEnergy+=(right->pos-pos).norm();
-        TWinding=TWinding+(right->pos-pos);
+        (pos.TheZ()>0)?TWindingUp=TWindingUp+(right->pos-pos):TWindingDown=TWindingDown+(right->pos-pos);
         double U=0;
         position gU=position(0.);
         ThePotential.PairInteraction(this,U,gU);
@@ -305,7 +305,7 @@ inline void ChangeInU(const bool & isRemove, double& dU ,double & U )const
     position pos,oldpos;
     Site* left,* right,* up,* down;
     const static potential ThePotential;
-    static size_t NParti_,NClose,NOpen,NMove,NSwap,NInsert,NInsertP,NRemo,NRemoP,NCloseP,NOpenP,NMoveP,NSwapP;
+    static size_t NParti_,Nparti_UpxNT,NClose,NOpen,NMove,NSwap,NInsert,NInsertP,NRemo,NRemoP,NCloseP,NOpenP,NMoveP,NSwapP;
 
 
  inline void restartRatios(void)const{
@@ -352,10 +352,12 @@ inline void ChangeInU(const bool & isRemove, double& dU ,double & U )const
 
     }
     void insertParticle(void)const;
+    void insertParticle(const double &)const;
     inline void removeLastParticle(void)const
     {
         size_t step=0;
         Site* ptr;
+        const bool v=(theParticles->at(0).back().pos.TheZ()>0)?true:false;
         while(step<NTimeSlices)
         {
             ptr=&theParticles->at(step).back();
@@ -364,6 +366,7 @@ inline void ChangeInU(const bool & isRemove, double& dU ,double & U )const
             theParticles->at(ptr->TimeSliceOnBead).pop_back();
             step++;
         }
+        if(v)Nparti_UpxNT-=NTimeSlices;
     }
     inline Site* searchBead(const bool & isRight, size_t step)const
     {
@@ -412,9 +415,9 @@ inline void ChangeInU(const bool & isRemove, double& dU ,double & U )const
              {
                  var=theParticles->at(i).at(j);
                  if(var.active)
-                     cout<<var.pos;
+                     cout<<var.right->ParticleOnBead<<" "<<var.right->TimeSliceOnBead<<" "<<var.pos.TheZ();
                  else {
-                     cout<<"#"<<var.pos<<" ";
+                     cout<<"#"<<var.right->ParticleOnBead<<" "<<var.right->TimeSliceOnBead<<" "<<var.pos.TheZ();
                  }
                  cout<<" ";
                  //cout<<var.right<<"  ";
