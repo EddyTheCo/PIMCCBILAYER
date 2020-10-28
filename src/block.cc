@@ -35,6 +35,7 @@ while(step<NSweeps)
 
 
 //start->printLattice();
+//cout<<"************************************"<<endl;
 //cout<<start->NParti_<<" * "<<start->Nparti_UpxNT/NTimeSlices<<" "<<step<<endl;
 
 

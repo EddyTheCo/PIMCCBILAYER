@@ -118,6 +118,7 @@ position::position(const string str)
     }
     if(str=="ini down")
     {
+        cout<<"down"<<endl;
         for(size_t i=0;i<d;i++)
         {
             if(restart)
@@ -142,6 +143,7 @@ position::position(const string str)
     }
     if(str=="ini up")
     {
+
         for(size_t i=0;i<d;i++)
         {
             if(restart)
@@ -160,6 +162,7 @@ position::position(const string str)
                 else
                 {
                     x.push_back(dplanes/2);
+                    Site::Nparti_UpxNT++;
                 }
             }
         }
