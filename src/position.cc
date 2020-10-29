@@ -65,7 +65,7 @@ position::position(const string str)
                  //     x.push_back(var);
                 //x.push_back(0.);
             if(i==2)
-	       {
+           {
                 if(upPart)
                 {
                     x.push_back(dplanes/2);
@@ -77,11 +77,11 @@ position::position(const string str)
                     x.push_back(-dplanes/2);
                     upPart=!upPart;
                 }
-	       }
-	       else
-	       {
-		       x.push_back(Constants::giveRanD(L.x.at(i))-L.x.at(i)/2);
-	       }
+           }
+           else
+           {
+               x.push_back(Constants::giveRanD(L.x.at(i))-L.x.at(i)/2);
+           }
             }
 
         }
@@ -118,7 +118,7 @@ position::position(const string str)
     }
     if(str=="ini down")
     {
-        cout<<"down"<<endl;
+
         for(size_t i=0;i<d;i++)
         {
             if(restart)

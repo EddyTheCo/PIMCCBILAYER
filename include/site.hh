@@ -212,15 +212,72 @@ inline size_t  CalculateNoWormLenght(void)const
             left=&(theParticles->at(LeftTi).at(LeftPa));
             right=&(theParticles->at(RightTi).at(RightPa));
 
+            double var;
+            vector<double> x;
+            for(size_t i=0;i<d;i++)
+            {
+                (* position::inFile)>>var;
+                x.push_back(var);
+                if(i==2&&var>0)
+                {
+                    Site::Nparti_UpxNT++;
+                }
+            }
+            pos=position(x);
+            oldpos=pos;
+
+
         }
         else
         {
             left=&(theParticles->at((TimeSliceOnBead-1+NTimeSlices)%NTimeSlices).at(ParticleOnBead));
             right=&(theParticles->at((TimeSliceOnBead+1)%NTimeSlices).at(ParticleOnBead));
+
+
+            double var;
+            vector<double> x;
+            for(size_t i=0;i<d;i++)
+            {
+                if(TimeSliceOnBead==0)
+                {
+                    if(i!=2)
+                    {
+                         x.push_back(Constants::giveRanD(position::L.x.at(i))-position::L.x.at(i)/2);
+
+                    }
+                    else
+                    {
+                        if(ParticleOnBead%2)
+                        {
+                            x.push_back(dplanes/2);
+                            Site::Nparti_UpxNT++;
+
+                        }
+                        else
+                        {
+                             x.push_back(-dplanes/2);
+                        }
+                    }
+
+                }
+                else
+                {
+                    x.push_back(left->pos.x.at(i));
+                    if(i==2&&left->pos.x.at(i)>0)
+                    {
+                       Site::Nparti_UpxNT++;
+                    }
+                }
+                            }
+            pos=position(x);
+            oldpos=pos;
         }
 
         up=&(theParticles->at(TimeSliceOnBead).at((ParticleOnBead+1)%NParti_));
         down=&(theParticles->at(TimeSliceOnBead).at((ParticleOnBead-1+NParti_)%NParti_));
+
+
+
     }
     inline void totalEnergy(void)const
     {
@@ -415,9 +472,9 @@ inline void ChangeInU(const bool & isRemove, double& dU ,double & U )const
              {
                  var=theParticles->at(i).at(j);
                  if(var.active)
-                     cout<<var.right->ParticleOnBead<<" "<<var.right->TimeSliceOnBead<<" "<<var.pos.TheZ();
+                     cout<<var.right->ParticleOnBead<<" "<<var.right->TimeSliceOnBead<<"/"<<var.pos;
                  else {
-                     cout<<"#"<<var.right->ParticleOnBead<<" "<<var.right->TimeSliceOnBead<<" "<<var.pos.TheZ();
+                     cout<<"#"<<var.right->ParticleOnBead<<" "<<var.right->TimeSliceOnBead<<"/"<<var;
                  }
                  cout<<" ";
                  //cout<<var.right<<"  ";

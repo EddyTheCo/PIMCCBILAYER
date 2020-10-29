@@ -51,7 +51,7 @@ Site::Site():pos(position(1.0))
 
 
 }
-Site::Site(const size_t i,const size_t j):pos((i%2)?position("ini up"):position("ini down")),oldpos(pos),active(true),TimeSliceOnBead(j),ParticleOnBead(i),left(nullptr),right(nullptr),up(nullptr),down(nullptr)
+Site::Site(const size_t i,const size_t j):active(true),TimeSliceOnBead(j),ParticleOnBead(i),left(nullptr),right(nullptr),up(nullptr),down(nullptr)
 {
 
 

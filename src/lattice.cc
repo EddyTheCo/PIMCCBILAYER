@@ -50,7 +50,7 @@ const size_t lattice::NSweeps=ReadFromInput <size_t> (8);
 array<vector<Site>,10000>*  const lattice::grid=new array<vector<Site>,10000>;
 lattice::lattice()
 {
-
+cout<<"init Lattice"<<endl;
 
     for(size_t i=0;i<NTimeSlices;i++)
     {
@@ -78,7 +78,7 @@ lattice::lattice()
 
 
 
-
+cout<<"end Lattice"<<endl;
 }
 #ifdef USEROOT
 TVectorD *lattice::v=nullptr;
@@ -136,7 +136,7 @@ TVectorD *lattice::v=nullptr;
 
 void lattice::setup()const
 {
-
+cout<<"init Lattice Setup"<<endl;
     grid->at(0).at(0).setLattice(grid);
 
 
@@ -159,13 +159,13 @@ void lattice::setup()const
 
 
     }
-
+cout<<"end Lattice Setup"<<endl;
 }
 
 void lattice::move()const
 {
 
-
+cout<<"init Lattice Move"<<endl;
 if(!restart)thesweep<< left << setw(16) <<"KEnergy"<< left << setw(16) <<"PEnergy"<< left << setw(16) <<"TEnergy"<< left << setw(16) <<"WoLen"<< left << setw(16) <<"SFDUp"<< left << setw(16) <<"SFDDown"<< left << setw(16) <<"NpartiUp"<< right << setw(16) <<"NParti"<</* right << setw(12) <<"S(k,w=0)"<<*/endl;
 
 theratios<< left << setw(12)<<"Ropen"<<left << setw(12)<<"RClose"<<left << setw(12)<<"Rmove"<<left << setw(12)<<"Rswap"<<left << setw(12)<<"RInsert"<<left << setw(12)<<"RRmove"<<endl;
@@ -202,6 +202,7 @@ thesweep << left << setw(16) << myBlock.getKineticEnergy()<<" "<< left << setw(1
 #endif
     thesweep.close();
     theratios.close();
+    cout<<"end Lattice Move"<<endl;
 }
 
 void lattice::PrintConfiguration (
