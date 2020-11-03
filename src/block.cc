@@ -125,6 +125,7 @@ h++;
                    const size_t posiParti=giveRanI(particles->at(posiTimes).size()-1);
                    const size_t var2=  giveRanI(MBar-2);
                    Site* const Ranbead=&(particles->at(posiTimes).at(posiParti));
+                   start->NOpenP++;
                    start->ThereIsAWorm= Ranbead->OpenWorm(var2,var2+1,0,Ranbead->pos);
                }
 

@@ -87,7 +87,7 @@ bool Site::OpenWorm(const size_t step, const size_t ab, double dU, const positio
     else
     {
 
-        NOpenP++;
+
         if(eta*NParti_/(propagator(start,right->pos,ab,-dU)*position::volumen)>giveRanD(1.))
         {
             const auto Dist=pos-right->pos;
