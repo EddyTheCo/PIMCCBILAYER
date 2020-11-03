@@ -172,7 +172,7 @@ theratios<< left << setw(12)<<"Ropen"<<left << setw(12)<<"RClose"<<left << setw(
     for(size_t step=0;step<NRep;step++)
     {
 
-        const auto myBlock=block(grid,NTimeSlices,NSweeps,true
+        const auto myBlock=block(grid,NTimeSlices,NSweeps
 #ifdef USEROOT
                                  ,Greens
 #endif

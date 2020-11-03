@@ -132,6 +132,7 @@ bool Site::CloseWorm(double dU)
     }
     else
     {
+
         if(propagator(Lbead->pos,Rbead->pos,NInactiveLinks(),dU)*position::getVolumen()/(eta*NParti_)>giveRanD(1.))
         {
             const auto Dist=right->pos-pos;

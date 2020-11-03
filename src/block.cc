@@ -11,10 +11,10 @@ using namespace std;
 
 #include"site.hh"
 
+const int Warmup=ReadFromInput<int>(22);
 
 
-
-block::block(array<vector<Site>,10000>* particles, const size_t &NTimeSlices, const size_t &NSweeps, const bool &realB
+block::block(array<vector<Site>,10000>* particles, const size_t &NTimeSlices, const size_t &NSweeps
              #ifdef USEROOT
              , TH2D * const Greens
              #endif
@@ -27,6 +27,7 @@ size_t TWormlenght=0,step=0,measureCounter=0,measureCounter1=0;
 double TWindingUp=0,TWindingDown=0;
 Site* const start=&(particles->at(0).at(0));
 
+size_t h=0;
 
 
 while(step<NSweeps)
@@ -34,15 +35,25 @@ while(step<NSweeps)
 
 
 
-//start->printLattice();
-//cout<<"************************************"<<endl;
-//cout<<start->NParti_<<" * "<<start->Nparti_UpxNT/NTimeSlices<<" "<<step<<endl;
+if(!(h%1000)&&Warmup&&!isGrandCanonical)
+{
+    if(start->NClose*1./start->NCloseP<0.001)
+    {
+        Site::mu+=1;
+    }
+    if(start->NOpen*1./start->NOpenP<0.001)
+    {
+        Site::mu-=1;
+    }
+    cout<<"mu*******************************="<<Site::mu<<endl;
+}
+h++;
 
 
          if(start->ThereIsAWorm)
         {
 
-             if(realB)
+             if(!Warmup)
              {
                 measureCounter1++;
                 TWormlenght+=start->NInactiveLinks();
@@ -92,7 +103,7 @@ while(step<NSweeps)
         }
         else
         {
-            if(realB)
+            if(!Warmup)
             {
                 TSumOfdisplacement+=start->TEnergy;
                 TSumOfPotential+=start->TPotential;
@@ -158,7 +169,7 @@ while(step<NSweeps)
     }
 
 
-if(realB)
+if(!Warmup)
 {
         SumofDisplacement=TSumOfdisplacement/measureCounter;
         SumOfPotential=TSumOfPotential/measureCounter;
