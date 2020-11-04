@@ -24,307 +24,80 @@ TH1 * StrucFact(TH1 * hist,double &val, int & binMax)
     return hm;
 
 }
-
-void CalStruFact(size_t ini,size_t NT)
+void BilayerPCF(size_t Npart, size_t NTimeSlices,double Rangetop,double Lx,double Ly)
 {
-    gROOT->SetBatch(kTRUE);
-
-        TH1 * M4 =nullptr;
-        TH1 * M2 =nullptr;
-         TH1 * AveStru =nullptr;
-
-    size_t stp=0;
-
-
-    v = (TVectorD*)gDirectory->Get("v");
-
-    bool var=1;
-
-    TCanvas*c1 = new TCanvas("c1", "c1", 1200,1000);
+    //gROOT->SetBatch(kTRUE);
     gStyle->SetOptStat(0);
+    TH1* PCFUp = (TH1D*)gDirectory->Get("PCFUp");
+    TH1* PCFDown = (TH1D*)gDirectory->Get("PCFDown");
+    TH1* PCFMix = (TH1D*)gDirectory->Get("PCFMix");
+
+    double pi=3.141592654;
+    v = (TVectorD*)gDirectory->Get("v");
+    size_t Nsamples=(*v)[0];
+    PCFUp->Add(PCFDown);
+    PCFUp->Scale(Lx*Ly/Nsamples/4/pi/(PCFUp->GetBinWidth(1)*(Npart/2-1)*NTimeSlices*(Npart/2)));
+    PCFMix->Scale(Lx*Ly/Nsamples/4/pi/(PCFMix->GetBinWidth(1)*(Npart/2)*NTimeSlices*(Npart/2)));
 
 
-    for(int i=ini;i<=(*v)[0];i++)
-        {
-        cout<<i<<endl;
-            TYP* hist = nullptr;
-            hist=(TYP* )gDirectory->Get(("pos" + to_string(i)).c_str());
-            if(hist!=nullptr)
-            {
 
 
-
-#ifdef D3
-    TH1 * xyProj=hist->Project3D("xy");
-#else
-    TH1 * xyProj=(TH1 *)hist->Clone();
-#endif
-    xyProj->Scale(1./NT);
-
-    static vector<TH1 *> VecMagPlus;
-    static vector<TH1 *> VecPhasePlus;
-    static vector<TH1 *> VecMagMinus;
-    static vector<TH1 *> VecPhaseMinus;
-    static TH1* M4Hist=nullptr;
-    static TH1* M2Hist=nullptr;
-cout<<"xyproj"<<endl;
-    for(size_t j=1;j<=xyProj->GetXaxis()->GetNbins();j++)
+    for(size_t j=1;j<=PCFUp->GetXaxis()->GetNbins();j++)
     {
-            cout<<xyProj->GetBinContent(xyProj->GetBin(j))<<" ";
 
+            PCFUp->SetBinContent(j,PCFUp->GetBinContent(j)/PCFUp->GetXaxis()->GetBinCenter(j));
+            PCFMix->SetBinContent(j,PCFMix->GetBinContent(j)/PCFMix->GetXaxis()->GetBinCenter(j));
     }
-    cout<<endl;
-    TVirtualFFT::SetTransform(0);
-    TH1 *hmP =0;
-    TH1 *hmM =0;
-
-    hmP = xyProj->FFT(hmP, "MAG C2CFORWARD");
-    hmP->SetName(("MAG C2CFORWARD"  + to_string(i)).c_str());
-    VecMagPlus.push_back(hmP);
-
-    cout<<"hmp"<<endl;
-        for(size_t j=1;j<=xyProj->GetXaxis()->GetNbins();j++)
-        {
-                cout<<hmP->GetBinContent(xyProj->GetBin(j))<<" ";
-
-        }
-    cout<<endl;
-
-
-    hmM = xyProj->FFT(hmM, "MAG C2CBACKWARD");
-    hmM->SetName(("MAG C2CBACKWARD"  + to_string(i)).c_str());
-    VecMagMinus.push_back(hmM);
-
-    cout<<"hmM"<<endl;
-        for(size_t j=1;j<=xyProj->GetXaxis()->GetNbins();j++)
-        {
-                cout<<hmM->GetBinContent(xyProj->GetBin(j))<<" ";
-
-        }
-    cout<<endl;
 
 
 
-    TH1 *hpP = 0;
-    TH1 *hpM = 0;
-    hpP = xyProj->FFT(hpP, "PH C2CFORWARD");
-    hpP->SetName(("PH C2CFORWARD"  + to_string(i)).c_str());
-    VecPhasePlus.push_back(hpP);
-    cout<<"hpP"<<endl;
-        for(size_t j=1;j<=xyProj->GetXaxis()->GetNbins();j++)
-        {
-                cout<<hpP->GetBinContent(xyProj->GetBin(j))<<" ";
-
-        }
-    cout<<endl;
+    PCFUp->GetXaxis()->SetTitle("r");
+    PCFUp->GetYaxis()->SetTitle("g(r)");
+    PCFUp->GetXaxis()->SetRangeUser(0.,Rangetop);
 
 
-    hpM = xyProj->FFT(hpM, "PH C2CBACKWARD");
-    hpM->SetName(("PH C2CBACKWARD"  + to_string(i)).c_str());
-    VecPhaseMinus.push_back(hpM);
-    cout<<"hpM"<<endl;
-        for(size_t j=1;j<=xyProj->GetXaxis()->GetNbins();j++)
-        {
-                cout<<hpM->GetBinContent(xyProj->GetBin(j))<<" ";
+    PCFUp->GetYaxis()->CenterTitle(true);
+    PCFUp->GetXaxis()->CenterTitle(true);
+     PCFUp->SetMarkerStyle(kFullCircle);
+     PCFUp->SetMarkerStyle(21);
+     PCFUp->SetMarkerSize(0.8);
+     PCFUp->SetMarkerColor(2);
 
-        }
-    cout<<endl;
-delete hist;
-    delete xyProj;
+     PCFMix->SetMarkerStyle(kFullTriangleUp);
+     PCFMix->SetMarkerStyle(18);
+     PCFMix->SetMarkerSize(0.8);
+     PCFMix->SetMarkerColor(3);
 
-    if(!M4Hist)
-    {
-        M4Hist=(TH1*)hmM->Clone();
-        M4Hist->Multiply(hmP);
-        M4Hist->Multiply(hmM);
-        M4Hist->Multiply(hmP);
-        M2Hist=(TH1*)hmP->Clone();
-        M2Hist->Multiply(hmP);
-    }
-    else
-    {
-        TH1* varM4=(TH1*)hmM->Clone();
-        varM4->Multiply(hmP);
-        varM4->Multiply(hmM);
-        varM4->Multiply(hmP);
-        M4Hist->Add(varM4);
-        TH1* varM2=(TH1*)hmP->Clone();
-        varM2->Multiply(hmP);
-        M2Hist->Add(varM2);
-        delete varM2;
-        delete varM4;
-    }
-    cout<<"M4Hist"<<endl;
-        for(size_t j=1;j<=hpM->GetXaxis()->GetNbins();j++)
-        {
-                cout<<M4Hist->GetBinContent(hpM->GetBin(j))<<" ";
+     TLegend *leg=new TLegend(0.8,0.8,0.9,0.9);
+        leg->SetFillColor(0);
 
-        }
-    cout<<endl;
-    cout<<"M2hist"<<endl;
-        for(size_t j=1;j<=hpM->GetXaxis()->GetNbins();j++)
-        {
-                cout<<M2Hist->GetBinContent(hpM->GetBin(j))<<" ";
-
-        }
-    cout<<endl;
-
-
-    if(!M4)
-    {
-        M4=(TH1*) M4Hist->Clone();
-        M2=(TH1*) M2Hist->Clone();
-    }
-    else
-    {
-        M4->Add(M4Hist);
-        M2->Add(M2Hist);
-    }
-    static TH1 * M2cos=nullptr;
-    static TH1 * M4cos=nullptr;
-
-bool first=true;
-    if(VecMagPlus.size()>1)
-    {
-        if(!M2cos)
-        {
-            M2cos=(TH1*)VecMagPlus.back()->Clone();
-
-            M4cos=(TH1*)VecMagPlus.back()->Clone();
-            M4cos->Multiply(VecMagMinus.back());
-        }
-            TH1* PhaseSum=(TH1*)VecPhaseMinus.back()->Clone();
-            PhaseSum->Add(VecPhasePlus.back());
-            TH1* PhaseK=(TH1*)VecPhasePlus.back()->Clone();
-            PhaseK->Scale(-1.);
-            PhaseSum->Scale(-1.);
-                    for(size_t j=0;j<VecMagPlus.size()-1;j++)
-                    {
-
-
-                        TH1* PhaseSum2=(TH1* )VecPhaseMinus.at(j)->Clone();
-                                PhaseSum2->Add(VecPhasePlus.at(j));
-
-                        PhaseSum2->Add(PhaseSum);
-
-                        TH1* DiffPase4=PhaseSum2;
-                        PhaseK->Add(VecPhasePlus.at(j));
-                        TH1* DiffPase2=PhaseK;
-
-                        for(size_t j=1;j<=DiffPase4->GetXaxis()->GetNbins();j++)
-                        {
-                            for(size_t k=1;k<=DiffPase4->GetYaxis()->GetNbins();k++)
-                            {
-                                DiffPase2->SetBinContent( DiffPase2->GetBin(j,k),cos(DiffPase2->GetBinContent(DiffPase2->GetBin(j,k))));
-                                DiffPase4->SetBinContent( DiffPase4->GetBin(j,k),cos(DiffPase4->GetBinContent(DiffPase4->GetBin(j,k))));
-                            }
-                        }
-                        if(first)
-                        {
-                            M2cos->Multiply(VecMagPlus.at(j));
-                            M2cos->Multiply(DiffPase2);
-                            M2cos->Scale(2.0);
-                            M4cos->Multiply(VecMagMinus.at(j));
-                            M4cos->Multiply(VecMagPlus.at(j));
-                            M4cos->Multiply(DiffPase4);
-                            M4cos->Scale(2.0);
-                            first=false;
-                        }
-                        else
-                        {
-                            TH1* M2cosvar=(TH1*)VecMagPlus.back()->Clone();
-
-                            TH1* M4cosvar=(TH1*)VecMagPlus.back()->Clone();
-                            M4cosvar->Multiply(VecMagMinus.back());
-
-                            M2cosvar->Multiply(VecMagPlus.at(j));
-                            M2cosvar->Multiply(DiffPase2);
-                            M2cosvar->Scale(2.0);
-                            M4cosvar->Multiply(VecMagMinus.at(j));
-                            M4cosvar->Multiply(VecMagPlus.at(j));
-                            M4cosvar->Multiply(DiffPase4);
-                            M4cosvar->Scale(2.0);
-                              M4cos->Add(M4cosvar)      ;
-                              M2cos->Add(M2cosvar)      ;
-                              delete M2cosvar;
-                              delete M4cosvar;
-                        }
-
-                    }
-
-                    cout<<"M4cos"<<endl;
-                        for(size_t j=1;j<=hpM->GetXaxis()->GetNbins();j++)
-                        {
-                                cout<<M4cos->GetBinContent(hpM->GetBin(j))<<" ";
-
-                        }
-                    cout<<endl;
-
-                    cout<<"M2cos"<<endl;
-                        for(size_t j=1;j<=hpM->GetXaxis()->GetNbins();j++)
-                        {
-                                cout<<M2cos->GetBinContent(hpM->GetBin(j))<<" ";
-
-                        }
-                    cout<<endl;
-
-                    M4->Add(M4cos);
-                    M2->Add(M2cos);
+       leg->AddEntry(PCFUp,"g_#alpha#alpha","P");
+       leg->AddEntry(PCFMix,"g_#alpha#beta","P");
+        leg->SetTextFont(132);
 
 
 
-        }
+     TCanvas*c1 = new TCanvas("c1", "c1", 1200,1000);
+     PCFUp->Draw("PLC PMC");
+     PCFMix->Draw("PLC PMC SAME");
+     leg->Draw();
 
-                stp++;
-
-            }
-
-        }
-
-
-    M2->Scale(-1./stp);
-            for(size_t j=1;j<=M4->GetXaxis()->GetNbins();j++)
-            {
-                for(size_t k=1;k<=M4->GetYaxis()->GetNbins();k++)
-                {
-                    M4->SetBinContent( M4->GetBin(j,k),sqrt(M4->GetBinContent(M4->GetBin(j,k))));
-                }
-            }
-    M4->Scale(1./stp);
-    M4->Add(M2);
-    AveStru=M4;
-
-    AveStru->SetTitle("Static Structure Factor");
-    AveStru->GetXaxis()->SetTitle("Kx");
-#ifndef D1
-    AveStru->GetYaxis()->SetTitle("Ky");
-#endif
-    AveStru->GetYaxis()->CenterTitle(true);
-
-    AveStru->GetXaxis()->CenterTitle(true);
-#ifndef D1
-    AveStru->Draw("CONT4Z");
-#else
-      AveStru->Draw("Hist");
-#endif
-    c1->Print("AverStruc.png");
+     c1->Print("PCFUp.png");
+    /*
 
 
 
+    //PCFUp->Add(PCFDown);
 
+    //PCFDown->Scale(Lx*Ly/Nsamples/2.0/pi/(PCFUp->GetBinWidth(1)*(Npart/2-1)*NTimeSlices*(Npart/2)))
 
-
-
-
-
-
-
-
+*/
 }
+
 
 TYP * Average (int &ini,size_t NT)
 {
-    gROOT->SetBatch(kTRUE);
+
         TYP * Ave =nullptr;
         TH1 * M4 =nullptr;
         TH1 * M2 =nullptr;
@@ -440,7 +213,7 @@ void rootScript (int NT, int starte)
 	if(start==0)start=((*v)[0]);
 
         // TYP * hist=Average (start,NT);
-    CalStruFact(start,NT);
+    //CalStruFact(start,NT);
 #ifdef D3
         XYProj(hist,0,100,NT*start);
         XZProj(hist,0,100,NT*start);

@@ -34,10 +34,10 @@ class block
         return (NumberOfParticles*d*0.5/tao-SumofDisplacement/(4*landa*tao*tao*NTimeSlices));
         }
     inline double getSuperfluidDensityUp(void)const{
-        return SumofWindingUp/(d*landa*beta*NumberOfParticlesUp);
+        return SumofWindingUp/(d*2*landa*beta*NumberOfParticlesUp);
         }
     inline double getSuperfluidDensityDown(void)const{
-        return SumofWindingDown/(d*landa*beta*(NumberOfParticles-NumberOfParticlesUp));
+        return SumofWindingDown/(d*2*landa*beta*(NumberOfParticles-NumberOfParticlesUp));
         }
 
 

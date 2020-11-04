@@ -258,22 +258,20 @@ void lattice::PrintConfiguration (
                     if(j!=k)
                     {
                         const double dis=sqrt((grid->at(i).at(j).pos-grid->at(i).at(k).pos).norm()-dplanes*dplanes);
-                        const double binUp=PCFUp->GetBinWidth(1)*(grid->at(0).at(0).NParti_/2-1)*NTimeSlices*(grid->at(0).at(0).NParti_/2)/position::L.TheX()/position::L.TheY();
-                        const double binMix=PCFUp->GetBinWidth(1)*(grid->at(0).at(0).NParti_/2)*NTimeSlices*(grid->at(0).at(0).NParti_/2)/position::L.TheX()/position::L.TheY();
 
                     if(grid->at(i).at(j).pos.TheZ()!=grid->at(i).at(k).pos.TheZ())
                     {
-                        PCFMix->Fill(dis,1.0/(pi*dis*binMix));
+                        PCFMix->Fill(dis);
                     }
                     else
                     {
                         if(grid->at(i).at(j).pos.TheZ()>0)
                         {
-                            PCFUp->Fill(dis,1.0/(pi*dis*binUp));
+                            PCFUp->Fill(dis);
                         }
                         else
                         {
-                            PCFDown->Fill(dis,1.0/(pi*dis*binUp));
+                            PCFDown->Fill(dis);
                         }
                     }
                     }

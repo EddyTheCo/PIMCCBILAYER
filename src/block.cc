@@ -37,15 +37,28 @@ while(step<NSweeps)
 
 if(!(h%1000)&&Warmup&&!isGrandCanonical)
 {
-    if(start->NClose*1./start->NCloseP<0.001)
+    if(start->NClose*1./start->NCloseP<0.1)
     {
         Site::mu+=1;
     }
-    if(start->NOpen*1./start->NOpenP<0.001)
+    if(start->NOpen*1./start->NOpenP<0.1)
     {
         Site::mu-=1;
     }
-    cout<<"mu*******************************="<<Site::mu<<endl;
+    if(start->NClose*1./start->NCloseP<0.1&&start->NOpen*1./start->NOpenP<0.1)
+    {
+        Site::eta++;
+        if(start->NClose*1./start->NCloseP<start->NOpen*1./start->NOpenP)
+        {
+            Site::mu+=1;
+        }
+        else
+        {
+            Site::mu-=1;
+        }
+    }
+    cout<<"mu="<<Site::mu<<" eta="<<Site::eta<<" RC="<<start->NClose*1./start->NCloseP<<" RO="<<start->NOpen*1./start->NOpenP<<endl;
+    start->restartRatios();
 }
 h++;
 
@@ -110,7 +123,7 @@ h++;
                 TNumberOfParticles+=start->NParti_;
                 TNumberOfParticlesUp+=start->Nparti_UpxNT/NTimeSlices;
                 TWindingUp+=start->TWindingUp.normxy();
-                TWindingDown+=start->TWindingDown.norm();
+                TWindingDown+=start->TWindingDown.normxy();
                 measureCounter++;
             }
 
