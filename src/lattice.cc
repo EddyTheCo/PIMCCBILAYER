@@ -257,14 +257,16 @@ void lattice::PrintConfiguration (
                 {
                     if(j!=k)
                     {
-                        const double dis=sqrt((grid->at(i).at(j).pos-grid->at(i).at(k).pos).norm()-dplanes*dplanes);
+
 
                     if(((grid->at(i).at(j).pos.TheZ()>0.)&&(grid->at(i).at(k).pos.TheZ()<0.))||((grid->at(i).at(j).pos.TheZ()<0.)&&(grid->at(i).at(k).pos.TheZ()>0.)))
                     {
+                        const double dis=sqrt((grid->at(i).at(j).pos-grid->at(i).at(k).pos).norm()-dplanes*dplanes);
                         PCFMix->Fill(dis);
                     }
                     else
                     {
+                        const double dis=sqrt((grid->at(i).at(j).pos-grid->at(i).at(k).pos).norm());
                         if(grid->at(i).at(j).pos.TheZ()>0)
                         {
                             PCFUp->Fill(dis);

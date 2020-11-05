@@ -76,7 +76,7 @@ void BilayerPCF(size_t Npart, size_t NTimeSlices,double Rangetop,double Lx,doubl
      PCFMix->SetMarkerSize(1);
      PCFMix->SetMarkerColor(3);
 
-     TLegend *leg=new TLegend(0.7,0.7,0.89,0.89);
+     TLegend *leg=new TLegend(0.7,0.1,0.89,0.29);
         leg->SetFillColor(0);
 
        leg->AddEntry(PCFUp,"g_{#alpha#alpha}","P");
