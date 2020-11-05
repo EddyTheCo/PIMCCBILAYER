@@ -4,29 +4,37 @@
 using namespace std;
 
 
-#define D1
-#define TYP TH1D
+#define D3
+#define TYP TH3D
 
 TVectorD *v=nullptr;
 TFile *MyFile = new TFile("RootFile.root","UPDATE");
 
-TH1 * StrucFact(TH1 * hist,double &val, int & binMax)
-{
-    hist->Scale(1./hist->GetEntries());
-    TVirtualFFT::SetTransform(0);
-    TH1 *hm =0;
 
-    hm = hist->FFT(hm, "MAG R2C M");
-    hm->Multiply(hm);
-    hm->SetBinContent(1,1,0);
-    binMax=hm->GetMaximumBin();
-    val=hm->GetBinContent(binMax);
-    return hm;
+
+void StrucFact(TYP * hist,size_t step)
+{
+
+#ifdef D3
+    TH1 * xyProj=hist->Project3D("xy");
+#else
+    TH1 * xyProj=(TH1 *)hist->Clone();
+#endif
+
+    xyProj->Scale(1./xyProj->GetEntries());
+    TVirtualFFT::SetTransform(0);
+    TH1 *hm =0,*hp=0;
+
+    hm = xyProj->FFT(hm, "MAG");
+    hp = xyProj->FFT(hp, "PH");
+
+    hm->Write(("hm" + to_string(step)).c_str(),TObject::kOverwrite);
+    hp->Write(("hp" + to_string(step)).c_str(),TObject::kOverwrite);
 
 }
 void BilayerPCF(size_t Npart, size_t NTimeSlices,double Rangetop,double Lx,double Ly)
 {
-    //gROOT->SetBatch(kTRUE);
+    gROOT->SetBatch(kTRUE);
     gStyle->SetOptStat(0);
     TH1* PCFUp = (TH1D*)gDirectory->Get("PCFUp");
     TH1* PCFDown = (TH1D*)gDirectory->Get("PCFDown");
@@ -59,21 +67,27 @@ void BilayerPCF(size_t Npart, size_t NTimeSlices,double Rangetop,double Lx,doubl
     PCFUp->GetYaxis()->CenterTitle(true);
     PCFUp->GetXaxis()->CenterTitle(true);
      PCFUp->SetMarkerStyle(kFullCircle);
-     PCFUp->SetMarkerStyle(21);
-     PCFUp->SetMarkerSize(0.8);
+     PCFUp->SetMarkerStyle(23);
+     PCFUp->SetMarkerSize(1);
      PCFUp->SetMarkerColor(2);
 
      PCFMix->SetMarkerStyle(kFullTriangleUp);
-     PCFMix->SetMarkerStyle(18);
-     PCFMix->SetMarkerSize(0.8);
+     PCFMix->SetMarkerStyle(23);
+     PCFMix->SetMarkerSize(1);
      PCFMix->SetMarkerColor(3);
 
-     TLegend *leg=new TLegend(0.8,0.8,0.9,0.9);
+     TLegend *leg=new TLegend(0.7,0.7,0.89,0.89);
         leg->SetFillColor(0);
 
-       leg->AddEntry(PCFUp,"g_#alpha#alpha","P");
-       leg->AddEntry(PCFMix,"g_#alpha#beta","P");
-        leg->SetTextFont(132);
+       leg->AddEntry(PCFUp,"g_{#alpha#alpha}","P");
+       leg->AddEntry(PCFMix,"g_{#alpha#beta}","P");
+        leg->SetTextFont(42);
+
+        leg->SetBorderSize(0);
+
+
+        leg->SetTextSize(0.04);
+
 
 
 
@@ -93,19 +107,88 @@ void BilayerPCF(size_t Npart, size_t NTimeSlices,double Rangetop,double Lx,doubl
 
 */
 }
-
-
-TYP * Average (int &ini,size_t NT)
+void CalcStrucFact(void)
 {
+    v = (TVectorD*)gDirectory->Get("v");
+    cout<<"v="<<(*v)[0]<<endl;
+TH1* hmi = nullptr,*hmj=nullptr,*hpi=nullptr,*hpj=nullptr;
+TH1* sum=nullptr;
+    for(int i=1;i<(((*v)[0]<1000)?((*v)[0]):(999));i++)
+        {
 
+            hmi=(TH1* )gDirectory->Get(("hm" + to_string(i)).c_str());
+            if(!hmi)continue;
+            hpi=(TH1* )gDirectory->Get(("hp" + to_string(i)).c_str());
+            for(int j=i+1;j<=(((*v)[0]<1000)?((*v)[0]):(999));j++)
+                {
+                    cout<<("i=" + to_string(i)).c_str()<<(" j=" + to_string(j)).c_str()<<endl;
+                     hmj=(TH1* )gDirectory->Get(("hm" + to_string(j)).c_str());
+                     if(!hmj)continue;
+                     hpj=(TH1* )gDirectory->Get(("hp" + to_string(j)).c_str());
+                    hpi->Scale(-1.0);
+                    hpj->Add(hpi);
+                    for(size_t a=1;a<=hpj->GetXaxis()->GetNbins();a++)
+                    {
+                        for(size_t b=1;b<=hpj->GetYaxis()->GetNbins();b++)
+                        {
+                            hpj->SetBinContent( a,b,cos(hpj->GetBinContent(a,b)));
+                        }
+
+                    }
+
+                    hpj->Multiply(hmi);
+                    hpj->Multiply(hmj);
+                    hpj->Scale(-2.0);
+                     if(sum)
+                    {
+                        sum->Add(hpj);
+                    }
+                    else {
+                        sum=(TH1*)hpj->Clone();
+                    }
+
+
+                     delete hmj;
+                     delete hpj;
+                }
+
+            delete hmi;
+            delete hpi;
+        }
+    TCanvas*c1 = new TCanvas("c1", "c1", 1200,1000);
+    sum->Draw("SURF");
+    TH1D * Sq=((TH2D*)sum)->ProjectionX();
+    Sq->Scale(1./hpj->GetYaxis()->GetNbins());
+
+
+    gStyle->SetOptStat(0);
+    Sq->GetXaxis()->SetTitle("q");
+    Sq->GetYaxis()->SetTitle("S(q)");
+
+    Sq->GetYaxis()->CenterTitle(true);
+
+    Sq->GetXaxis()->CenterTitle(true);
+
+    Sq->SetMarkerStyle(kFullCircle);
+    Sq->SetMarkerStyle(23);
+    Sq->SetMarkerSize(1);
+    Sq->SetMarkerColor(2);
+    Sq->SetTitle("");
+    //Sq->Draw("PLC PMC");
+    c1->Print("Sq.png");
+
+
+
+}
+
+void Average (int ini,bool SaveFourier)
+{
+gROOT->SetBatch(kTRUE);
         TYP * Ave =nullptr;
-        TH1 * M4 =nullptr;
-        TH1 * M2 =nullptr;
-         TH1 * AveStru =nullptr;
+
 
     size_t stp=0;
-    int bin;
-    int binSum=0;
+
 
     v = (TVectorD*)gDirectory->Get("v");
 
@@ -115,9 +198,10 @@ TYP * Average (int &ini,size_t NT)
     gStyle->SetOptStat(0);
 
 
-    for(int i=ini;i<=(*v)[0];i++)
+    for(int i=ini;i<=(((*v)[0]<1000)?((*v)[0]):(999));i++)
         {
             TYP* hist = nullptr;
+            cout<<("pos" + to_string(i)).c_str()<<endl;
             hist=(TYP* )gDirectory->Get(("pos" + to_string(i)).c_str());
             if(hist!=nullptr)
             {   
@@ -125,7 +209,10 @@ TYP * Average (int &ini,size_t NT)
                 if(var)
                 {   
                     Ave=(TYP*)hist->Clone();
-
+                    if(SaveFourier)
+                    {
+                        StrucFact(hist,i);
+                    }
                     var=0;
 			stp++;	
                 }
@@ -133,6 +220,10 @@ TYP * Average (int &ini,size_t NT)
                 {  
 
                    Ave->Add(hist);
+                   if(SaveFourier)
+                   {
+                       StrucFact(hist,i);
+                   }
 			stp++;
                 }
 
@@ -148,18 +239,12 @@ TYP * Average (int &ini,size_t NT)
     Ave->GetXaxis()->CenterTitle(true);
     Ave->Draw();
     c1->Print("Avera.png");
-    Ave->Write("Ave");
+    Ave->Scale(1.0/stp);
+    Ave->Write("Ave",TObject::kOverwrite);
     gDirectory->Write("", TObject::kOverwrite);
 
-    TCanvas* c2 = new TCanvas("c2", "c2", 1300,1000);
-    gStyle->SetOptStat(0);
 
 
-
-
-
-
-    return Ave;
 
 
 }
@@ -208,15 +293,6 @@ TH1 * XYProj (TYP * hist,int center, int num, int NT)
 void rootScript (int NT, int starte)
 {
         gStyle->SetPalette(1);
-        TVectorD * v = (TVectorD*)gDirectory->Get("v");
-       int start=starte;
-	if(start==0)start=((*v)[0]);
 
-        // TYP * hist=Average (start,NT);
-    //CalStruFact(start,NT);
-#ifdef D3
-        XYProj(hist,0,100,NT*start);
-        XZProj(hist,0,100,NT*start);
-#endif
 }
 

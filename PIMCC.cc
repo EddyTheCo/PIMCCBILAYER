@@ -16,10 +16,13 @@ int main()
 auto start = chrono::high_resolution_clock::now();
 
 if(ReadFromInput<string>(10)=="restart")    
-Constants::readRandom();
-else {
-int va=system("cp input .input.ini"); //Makes a copy of the input file
+{
+    Constants::readRandom();
+    int va=system("cp input .input.start");
 }
+
+int va=system("cp input .input.ini"); //Makes a copy of the input file
+
 cout<<"Version 1.0"<<endl;
 
    auto theLattice=lattice();

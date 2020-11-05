@@ -34,27 +34,30 @@ while(step<NSweeps)
 {
 
 
-
+if(!(h%1000))
+{
+    cout<<"RC="<<start->NClose*1./start->NCloseP<<" RO="<<start->NOpen*1./start->NOpenP<<endl;
+}
 if(!(h%1000)&&Warmup&&!isGrandCanonical)
 {
-    if(start->NClose*1./start->NCloseP<0.1)
+    if(start->NClose*1./start->NCloseP<0.01)
     {
-        Site::mu+=1;
+        Site::mu*=2;
     }
-    if(start->NOpen*1./start->NOpenP<0.1)
+    if(start->NOpen*1./start->NOpenP<0.01)
     {
-        Site::mu-=1;
+        Site::mu*=0.3;
     }
-    if(start->NClose*1./start->NCloseP<0.1&&start->NOpen*1./start->NOpenP<0.1)
+    if(start->NClose*1./start->NCloseP<0.01&&start->NOpen*1./start->NOpenP<0.01)
     {
-        Site::eta++;
+        Site::eta*=2;
         if(start->NClose*1./start->NCloseP<start->NOpen*1./start->NOpenP)
         {
-            Site::mu+=1;
+            Site::mu*=2;
         }
         else
         {
-            Site::mu-=1;
+            Site::mu*=0.3;
         }
     }
     cout<<"mu="<<Site::mu<<" eta="<<Site::eta<<" RC="<<start->NClose*1./start->NCloseP<<" RO="<<start->NOpen*1./start->NOpenP<<endl;

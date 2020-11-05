@@ -259,7 +259,7 @@ void lattice::PrintConfiguration (
                     {
                         const double dis=sqrt((grid->at(i).at(j).pos-grid->at(i).at(k).pos).norm()-dplanes*dplanes);
 
-                    if(grid->at(i).at(j).pos.TheZ()!=grid->at(i).at(k).pos.TheZ())
+                    if((grid->at(i).at(j).pos.TheZ()>0.)&&(grid->at(i).at(k).pos.TheZ()<0.))
                     {
                         PCFMix->Fill(dis);
                     }
@@ -295,7 +295,7 @@ void lattice::PrintConfiguration (
 
        (*v).Write("v",TObject::kOverwrite);
 
-       hpos->Write(("pos" + to_string(step)).c_str());
+       hpos->Write(("pos" + to_string(step%1000)).c_str(),TObject::kOverwrite);
         hpos->Reset("ICESM");
 
    gDirectory->Write("", TObject::kOverwrite);
