@@ -26,6 +26,7 @@ double TSumOfdisplacement=0,TSumOfPotential=0,TNumberOfParticles=0,TNumberOfPart
 size_t TWormlenght=0,step=0,measureCounter=0,measureCounter1=0;
 double TWindingUp=0,TWindingDown=0;
 Site* const start=&(particles->at(0).at(0));
+ofstream muAndeta(".muAndeta");
 
 size_t h=0;
 
@@ -61,6 +62,7 @@ if(!(h%1000)&&Warmup&&!isGrandCanonical)
         }
     }
     cout<<"mu="<<Site::mu<<" eta="<<Site::eta<<" RC="<<start->NClose*1./start->NCloseP<<" RO="<<start->NOpen*1./start->NOpenP<<endl;
+    muAndeta<<Site::mu<<" "<<Site::eta<<endl;
     start->restartRatios();
 }
 h++;
@@ -80,24 +82,30 @@ h++;
             switch ((!isGrandCanonical)?giveRanI(2):giveRanI(3)) {
             case 0:
             {
-  //             cout<<"closing worm"<<endl;
+               //cout<<"closing worm"<<endl;
                     start->NCloseP++;
 
-                    if(start->Lbead->CloseWorm(0))
+
+                    if(!(start->cantClose(MBar)))
                     {
-                        step++;
+                        if(start->Lbead->CloseWorm(0))
+                        {
+                            step++;
+                        }
+
                     }
+
                 break;
             }
             case 1:
             {
-    //           cout<<"MoveWorm"<<endl;
+               //cout<<"MoveWorm"<<endl;
                     start->MoveWorm();
                      break;
             }
             case 2:
             {
-      //         cout<<"swap"<<endl;
+              //cout<<"swap"<<endl;
                 start->NSwapP++;
                if(start->NParti_>1)
                start->PrepareSwap();
@@ -136,7 +144,7 @@ h++;
 
                if(start->NParti_)
                {
-          //       cout<<"OpenWorm"<<endl;
+                // cout<<"OpenWorm"<<endl;
                    const size_t posiTimes=giveRanI(NTimeSlices-1) ;
                    const size_t posiParti=giveRanI(particles->at(posiTimes).size()-1);
                    const size_t var2=  giveRanI(MBar-2);
@@ -152,7 +160,7 @@ h++;
                  if(start->NParti_)
                  {
 
-            //      cout<<"wiggle"<<endl;
+                  //cout<<"wiggle"<<endl;
 
                      const size_t posiTimes=giveRanI(NTimeSlices-1) ; //Choose a random time slice
                      const size_t posiParti=giveRanI(particles->at(posiTimes).size()-1); //Choose the particle
@@ -185,7 +193,7 @@ h++;
 
     }
 
-
+muAndeta.close();
 if(!Warmup)
 {
         SumofDisplacement=TSumOfdisplacement/measureCounter;

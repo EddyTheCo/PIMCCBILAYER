@@ -81,9 +81,11 @@ class Site
  }
  inline bool cantClose(size_t del)const
  {
+
 const Site*  ptr=Lbead->right;
 while(del>1)
 {
+
     if(ptr==Rbead)
         return false;
     ptr=ptr->right;
@@ -172,6 +174,7 @@ inline size_t  CalculateNoWormLenght(void)const
      }
      inline double propagator(const position& a, const position& b,const double& ab, const double& dU )const
      {
+
          return exp(-fact1(ab)-(a-b).norm()*fact2(ab)+dU);
 
      }
@@ -344,6 +347,8 @@ inline void ChangeInU(const bool & isRemove, double& dU ,double & U )const
     else {
         var=tao*U;
     }
+
+
 
     if(isRemove)
         {
