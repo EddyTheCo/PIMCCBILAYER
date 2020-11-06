@@ -26,7 +26,7 @@ double TSumOfdisplacement=0,TSumOfPotential=0,TNumberOfParticles=0,TNumberOfPart
 size_t TWormlenght=0,step=0,measureCounter=0,measureCounter1=0;
 double TWindingUp=0,TWindingDown=0;
 Site* const start=&(particles->at(0).at(0));
-ofstream muAndeta(".muAndeta");
+
 
 size_t h=0;
 
@@ -51,7 +51,7 @@ if(!(h%1000)&&Warmup&&isGrandCanonical)
     }
 
     cout<<"mu="<<Site::mu<<" Npar="<<start->NParti_<<" NpartUp="<<start->Nparti_UpxNT/NTimeSlices<<endl;
-    muAndeta<<Site::mu<<" "<<Site::eta<<endl;
+
 
 }
 h++;
@@ -182,7 +182,7 @@ h++;
 
     }
 
-muAndeta.close();
+
 if(!Warmup)
 {
         SumofDisplacement=TSumOfdisplacement/measureCounter;
