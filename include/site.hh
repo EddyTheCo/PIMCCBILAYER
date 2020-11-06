@@ -303,6 +303,7 @@ inline size_t  CalculateNoWormLenght(void)const
         switch ( giveRanI(4) ) {
                 case 0:
             {
+
                     if(NfindHead(del,true))
                     Rbead->deleteToRight(del,0);
                     break;
@@ -335,6 +336,8 @@ inline size_t  CalculateNoWormLenght(void)const
     const static bool fourthOrder;
 inline void ChangeInU(const bool & isRemove, double& dU ,double & U )const
 {
+
+
     const bool isEven=this->TimeSliceOnBead%2==0;
     position gU=position(0.);
     U=0;
@@ -353,11 +356,13 @@ inline void ChangeInU(const bool & isRemove, double& dU ,double & U )const
     if(isRemove)
         {
             dU+=var;
+
              return ;
         }
         if(!isRemove)
         {            
             dU-=var;
+
              return ;
         }
 
@@ -376,6 +381,7 @@ inline void ChangeInU(const bool & isRemove, double& dU ,double & U )const
  }
     inline double fact1(const double N=1)const
     {
+
         return log(4*landa*tao*pi*N)*d/2;
     }
     inline double fact2(const double N=1) const

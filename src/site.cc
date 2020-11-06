@@ -65,6 +65,7 @@ bool Site::OpenWorm(const size_t step, const size_t ab, double dU, const positio
 {
 
     dU+=-mu*tao;
+
     if(step>0)
     {
         double U=0;
@@ -90,6 +91,7 @@ bool Site::OpenWorm(const size_t step, const size_t ab, double dU, const positio
 
         if(eta*NParti_/(propagator(start,right->pos,ab,-dU)*position::volumen)>giveRanD(1.))
         {
+
             const auto Dist=pos-right->pos;
             TEnergy-=Dist.norm();
             (pos.TheZ()>0)?TWindingUp=TWindingUp+Dist:TWindingDown=TWindingDown+Dist;
@@ -134,6 +136,7 @@ bool Site::CloseWorm(double dU)
 
         if(propagator(Lbead->pos,Rbead->pos,NInactiveLinks(),dU)*position::getVolumen()/(eta*NParti_)>giveRanD(1.))
         {
+
             const auto Dist=right->pos-pos;
             TEnergy+=Dist.norm();
            (pos.TheZ()>0)?TWindingUp=TWindingUp+Dist:TWindingDown=TWindingDown+Dist;
@@ -184,8 +187,10 @@ right->oldpos=right->pos;
         const auto Dist=oldpos-right->pos;
         TEnergyVar-=Dist.norm();
         (pos.TheZ()>0)?TWindingVarUp=TWindingVarUp+Dist:TWindingVarDown=TWindingVarDown+Dist;
+
         if(exp(dU)>giveRanD(1.))
         {
+
             TPotential-=TPotentialVar;
             const auto Dist=right->pos-pos;
             TEnergy+=TEnergyVar+Dist.norm();
@@ -236,8 +241,10 @@ ChangeInU(true,dU,U);
             if(this==Lbead)dU+=mu*tao;
 
             NMoveP++;
+
             if(exp(dU)>giveRanD(1.))
             {
+
                 if(this!=Lbead)
                 {
                     const auto Dist=pos-right->pos;
@@ -278,8 +285,10 @@ ChangeInU(true,dU,U);
             else
             {
                 NMoveP++;
+
                 if(exp(dU)>giveRanD(1.))
                 {
+
                     active=false;
                     TPotential-=U;
                     const auto Dist=left->pos-pos;
@@ -336,8 +345,10 @@ right->ChangeInU(false,dU,U);
             {
 
                 NMoveP++;
+
                 if(exp(dU)>giveRanD(1.))
                 {
+
                     right->active=true;
                     const auto Dist=right->pos-pos;
                     TEnergy+=Dist.norm();
@@ -421,8 +432,10 @@ dU+=mu*tao;
             {
 
                 NMoveP++;
+
                 if(exp(dU)>giveRanD(1.))
                 {
+
                     left->active=true;
                     const auto Dist=pos-left->pos;
                     TEnergy+=Dist.norm();
