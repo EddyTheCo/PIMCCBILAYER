@@ -35,26 +35,22 @@ while(step<NSweeps)
 {
 
 
-if(!(h%1000))
-{
-    cout<<"RC="<<start->NClose*1./start->NCloseP<<" RO="<<start->NOpen*1./start->NOpenP<<endl;
-}
-if(!(h%1000)&&Warmup&&isGrandCanonical)
-{
-    if(start->NParti_<Warmup)
+    if(!(h%1000))
     {
-        Site::mu+=1;
+        cout<<"RC="<<start->NClose*1./start->NCloseP<<" RO="<<start->NOpen*1./start->NOpenP<<endl;
     }
-    if(start->NParti_>Warmup)
+    if(!(h%1000)&&Warmup&&!isGrandCanonical)
     {
-        Site::mu-=1;
+        if(start->NClose*1./start->NCloseP<0.001)
+        {
+            Site::mu+=1;
+        }
+
+       cout<<"mu="<<Site::mu<<" Npar="<<start->NParti_<<" NpartUp="<<start->Nparti_UpxNT/NTimeSlices<<endl;
+
+
     }
-
-    cout<<"mu="<<Site::mu<<" Npar="<<start->NParti_<<" NpartUp="<<start->Nparti_UpxNT/NTimeSlices<<endl;
-
-
-}
-h++;
+    h++;
 
 
          if(start->ThereIsAWorm)

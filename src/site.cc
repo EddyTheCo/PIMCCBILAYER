@@ -18,8 +18,9 @@ const double landa=ReadFromInput<double>(4);
 const double tao=ReadFromInput<double>(2);
 const double beta=ReadFromInput<double>(3);
 const double dplanes=ReadFromInput<double>(21);
-double Site::mu=ReadFromInput<double>(9);
-double Site::eta=ReadFromInput<double>(13);
+double Site::mu=(restart)?ReadFromInput<size_t>(1,".muAndeta"):ReadFromInput<double>(9);
+double Site::eta=(restart)?ReadFromInput<size_t>(2,".muAndeta"):ReadFromInput<double>(13);
+
 
 double Site::TEnergyVar=0,Site::TPotentialVar=0;
 

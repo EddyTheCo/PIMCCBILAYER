@@ -310,7 +310,8 @@ Constants::saveRandom();
    rename(".restartVAR.conf", ".restart.conf");
    rename(".restartPtrVAR.conf", ".restartPtr.conf");
    ofstream muAndeta(".muAndeta");
-   muAndeta<<Site::mu<<" "<<Site::eta<<endl;
+   muAndeta<<Site::mu<<endl;
+   muAndeta<<Site::eta<<endl;
     muAndeta.close();
 
 
