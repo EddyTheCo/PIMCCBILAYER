@@ -39,7 +39,7 @@ while(step<NSweeps)
     {
         cout<<"RC="<<start->NClose*1./start->NCloseP<<" RO="<<start->NOpen*1./start->NOpenP<<endl;
     }
-    if(!(h%1000)&&Warmup&&!isGrandCanonical)
+    if(!(h%1000)&&Warmup&&!isGrandCanonical&&start->ThereIsAWorm)
     {
         if(start->NClose*1./start->NCloseP<0.001)
         {
