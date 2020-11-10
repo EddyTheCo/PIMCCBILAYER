@@ -110,15 +110,23 @@ inline void potential::LiebLini(double & dU,position& graddU,const Site* const b
 inline void potential::Dipolar(double & dU, position& graddU, const Site * const bead, const Site * const ptr)const
 {
     const position dif=bead->pos-ptr->pos;
-   dU+= 1./pow(dif.norm(),1.5);
+
     if(bead->pos.TheZ()!=ptr->pos.TheZ())
     {
         dU+=((dif).norm()-2*dplanes*dplanes)/pow((dif).norm()+dplanes*dplanes,2.5);
     }
-   graddU=graddU+(dif)*(-1./pow((dif).norm(),2.5)) ;
+    else
+    {
+        dU+= 1./pow(dif.norm(),1.5);
+    }
+
    if(bead->pos.TheZ()!=ptr->pos.TheZ())
    {
        graddU=graddU-dif*(2*(1.5*dif.norm()-4*dplanes*dplanes)/pow(dif.norm()+dplanes*dplanes,3.5));
+   }
+   else
+   {
+       graddU=graddU+(dif)*(-1./pow((dif).norm(),2.5)) ;
    }
 
 }
