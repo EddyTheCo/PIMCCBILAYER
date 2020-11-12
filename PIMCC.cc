@@ -10,7 +10,7 @@
 
 using namespace std;
 
-void printinput(void);
+
 int main()
 {
 auto start = chrono::high_resolution_clock::now();
@@ -29,6 +29,12 @@ cout<<"Version 1.0"<<endl;
 
     theLattice.setup();
 
+    if(size_t Warmup=ReadFromInput<int>(22))
+    {
+        cout<<"Starting The WarmingUp"<<endl;
+        theLattice.Warm();
+        cout<<"Finishing The WarmingUp"<<endl;
+    }
 
 
     theLattice.move();

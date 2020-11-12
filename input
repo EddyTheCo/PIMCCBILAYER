@@ -19,4 +19,4 @@ Dipolar            #LiebLiniger or free or Dipolar or Softcore or Bonin
 false               #FourOrderPotential true or false
 4                   #of Sampling
 0.1                   #dplanes distance between planes
-1                   #warmup 1 or 0
+1                   #Warmup

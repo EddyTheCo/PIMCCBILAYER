@@ -20,7 +20,9 @@
 using namespace std;
 
 
-extern const bool isGrandCanonical,restart;
+extern  bool isGrandCanonical;
+extern const bool restart;
+extern size_t Warmup;
 
 extern const size_t NPartiIni,SAMPLING;
 class lattice
@@ -30,6 +32,7 @@ public:
 
     void setup()const;
     void move()const;
+    void Warm() const;
 
      void PrintConfiguration (
         #ifdef USEROOT

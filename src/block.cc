@@ -11,7 +11,7 @@ using namespace std;
 
 #include"site.hh"
 
-const int Warmup=ReadFromInput<int>(22);
+
 
 
 block::block(array<vector<Site>,10000>* particles, const size_t &NTimeSlices, const size_t &NSweeps
@@ -29,24 +29,36 @@ Site* const start=&(particles->at(0).at(0));
 
 
 size_t h=0;
+size_t War=Warmup;
+static size_t CorrectNpart=0;
 
 
 while(step<NSweeps)
 {
 
 
-    if(!(h%1000))
+    if(!(h%1000)&&War&&isGrandCanonical)
     {
-        cout<<"RC="<<start->NClose*1./start->NCloseP<<" RO="<<start->NOpen*1./start->NOpenP<<endl;
-    }
-    if(!(h%1000)&&Warmup&&!isGrandCanonical&&start->ThereIsAWorm)
-    {
-        if(start->NClose*1./start->NCloseP<0.001)
+        if(start->NParti_<War)
         {
             Site::mu+=1;
         }
+        if(start->NParti_>War)
+        {
+            Site::mu-=1;
+        }
+        if(start->NParti_==War)
+        {
+            CorrectNpart++;
+            if(CorrectNpart>=100&&start->Nparti_UpxNT/NTimeSlices==Warmup/2&&start->NParti_==Warmup)
+            {
+                War=0;
+                isGrandCanonical=0;
 
-       cout<<"mu="<<Site::mu<<" Npar="<<start->NParti_<<" NpartUp="<<start->Nparti_UpxNT/NTimeSlices<<endl;
+            }
+        }
+
+        cout<<"mu="<<Site::mu<<" eta="<<Site::eta<<" Npar="<<start->NParti_<<" NPartUp="<<start->Nparti_UpxNT/NTimeSlices<<" C="<<CorrectNpart<<endl;
 
 
     }
@@ -76,7 +88,7 @@ while(step<NSweeps)
                         if(start->Lbead->CloseWorm(0))
                         {
                             step++;
-                            if(Warmup)start->restartRatios();
+
                         }
 
                     }
@@ -190,6 +202,11 @@ if(!Warmup)
         SumofWindingUp=TWindingUp/measureCounter;
         SumofWindingDown=TWindingDown/measureCounter;
 }
+if(!War&&Warmup)
+{
+    Warmup=0;
+}
+
 
 }
 

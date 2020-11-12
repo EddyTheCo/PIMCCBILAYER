@@ -33,8 +33,8 @@ const size_t SAMPLING=ReadFromInput<size_t>(20);
 const size_t NPartiIni=(restart)?ReadFromInput<size_t>(1,".restart.conf"):ReadFromInput<size_t>(1);
 ofstream  lattice::thesweep("sweep",(restart)?std::ofstream::out | std::ofstream::app:std::ofstream::out),lattice::theratios("ratios",(restart)?std::ofstream::out | std::ofstream::app:std::ofstream::out);
 
-const bool isGrandCanonical=ReadFromInput<string>(11)=="GrandCanonical";
-
+bool isGrandCanonical=ReadFromInput<string>(11)=="GrandCanonical";
+size_t Warmup=ReadFromInput<int>(22);
 const size_t lattice::NRep=ReadFromInput<size_t>(5);
 
 const size_t lattice::NSweeps=ReadFromInput <size_t> (8);
@@ -162,6 +162,66 @@ cout<<"init Lattice Setup"<<endl;
 cout<<"end Lattice Setup"<<endl;
 }
 
+
+
+void lattice::Warm() const
+{
+    ofstream RestartConf(".restartVAR.conf");
+    ofstream RestartPtrConf(".restartPtrVAR.conf");
+
+    for(size_t step=0;step<NRep;step++)
+    {
+
+        const auto myBlock=block(grid,NTimeSlices,NSweeps
+#ifdef USEROOT
+                                 ,nullptr
+#endif
+                                     );
+
+
+
+
+
+
+
+        system(("sed -i 's/^.*\\#mu\\b.*$/" + to_string(Site::mu)   + "              \\#mu/' input").c_str());
+        system(("sed -i 's/^.*\\#Warmup\\b.*$/" +to_string(0) +     "              \\#Warmup/' input").c_str());
+        system("sed -i 's/^.*\\Canonical\\b.*$/Canonical       \\# or Canonical/' input");
+
+
+
+
+        RestartConf<<grid->at(0).at(0).NParti_<<" #Particles"<<endl;
+        RestartConf.precision(12);
+
+
+        for(size_t i=0;i<NTimeSlices;i++)
+        {
+
+                for(size_t j = 0; j<grid->at(0).at(0).NParti_; j++)
+                {
+
+                    const auto var=grid->at(i).at(j);
+                    RestartConf<<var.pos;
+
+                    RestartPtrConf<<var.left->ParticleOnBead<<" "<<var.left->TimeSliceOnBead<<" "<<var.right->ParticleOnBead<<" "<<var.right->TimeSliceOnBead<<" ";
+                }
+        }
+
+
+if(!Warmup)
+{
+    RestartConf.close();
+    RestartPtrConf.close();
+    break;
+}
+
+    }
+
+
+
+
+}
 void lattice::move()const
 {
 
@@ -309,10 +369,7 @@ Constants::saveRandom();
    RestartPtrConf.close();
    rename(".restartVAR.conf", ".restart.conf");
    rename(".restartPtrVAR.conf", ".restartPtr.conf");
-   ofstream muAndeta(".muAndeta");
-   muAndeta<<Site::mu<<endl;
-   muAndeta<<Site::eta<<endl;
-    muAndeta.close();
+
 
 
 

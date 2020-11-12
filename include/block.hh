@@ -15,7 +15,7 @@ using namespace std;
 #include"site.hh"
 
 
-extern const int Warmup;
+
 class block
 {
     public:
