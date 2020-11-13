@@ -166,8 +166,7 @@ cout<<"end Lattice Setup"<<endl;
 
 void lattice::Warm() const
 {
-    ofstream RestartConf(".restartVAR.conf");
-    ofstream RestartPtrConf(".restartPtrVAR.conf");
+
 
     for(size_t step=0;step<NRep;step++)
     {
@@ -189,7 +188,8 @@ void lattice::Warm() const
         system("sed -i 's/^.*\\Canonical\\b.*$/Canonical       \\# or Canonical/' input");
 
 
-
+        ofstream RestartConf(".restartVAR.conf");
+        ofstream RestartPtrConf(".restartPtrVAR.conf");
 
         RestartConf<<grid->at(0).at(0).NParti_<<" #Particles"<<endl;
         RestartConf.precision(12);
@@ -207,12 +207,12 @@ void lattice::Warm() const
                     RestartPtrConf<<var.left->ParticleOnBead<<" "<<var.left->TimeSliceOnBead<<" "<<var.right->ParticleOnBead<<" "<<var.right->TimeSliceOnBead<<" ";
                 }
         }
-
+        RestartConf.close();
+        RestartPtrConf.close();
 
 if(!Warmup)
 {
-    RestartConf.close();
-    RestartPtrConf.close();
+
     break;
 }
 
