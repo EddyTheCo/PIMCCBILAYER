@@ -184,8 +184,6 @@ void lattice::Warm() const
 
 
         system(("sed -i 's/^.*\\#mu\\b.*$/" + to_string(Site::mu)   + "              \\#mu/' input").c_str());
-        system(("sed -i 's/^.*\\#Warmup\\b.*$/" +to_string(0) +     "              \\#Warmup/' input").c_str());
-        system("sed -i 's/^.*\\Canonical\\b.*$/Canonical       \\# or Canonical/' input");
 
 
         ofstream RestartConf(".restartVAR.conf");
@@ -212,7 +210,8 @@ void lattice::Warm() const
 
 if(!Warmup)
 {
-
+    system(("sed -i 's/^.*\\#Warmup\\b.*$/" +to_string(0) +     "              \\#Warmup/' input").c_str());
+    system("sed -i 's/^.*\\Canonical\\b.*$/Canonical       \\# or Canonical/' input");
     break;
 }
 
