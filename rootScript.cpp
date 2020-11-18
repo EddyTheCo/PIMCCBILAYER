@@ -61,13 +61,14 @@ void BilayerPCF(size_t Npart, size_t NTimeSlices,double Rangetop,double Lx,doubl
                  <<" "<<PCFUp->GetBinContent(j)/PCFUp->GetXaxis()->GetBinCenter(j)*sqrt(PCFUp->GetBinError(j)*PCFUp->GetBinError(j)/
                                                 PCFUp->GetBinContent(j)/PCFUp->GetBinContent(j) +
                                                 PCFUp->GetXaxis()->GetBinWidth(j)*PCFUp->GetXaxis()->GetBinWidth(j)/
-                                                PCFUp->GetXaxis()->GetBinCenter(j)/PCFUp->GetXaxis()->GetBinCenter(j))                                        )
+                                                PCFUp->GetXaxis()->GetBinCenter(j)/PCFUp->GetXaxis()->GetBinCenter(j))
                 <<" "<<PCFMix->GetBinContent(j)/PCFMix->GetXaxis()->GetBinCenter(j)
                                  <<" "<<PCFMix->GetBinContent(j)/PCFMix->GetXaxis()->GetBinCenter(j)*
                                    sqrt(PCFMix->GetBinError(j)*PCFMix->GetBinError(j)/
                                                                 PCFMix->GetBinContent(j)/PCFMix->GetBinContent(j) +
                                                                 PCFMix->GetXaxis()->GetBinWidth(j)*PCFMix->GetXaxis()->GetBinWidth(j)/
-                                                                PCFMix->GetXaxis()->GetBinCenter(j)/PCFMix->GetXaxis()->GetBinCenter(j))
+                                                                PCFMix->GetXaxis()->GetBinCenter(j)/PCFMix->GetXaxis()->GetBinCenter(j))<<endl;
+
     }
 PCFOUT.close();
 
