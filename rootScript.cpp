@@ -49,7 +49,7 @@ void BilayerPCF(size_t Npart, size_t NTimeSlices,double Rangetop,double Lx,doubl
 
 
     ofstream PCFOUT("PCF.dat");
-    PCFOUT<<"r      PCFUP     PCFUP_ERR       PCFMIX      PCFMIX_ERR"
+    PCFOUT<<"r      PCFUP     PCFUP_ERR       PCFMIX      PCFMIX_ERR"<<endl;
 
     for(size_t j=1;j<=PCFUp->GetXaxis()->GetNbins();j++)
     {
