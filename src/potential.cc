@@ -122,11 +122,11 @@ inline void potential::Dipolar(double & dU, position& graddU, const Site * const
 
    if(bead->pos.TheZ()!=ptr->pos.TheZ())
    {
-       graddU=graddU-dif*(2*(1.5*dif.norm()-4*dplanes*dplanes)/pow(dif.norm()+dplanes*dplanes,3.5));
+       graddU=graddU-dif*(12*dplanes*dplanes-3*dif.norm())/pow(dif.norm()+dplanes*dplanes,2.5);
    }
    else
    {
-       graddU=graddU+(dif)*(-1./pow((dif).norm(),2.5)) ;
+       graddU=graddU+(dif)*(-3./pow((dif).norm(),2.5)) ;
    }
 
 }
