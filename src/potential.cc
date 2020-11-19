@@ -113,21 +113,15 @@ inline void potential::Dipolar(double & dU, position& graddU, const Site * const
 
     if(bead->pos.TheZ()!=ptr->pos.TheZ())
     {
-        dU+=((dif).norm()-2*dplanes*dplanes)/pow((dif).norm()+dplanes*dplanes,2.5);
+        dU+=(-3*dplanes*dplanes)/pow((dif).norm(),2.5);
     }
-    else
-    {
         dU+= 1./pow(dif.norm(),1.5);
-    }
 
    if(bead->pos.TheZ()!=ptr->pos.TheZ())
    {
-       graddU=graddU-dif*(12*dplanes*dplanes-3*dif.norm())/pow(dif.norm()+dplanes*dplanes,2.5);
+       graddU=graddU+dif*(15*dplanes*dplanes)/pow(dif.norm(),3.5);
    }
-   else
-   {
        graddU=graddU+(dif)*(-3./pow((dif).norm(),2.5)) ;
-   }
 
 }
 inline void potential::Softcore(double & dU, position& graddU, const Site * const bead, const Site * const ptr)const
