@@ -210,10 +210,12 @@ void lattice::Warm() const
         rename(".restartVAR.conf", ".restart.conf");
         rename(".restartPtrVAR.conf", ".restartPtr.conf");
 
+
 if(!Warmup)
 {
     system(("sed -i 's/^.*\\#Warmup\\b.*$/" +to_string(0) +     "              \\#Warmup/' input").c_str());
-    system("sed -i 's/^.*\\Canonical\\b.*$/Canonical       \\# or Canonical/' input");
+    system("sed -i '/Canonical/s/.*/Canonical       #GrandCanonical or Canonical/' input");
+    system("sed -i '/start or restart/s/.*/restart           #start or restart/' input");
     break;
 }
 
