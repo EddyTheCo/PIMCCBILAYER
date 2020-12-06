@@ -3,6 +3,7 @@
 #include <vector>
 TFile *MyFile = new TFile("RootFile.root","UPDATE");
 TVectorD *v=nullptr;
+gROOT->ForceStyle();
 
 void BilayerPCF(size_t Npart, size_t NTimeSlices,double Rangetop=2,double Lx=1,double Ly=1,const char *text="")
 {
@@ -55,12 +56,11 @@ PCFOUT.close();
     PCFUp->GetXaxis()->CenterTitle(true);
      PCFUp->SetMarkerStyle(kFullCircle);
      PCFUp->SetMarkerSize(1);
-     PCFUp->SetMarkerColorAlpha(kBlue, 0.35);
+     PCFUp->SetMarkerColor(kRed);
 
      PCFMix->SetMarkerStyle(kFullCircle);
      PCFMix->SetMarkerSize(1);
-     PCFMix->SetMarkerColorAlpha(kBlack, 0.35);
-
+     PCFMix->SetMarkerColor(kBlue);
 
      TLegend *leg=new TLegend(0.7,0.1,0.89,0.29);
         leg->SetFillColor(0);
