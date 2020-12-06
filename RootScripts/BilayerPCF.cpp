@@ -4,7 +4,7 @@
 TFile *MyFile = new TFile("RootFile.root","UPDATE");
 TVectorD *v=nullptr;
 
-void BilayerPCF(size_t Npart, size_t NTimeSlices,double Rangetop=2,double Lx=1,double Ly=1)
+void BilayerPCF(size_t Npart, size_t NTimeSlices,double Rangetop=2,double Lx=1,double Ly=1,const char *text="")
 {
     gROOT->SetBatch(kTRUE);
     gStyle->SetOptStat(0);
@@ -82,6 +82,10 @@ PCFOUT.close();
      PCFUp->Draw("PLC PMC");
      PCFMix->Draw("PLC PMC SAME");
      leg->Draw();
+
+     auto *th2 = new TText(0.1,1.05,text);
+      th2->SetTextSize(0.03);
+     th2->Draw();
 
      c1->Print("PCFUp.png");
     /*
