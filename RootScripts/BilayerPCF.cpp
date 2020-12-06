@@ -55,11 +55,11 @@ PCFOUT.close();
     PCFUp->GetXaxis()->CenterTitle(true);
      PCFUp->SetMarkerStyle(kFullCircle);
      PCFUp->SetMarkerSize(1);
-     PCFUp->SetMarkerColor(kRed);
+     PCFUp->SetMarkerColor(kBlack);
 
      PCFMix->SetMarkerStyle(kFullCircle);
      PCFMix->SetMarkerSize(1);
-     PCFMix->SetMarkerColor(kBlue);
+     PCFMix->SetMarkerColor(kRed);
 
      TLegend *leg=new TLegend(0.7,0.1,0.89,0.29);
         leg->SetFillColor(0);
@@ -77,8 +77,8 @@ PCFOUT.close();
 
 
      TCanvas*c1 = new TCanvas("c1", "c1", 1500,800);
-     PCFUp->Draw("PLC PMC");
-     PCFMix->Draw("PLC PMC SAME");
+     PCFUp->Draw("PLC ");
+     PCFMix->Draw("PLC SAME");
      leg->Draw();
 
 
@@ -87,7 +87,7 @@ PCFOUT.close();
      latex.SetTextSize(0.025);
      latex.SetTextAlign(13);  //align at top
      latex.DrawLatex(0.1,1.3,text);
-     gROOT->ForceStyle();
+
 
 
      c1->Print("PCFUp.png");
