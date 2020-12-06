@@ -56,12 +56,12 @@ PCFOUT.close();
      PCFUp->SetMarkerStyle(kFullCircle);
      PCFUp->SetMarkerStyle(23);
      PCFUp->SetMarkerSize(1);
-     PCFUp->SetMarkerColor(2);
+
 
      PCFMix->SetMarkerStyle(kFullTriangleUp);
      PCFMix->SetMarkerStyle(23);
      PCFMix->SetMarkerSize(1);
-     PCFMix->SetMarkerColor(10);
+
 
      TLegend *leg=new TLegend(0.7,0.1,0.89,0.29);
         leg->SetFillColor(0);
@@ -83,9 +83,13 @@ PCFOUT.close();
      PCFMix->Draw("PLC PMC SAME");
      leg->Draw();
 
-     auto *th2 = new TText(0.1,1.5,text);
-      th2->SetTextSize(0.03);
-     th2->Draw();
+
+
+     TLatex latex;
+     latex.SetTextSize(0.025);
+     latex.SetTextAlign(13);  //align at top
+     latex.DrawLatex(0.1,1.3,text);
+
 
      c1->Print("PCFUp.png");
     /*
