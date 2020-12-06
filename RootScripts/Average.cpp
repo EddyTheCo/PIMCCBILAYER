@@ -4,6 +4,76 @@
 TFile *MyFile = new TFile("RootFile.root","UPDATE");
 TVectorD *v=nullptr;
 
+
+void XZProj (TH1 * hist,string Title)
+{
+        gROOT->SetBatch(kTRUE);
+         TH1 * xzProj =nullptr;
+    if(hist->GetZaxis())
+    {
+        xzProj=((TH3D*)hist)->Project3D("xz");
+    }
+    else
+    {
+        if(hist->GetYaxis())
+        {
+            xzProj=(TH1*)hist->Clone();
+        }
+        else
+        {
+            return;
+
+        }
+    }
+
+
+
+    TCanvas*c1 = new TCanvas();
+    gStyle->SetOptStat(0);
+    xzProj->Draw("CONT4Z");
+    xzProj->GetXaxis()->SetTitle("z");
+    xzProj->GetYaxis()->CenterTitle(true);
+    xzProj->GetYaxis()->SetTitle("x");
+   xzProj->GetXaxis()->CenterTitle(true);
+    xzProj->SetTitle("");
+    c1->Print(("xzProj"+Title+".png").c_str());
+    return xzProj;
+}
+void XYProj (TH1 * hist, string Title)
+{
+        gROOT->SetBatch(kTRUE);
+    TH1 * xyProj =nullptr;
+
+    if(hist->GetZaxis())
+    {
+        xyProj=((TH3D*)hist)->Project3D("xy");
+    }
+    else
+    {
+        if(hist->GetYaxis())
+        {
+            xyProj=(TH1*)hist->Clone();
+        }
+        else
+        {
+            return;
+
+        }
+    }
+
+
+    TCanvas*c1 = new TCanvas();
+    gStyle->SetOptStat(0);
+    xyProj->Draw("CONT4Z");
+    xyProj->GetYaxis()->SetTitle("X");
+    xyProj->GetYaxis()->CenterTitle(true);
+    xyProj->GetXaxis()->SetTitle("Y");
+   xyProj->GetXaxis()->CenterTitle(true);
+    xyProj->SetTitle("");
+    c1->Print(("xyProj"+Title+".png").c_str());
+    return xyProj;
+}
+
 void Average ()
 {
 gROOT->SetBatch(kTRUE);
@@ -14,10 +84,11 @@ gROOT->SetBatch(kTRUE);
 
 
     v = (TVectorD*)gDirectory->Get("v");
+    cout<<"v="<<(*v)[0]<<endl;
     TH1* hist = nullptr;
     bool var=1;
 
-    TCanvas*c1 = new TCanvas("c1", "c1", 1200,1000);
+    TCanvas* c1 = new TCanvas("c1", "c1", 1200,1000);
     gStyle->SetOptStat(0);
 
 
@@ -60,7 +131,11 @@ gROOT->SetBatch(kTRUE);
     hist->Draw();
     c1->Print("AverageLast.png");
 
+    XYProj(hist,"Last");
+    XZProj(hist,"Last");
 
+    TCanvas* c2 = new TCanvas("c2", "c2", 1200,1000);
+    cout<<"Last NEntries="<<hist->GetEntries()<<endl;
     Ave->GetXaxis()->SetTitle("X");
     Ave->GetYaxis()->SetTitle("Y");
     Ave ->GetZaxis()->SetTitle("Z");
@@ -68,7 +143,12 @@ gROOT->SetBatch(kTRUE);
     Ave->GetZaxis()->CenterTitle(true);
     Ave->GetXaxis()->CenterTitle(true);
     Ave->Draw();
-    c1->Print("Average.png");
+    cout<<"Full NEntries="<<Ave->GetEntries()<<endl;
+
+    c2->Print("Average.png");
+
+    XYProj(Ave,"Average");
+    XZProj(Ave,"Average");
     Ave->Scale(1.0/stp);
     Ave->Write("Average",TObject::kOverwrite);
     gDirectory->Write("", TObject::kOverwrite);
