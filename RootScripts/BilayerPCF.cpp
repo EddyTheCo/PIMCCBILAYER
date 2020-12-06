@@ -83,7 +83,7 @@ PCFOUT.close();
      PCFMix->Draw("PLC PMC SAME");
      leg->Draw();
 
-     auto *th2 = new TText(0.1,1.05,text);
+     auto *th2 = new TText(0.1,1.15,text);
       th2->SetTextSize(0.03);
      th2->Draw();
 
