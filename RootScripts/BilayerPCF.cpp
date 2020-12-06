@@ -3,7 +3,6 @@
 #include <vector>
 TFile *MyFile = new TFile("RootFile.root","UPDATE");
 TVectorD *v=nullptr;
-gROOT->ForceStyle();
 
 void BilayerPCF(size_t Npart, size_t NTimeSlices,double Rangetop=2,double Lx=1,double Ly=1,const char *text="")
 {
@@ -88,6 +87,7 @@ PCFOUT.close();
      latex.SetTextSize(0.025);
      latex.SetTextAlign(13);  //align at top
      latex.DrawLatex(0.1,1.3,text);
+     gROOT->ForceStyle();
 
 
      c1->Print("PCFUp.png");
