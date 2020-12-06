@@ -87,7 +87,7 @@ PCFOUT.close();
      TLatex latex;
      latex.SetTextSize(0.025);
      latex.SetTextAlign(13);  //align at top
-     latex.DrawLatex(0.1,1.3,text);
+     latex.DrawLatex(0.1,1.85,text);
 
 
 
