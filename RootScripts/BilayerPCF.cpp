@@ -54,13 +54,12 @@ PCFOUT.close();
     PCFUp->GetYaxis()->CenterTitle(true);
     PCFUp->GetXaxis()->CenterTitle(true);
      PCFUp->SetMarkerStyle(kFullCircle);
-     PCFUp->SetMarkerStyle(23);
      PCFUp->SetMarkerSize(1);
+     PCFUp->SetMarkerColorAlpha(kBlue, 0.35);
 
-
-     PCFMix->SetMarkerStyle(kFullTriangleUp);
-     PCFMix->SetMarkerStyle(23);
+     PCFMix->SetMarkerStyle(kFullCircle);
      PCFMix->SetMarkerSize(1);
+     PCFMix->SetMarkerColorAlpha(kBlack, 0.35);
 
 
      TLegend *leg=new TLegend(0.7,0.1,0.89,0.29);
