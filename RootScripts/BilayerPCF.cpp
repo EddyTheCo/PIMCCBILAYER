@@ -61,7 +61,7 @@ PCFOUT.close();
      PCFMix->SetMarkerStyle(kFullTriangleUp);
      PCFMix->SetMarkerStyle(23);
      PCFMix->SetMarkerSize(1);
-     PCFMix->SetMarkerColor(1);
+     PCFMix->SetMarkerColor(10);
 
      TLegend *leg=new TLegend(0.7,0.1,0.89,0.29);
         leg->SetFillColor(0);
@@ -83,7 +83,7 @@ PCFOUT.close();
      PCFMix->Draw("PLC PMC SAME");
      leg->Draw();
 
-     auto *th2 = new TText(0.1,1.15,text);
+     auto *th2 = new TText(0.1,1.5,text);
       th2->SetTextSize(0.03);
      th2->Draw();
 
