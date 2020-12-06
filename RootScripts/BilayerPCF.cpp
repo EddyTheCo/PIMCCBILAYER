@@ -4,7 +4,7 @@
 TFile *MyFile = new TFile("RootFile.root","UPDATE");
 TVectorD *v=nullptr;
 
-void BilayerPCF(size_t Npart, size_t NTimeSlices,double Rangetop=2,double Lx=1,double Ly=1,const char *text="")
+void BilayerPCF(size_t Npart, size_t NTimeSlices,double Rangextop=2,double Rangeytop=2,double Lx=1,double Ly=1,const char *text="")
 {
     gROOT->SetBatch(kTRUE);
     gStyle->SetOptStat(0);
@@ -48,7 +48,8 @@ PCFOUT.close();
 
     PCFUp->GetXaxis()->SetTitle("r");
     PCFUp->GetYaxis()->SetTitle("g(r)");
-    PCFUp->GetXaxis()->SetRangeUser(0.,Rangetop);
+    PCFUp->GetXaxis()->SetRangeUser(0.,Rangextop);
+    PCFUp->GetYaxis()->SetRangeUser(0.,Rangeytop);
 
 
     PCFUp->GetYaxis()->CenterTitle(true);
