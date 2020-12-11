@@ -131,7 +131,7 @@ while(step<NSweeps)
                 TSumOfPotential+=start->TPotential;
                 TNumberOfParticles+=start->NParti_;
                 TNumberOfParticlesUp+=start->Nparti_UpxNT/NTimeSlices;
-                TWindingUp+=start->TWindingUp.normxy();
+                (d>1)?TWindingUp+=start->TWindingUp.normxy():TWindingUp+=start->TWindingUp.norm();
                 TWindingDown+=start->TWindingDown.normxy();
                 measureCounter++;
             }

@@ -77,7 +77,7 @@ bool Site::OpenWorm(const size_t step, const size_t ab, double dU, const positio
             Lbead=this;
             right->active=false;
             const auto Dist=pos-right->pos;
-            TEnergy-=Dist.norm();
+            TEnergy-=Dist.normxy();
 
             (pos.TheZ()>0)?TWindingUp=TWindingUp+Dist:TWindingDown=TWindingDown+Dist;
             TPotential-=U;
@@ -94,7 +94,7 @@ bool Site::OpenWorm(const size_t step, const size_t ab, double dU, const positio
         {
 
             const auto Dist=pos-right->pos;
-            TEnergy-=Dist.norm();
+            TEnergy-=Dist.normxy();
             (pos.TheZ()>0)?TWindingUp=TWindingUp+Dist:TWindingDown=TWindingDown+Dist;
             Rbead=this->right;
             ThereIsAWorm=true;
@@ -122,7 +122,7 @@ bool Site::CloseWorm(double dU)
         {
             right->active=true;
             const auto Dist=right->pos-pos;
-            TEnergy+=Dist.norm();
+            TEnergy+=Dist.normxy();
             (pos.TheZ()>0)?TWindingUp=TWindingUp+Dist:TWindingDown=TWindingDown+Dist;
             TPotential+=U;
 
@@ -139,7 +139,7 @@ bool Site::CloseWorm(double dU)
         {
 
             const auto Dist=right->pos-pos;
-            TEnergy+=Dist.norm();
+            TEnergy+=Dist.normxy();
            (pos.TheZ()>0)?TWindingUp=TWindingUp+Dist:TWindingDown=TWindingDown+Dist;
             Rbead=nullptr;
             Lbead=nullptr;
@@ -158,7 +158,7 @@ right->oldpos=right->pos;
     if(this->TimeSliceOnBead!=Rbead->left->TimeSliceOnBead)
     {
         const auto Dist=oldpos-right->pos;
-        TEnergyVar-=Dist.norm();
+        TEnergyVar-=Dist.normxy();
 
         (pos.TheZ()>0)?TWindingVarUp=TWindingVarUp+Dist:TWindingVarDown=TWindingVarDown+Dist;
         double U=0;
@@ -174,7 +174,7 @@ right->oldpos=right->pos;
         if(right->Wiggle(dU))
         {
             const auto Dist=right->pos-pos;
-            TEnergy+=Dist.norm();
+            TEnergy+=Dist.normxy();
             (pos.TheZ()>0)?TWindingUp=TWindingUp+Dist:TWindingDown=TWindingDown+Dist;
             TPotential+=U;
 
@@ -186,7 +186,7 @@ right->oldpos=right->pos;
     else
     {
         const auto Dist=oldpos-right->pos;
-        TEnergyVar-=Dist.norm();
+        TEnergyVar-=Dist.normxy();
         (pos.TheZ()>0)?TWindingVarUp=TWindingVarUp+Dist:TWindingVarDown=TWindingVarDown+Dist;
 
         if(exp(dU)>giveRanD(1.))
@@ -194,7 +194,7 @@ right->oldpos=right->pos;
 
             TPotential-=TPotentialVar;
             const auto Dist=right->pos-pos;
-            TEnergy+=TEnergyVar+Dist.norm();
+            TEnergy+=TEnergyVar+Dist.normxy();
 
             (pos.TheZ()>0)?TWindingUp=TWindingUp+Dist+TWindingVarUp:TWindingDown=TWindingDown+Dist+TWindingVarDown;
             Lbead=nullptr;
@@ -228,7 +228,7 @@ ChangeInU(true,dU,U);
             {
                 active=false;
                 const auto Dist=pos-right->pos;
-                TEnergy-=Dist.norm();
+                TEnergy-=Dist.normxy();
                 (pos.TheZ()>0)?TWindingUp=TWindingUp+Dist:TWindingDown=TWindingDown+Dist;
                 TPotential-=U;
                 return true;
@@ -249,7 +249,7 @@ ChangeInU(true,dU,U);
                 if(this!=Lbead)
                 {
                     const auto Dist=pos-right->pos;
-                    TEnergy-=Dist.norm();
+                    TEnergy-=Dist.normxy();
                     (pos.TheZ()>0)?TWindingUp=TWindingUp+Dist:TWindingDown=TWindingDown+Dist;
                 }
                 active=false;
@@ -275,7 +275,7 @@ ChangeInU(true,dU,U);
                 {
                     active=false;
                     const auto Dist=left->pos-pos;
-                    TEnergy-=Dist.norm();
+                    TEnergy-=Dist.normxy();
                     (pos.TheZ()>0)?TWindingUp=TWindingUp+Dist:TWindingDown=TWindingDown+Dist;
                     TPotential-=U;
                     return true;
@@ -293,7 +293,7 @@ ChangeInU(true,dU,U);
                     active=false;
                     TPotential-=U;
                     const auto Dist=left->pos-pos;
-                    TEnergy-=Dist.norm();
+                    TEnergy-=Dist.normxy();
                     (pos.TheZ()>0)?TWindingUp=TWindingUp+Dist:TWindingDown=TWindingDown+Dist;
                     Lbead=this->left;
                     NMove++;
@@ -334,7 +334,7 @@ right->ChangeInU(false,dU,U);
                 {
                     right->active=true;
                     const auto Dist=right->pos-pos;
-                    TEnergy+=Dist.norm();
+                    TEnergy+=Dist.normxy();
                     (pos.TheZ()>0)?TWindingUp=TWindingUp+Dist:TWindingDown=TWindingDown+Dist;
                     TPotential+=U;
                     return true;
@@ -352,7 +352,7 @@ right->ChangeInU(false,dU,U);
 
                     right->active=true;
                     const auto Dist=right->pos-pos;
-                    TEnergy+=Dist.norm();
+                    TEnergy+=Dist.normxy();
                     (pos.TheZ()>0)?TWindingUp=TWindingUp+Dist:TWindingDown=TWindingDown+Dist;
                     TPotential+=U;
                     Lbead=this->right;
@@ -418,7 +418,7 @@ dU+=mu*tao;
                 {
                     left->active=true;
                     const auto Dist=pos-left->pos;
-                    TEnergy+=Dist.norm();
+                    TEnergy+=Dist.normxy();
 
 
                     (pos.TheZ()>0)?TWindingUp=TWindingUp+Dist:TWindingDown=TWindingDown+Dist;
@@ -439,7 +439,7 @@ dU+=mu*tao;
 
                     left->active=true;
                     const auto Dist=pos-left->pos;
-                    TEnergy+=Dist.norm();
+                    TEnergy+=Dist.normxy();
 
 
                     (pos.TheZ()>0)?TWindingUp=TWindingUp+Dist:TWindingDown=TWindingDown+Dist;
@@ -781,7 +781,7 @@ if(isRight)
             zeta->right->active=false;
             const auto Dist1=right->pos-pos;
             const auto Dist2=zeta->pos-zeta->right->pos;
-            TEnergy+=Dist1.norm()-Dist2.norm();
+            TEnergy+=Dist1.normxy()-Dist2.normxy();
 
             (pos.TheZ()>0)?TWindingUp=TWindingUp+Dist1+Dist2:TWindingDown=TWindingDown+Dist1+Dist2;
             TPotential+=Ualpha;
@@ -802,7 +802,7 @@ if(isRight)
              this->right=zeta->right;
              const auto Dist1=right->pos-pos;
              const auto Dist2=zeta->pos-zeta->right->pos;
-             TEnergy+=Dist1.norm()-Dist2.norm();
+             TEnergy+=Dist1.normxy()-Dist2.normxy();
 
              (pos.TheZ()>0)?TWindingUp=TWindingUp+Dist1+Dist2:TWindingDown=TWindingDown+Dist1+Dist2;
             zeta->right=prev;
@@ -876,7 +876,7 @@ else {
             zeta->left->active=false;
             const auto Dist1=pos-left->pos;
             const auto Dist2=zeta->left->pos-zeta->pos;
-            TEnergy+=Dist1.norm()-Dist2.norm();
+            TEnergy+=Dist1.normxy()-Dist2.normxy();
 
             (pos.TheZ()>0)?TWindingUp=TWindingUp+Dist1+Dist2:TWindingDown=TWindingDown+Dist1+Dist2;
             TPotential+=Ualpha;
@@ -897,7 +897,7 @@ else {
              this->left=zeta->left;
              const auto Dist1=pos-left->pos;
              const auto Dist2=zeta->left->pos-zeta->pos;
-             TEnergy+=Dist1.norm()-Dist2.norm();
+             TEnergy+=Dist1.normxy()-Dist2.normxy();
 
              (pos.TheZ()>0)?TWindingUp=TWindingUp+Dist1+Dist2:TWindingDown=TWindingDown+Dist1+Dist2;
             zeta->left=prev;

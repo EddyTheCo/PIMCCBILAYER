@@ -9,24 +9,7 @@ void XZProj (TH1 * hist,string Title)
 {
         gROOT->SetBatch(kTRUE);
          TH1 * xzProj =nullptr;
-    if(hist->GetZaxis())
-    {
         xzProj=((TH3D*)hist)->Project3D("xz");
-    }
-    else
-    {
-        if(hist->GetYaxis())
-        {
-            xzProj=(TH1*)hist->Clone();
-        }
-        else
-        {
-            return;
-
-        }
-    }
-
-
 
     TCanvas*c1 = new TCanvas();
     gStyle->SetOptStat(0);
@@ -43,16 +26,15 @@ void XYProj (TH1 * hist, string Title)
 {
         gROOT->SetBatch(kTRUE);
     TH1 * xyProj =nullptr;
-
-    if(hist->GetZaxis())
+    if(hist->GetZaxis()->GetNbins()>1)
     {
         xyProj=((TH3D*)hist)->Project3D("xy");
     }
     else
     {
-        if(hist->GetYaxis())
+        if(hist->GetYaxis()->GetNbins()>1)
         {
-            xyProj=(TH1*)hist->Clone();
+            xyProj=(TH2D*)hist->Clone();
         }
         else
         {
@@ -95,7 +77,7 @@ gROOT->SetBatch(kTRUE);
     for(int i=1;i<=(((*v)[0]<1000)?((*v)[0]):(999));i++)
         {
 
-            cout<<("pos" + to_string(i)).c_str()<<endl;
+
             hist=(TH1* )gDirectory->Get(("pos" + to_string(i)).c_str());
             if(hist!=nullptr)
             {
@@ -132,7 +114,10 @@ gROOT->SetBatch(kTRUE);
     c1->Print("AverageLast.png");
 
     XYProj(hist,"Last");
-    XZProj(hist,"Last");
+    if(hist->GetZaxis()->GetNbins()>1)
+    {
+        XZProj(hist,"Last");
+    }
 
     TCanvas* c2 = new TCanvas("c2", "c2", 1200,1000);
     cout<<"Last NEntries="<<hist->GetEntries()<<endl;
@@ -148,7 +133,10 @@ gROOT->SetBatch(kTRUE);
     c2->Print("Average.png");
 
     XYProj(Ave,"Average");
-    XZProj(Ave,"Average");
+    if(hist->GetZaxis()->GetNbins()>1)
+    {
+            XZProj(Ave,"Average");
+    }
     Ave->Scale(1.0/stp);
     Ave->Write("Average",TObject::kOverwrite);
     gDirectory->Write("", TObject::kOverwrite);

@@ -285,7 +285,7 @@ inline size_t  CalculateNoWormLenght(void)const
     inline void totalEnergy(void)const
     {
 
-        TEnergy+=(right->pos-pos).norm();
+        TEnergy+=(right->pos-pos).normxy();
         (pos.TheZ()>0)?TWindingUp=TWindingUp+(right->pos-pos):TWindingDown=TWindingDown+(right->pos-pos);
         double U=0;
         position gU=position(0.);
