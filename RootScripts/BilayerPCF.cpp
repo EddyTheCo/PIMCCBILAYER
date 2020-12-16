@@ -4,7 +4,7 @@
 TFile *MyFile = new TFile("RootFile.root","READ");
 TVectorD *v=nullptr;
 
-void BilayerPCF(size_t Npart, size_t NTimeSlices,double Rangextop=2,double Rangeytop=2,double Lx=1,double Ly=1,const char *text="")
+void BilayerPCF(double Npart, size_t NTimeSlices,double Rangextop=2,double Rangeytop=2,double Lx=1,double Ly=1,const char *text="")
 {
     gROOT->SetBatch(kTRUE);
     gStyle->SetOptStat(0);
