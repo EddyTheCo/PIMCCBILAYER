@@ -166,7 +166,7 @@ cout<<"end Lattice Setup"<<endl;
 
 void lattice::Warm() const
 {
-double muVarDown=-100,muVarUp=10000;
+double muVarDown=-100,muVarUp=100000;
 double CNpar=-1000;
 while (CNpar<Warmup-1||CNpar>Warmup+1)
 {
