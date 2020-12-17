@@ -70,9 +70,9 @@ cout<<"init Lattice"<<endl;
       cout << "Error opening file" << endl;
   }
     if(!RootFile->IsOpen())
-	{
-		RootFile=new TFile("RootFile.root","RECREATE");
-	}
+    {
+        RootFile=new TFile("RootFile.root","RECREATE");
+    }
     initialize_histos();
 #endif
 
@@ -166,53 +166,20 @@ cout<<"end Lattice Setup"<<endl;
 
 void lattice::Warm() const
 {
-double muVarDown=-100,muVarUp=100000;
-double CNpar=-1000;
-while (CNpar<Warmup-1||CNpar>Warmup+1)
-{
-
-    const double Mu=muVarDown+(-muVarDown+muVarUp)/4;
-    grid->at(0).at(0).mu=Mu;
 
 
-
-
+    for(size_t step=0;step<NRep;step++)
+    {
 
         const auto myBlock=block(grid,NTimeSlices,NSweeps
 #ifdef USEROOT
                                  ,nullptr
 #endif
                                      );
-        CNpar=myBlock.NumberOfParticles;
-        cout<<"myBlock.NumberOfParticles="<<myBlock.NumberOfParticles<<endl;
 
 
 
-    cout<<"Mu="<<grid->at(0).at(0).mu<<" NPart="<<CNpar<<endl;
-    if(CNpar<Warmup)
-    {
-        muVarDown=Mu;
-    }
-    if(CNpar>Warmup)
-    {
-        muVarUp=Mu;
-    }
 
-
-}
-cout<<"finded Mu="<<grid->at(0).at(0).mu<<endl;
-while (grid->at(0).at(0).Nparti_UpxNT/NTimeSlices!=Warmup/2&&grid->at(0).at(0).NParti_!=Warmup) {
-
-    const auto myBlock=block(grid,NTimeSlices,1
-#ifdef USEROOT
-                             ,nullptr
-#endif
-                                 );
-
-}
-
-    Warmup=0;
-    isGrandCanonical=false;
 
 
 
@@ -244,12 +211,15 @@ while (grid->at(0).at(0).Nparti_UpxNT/NTimeSlices!=Warmup/2&&grid->at(0).at(0).N
         rename(".restartPtrVAR.conf", ".restartPtr.conf");
 
 
-
+if(!Warmup)
+{
     system(("sed -i 's/^.*\\#Warmup\\b.*$/" +to_string(0) +     "              \\#Warmup/' input").c_str());
     system("sed -i '/Canonical/s/.*/Canonical       #GrandCanonical or Canonical/' input");
     system("sed -i '/start or restart/s/.*/restart           #start or restart/' input");
+    break;
+}
 
-
+    }
 
 
 
