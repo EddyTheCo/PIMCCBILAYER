@@ -10,12 +10,12 @@ if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release)
 endif()
 
-if(USEROOT)
+#if(USEROOT)
     message( STATUS "This build is USING ROOT")
 add_definitions(-DUSEROOT)
 set(ROOT_INSTALL /home/camelud/GEANT4/ROOT/build)
 include_directories(${ROOT_INSTALL}/include)
-endif()
+#endif()
 
 
 if(SAVECONF)
@@ -61,7 +61,9 @@ set(SCRIPTS
 #  INIMaterial
 #  INISource
   input
-  rootScript.cpp
+  RootScripts/rootScript.cpp
+  RootScripts/BilayerPCF.cpp
+  RootScripts/Average.cpp
  )
 
 foreach(_script ${SCRIPTS})

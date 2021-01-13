@@ -14,7 +14,7 @@ using namespace std;
 
 
 
-block::block(array<vector<Site>,10000>* particles, const size_t &NTimeSlices, const size_t &NSweeps
+block::block(array<vector<Site>,100000>* particles, const size_t &NTimeSlices, const size_t &NSweeps
              #ifdef USEROOT
              , TH2D * const Greens
              #endif
@@ -136,7 +136,7 @@ while(step<NSweeps)
                 measureCounter++;
             }
 
-             switch ((isGrandCanonical)?giveRanI(2):giveRanI(1)) {
+             switch ((isGrandCanonical)?giveRanI(3):giveRanI(2)) {
              case 0:
              {
 
@@ -161,7 +161,7 @@ while(step<NSweeps)
 //                  cout<<"wiggle"<<endl;
 
                      const size_t posiTimes=giveRanI(NTimeSlices-1) ; //Choose a random time slice
-                     const size_t posiParti=giveRanI(particles->at(posiTimes).size()-1); //Choose the particle
+                     const size_t posiParti=giveRanI(start->NParti_-1); //Choose the particle
 
                         start->Lbead=&(particles->at(posiTimes).at(posiParti)); //LBEAD is proposed (but dosent mean theres is a worm)
                         const size_t var2= giveRanI(MBar-3)+1;
@@ -178,12 +178,43 @@ while(step<NSweeps)
                 break;
             }
 
-              case 2:
+              case 3:
              {
               //   cout<<"insertworminclose "<<endl;
                  start->insertWorm();
                  break;
              }
+             case 2:
+            {
+                 if(start->NParti_)
+                 {
+
+//                 cout<<"ShiftParticle"<<endl;
+
+
+                     const size_t posiParti=giveRanI(start->NParti_-1); //Choose the particle
+
+                        start->Lbead=&(particles->at(0).at(posiParti)); //LBEAD is proposed (but dosent mean theres is a worm)
+
+//cout<<"Lbead="<<start->Lbead->ParticleOnBead<<" "<<start->Lbead->TimeSliceOnBead<<endl;
+                        vector<double> varVec;
+
+                        varVec.push_back(giveRanDNormal(0,position::L.TheX()));
+                        varVec.push_back(giveRanDNormal(0,position::L.TheY()));
+                        varVec.push_back(0.);
+
+                        const position p=position(varVec);
+//cout<<"vectShift="<<p<<endl;
+
+                        start->Lbead->shiftParticle(0,p);
+
+                        start->Lbead=nullptr;
+
+
+                }
+                break;
+            }
+
              }
 
 

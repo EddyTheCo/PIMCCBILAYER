@@ -47,7 +47,7 @@ const size_t lattice::NSweeps=ReadFromInput <size_t> (8);
 
 
 
-array<vector<Site>,10000>*  const lattice::grid=new array<vector<Site>,10000>;
+array<vector<Site>,100000>*  const lattice::grid=new array<vector<Site>,100000>;
 lattice::lattice()
 {
 cout<<"init Lattice"<<endl;

@@ -32,7 +32,7 @@ class Site
                 out<<obj.pos;
         return out;
     }
-    void setLattice(array<vector<Site>,10000>* const particles)const
+    void setLattice(array<vector<Site>,100000>* const particles)const
     {
         theParticles=particles;
     }
@@ -159,7 +159,7 @@ inline size_t  CalculateNoWormLenght(void)const
      bool OpenWorm(const size_t, const size_t, double dU, const position & start);
      bool CloseWorm(double dU);
      bool Wiggle(double dU);
-     bool shiftParticle(double dU, const position& shift, const Site * const &str)const;
+     bool shiftParticle(double dU, const position& shift)const;
      void PrepareSwap(void)const;
      bool swap(Site * const , const double& SumI, const double& SumZ, double dU, const bool &isRight);
 
@@ -500,7 +500,7 @@ inline void ChangeInU(const bool & isRemove, double& dU ,double & U )const
     static Site* theZeta;
 	private:
 
-    static array<vector<Site>,10000>* theParticles;
+    static array<vector<Site>,100000>* theParticles;
 
 
 

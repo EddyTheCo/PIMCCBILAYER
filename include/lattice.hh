@@ -68,7 +68,7 @@ inline double getRemoveRatio(void)const
 {
     return grid->at(0).at(0).NRemo*1./grid->at(0).at(0).NRemoP;
 }
-  static array<vector<Site>,10000>*  const grid;
+  static array<vector<Site>,100000>*  const grid;
 
     static ofstream  thesweep,theratios;
 

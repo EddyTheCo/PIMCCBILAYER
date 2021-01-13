@@ -38,7 +38,7 @@ const potential Site::ThePotential=potential();
 
 
 bool Site::ThereIsAWorm=false;
-array<vector<Site>,10000>* Site::theParticles=nullptr;
+array<vector<Site>,100000>* Site::theParticles=nullptr;
 
 Site* Site::Lbead=nullptr;
 Site* Site::Rbead=nullptr;
@@ -938,22 +938,26 @@ else {
 }
 
 
-bool Site::shiftParticle(double dU, const position& shift, const Site * const &str)const
+bool Site::shiftParticle(double dU, const position& shift)const
 {
     right->oldpos=right->pos;
+
     double U=0;
-    right->ChangeInU(false,dU,U);
+    right->ChangeInU(true,dU,U);
     TPotentialVar+=U;
-    right->pos=right->pos-(shift*-1);  //the minus sign is in order to propose new position using Pbc
 
+    //cout<<"right="<<right->ParticleOnBead<<" "<<right->TimeSliceOnBead<<" "<<right->pos<<endl;
+    right->pos=right->pos+shift;
+    //cout<<"right="<<right->ParticleOnBead<<" "<<right->TimeSliceOnBead<<" "<<right->pos<<endl;
     right->ChangeInU(false,dU,U);
 
-        if(this!=str->left)
+        if(this!=Lbead->left)
         {
 
-            if(right->shiftParticle(dU,shift,str))
+            if(right->shiftParticle(dU,shift))
             {
                 TPotential+=U;
+                //cout<<oldpos-right->oldpos<<" "<<pos-right->pos<<endl;
                 return true;
             }
             right->pos=right->oldpos;
@@ -968,6 +972,7 @@ bool Site::shiftParticle(double dU, const position& shift, const Site * const &s
                 TPotential+=U;
                 TPotential-=TPotentialVar;
                 TPotentialVar=0.;
+                //cout<<oldpos-right->oldpos<<" "<<pos-right->pos<<endl;
                return true;
             }
             right->pos=right->oldpos;
