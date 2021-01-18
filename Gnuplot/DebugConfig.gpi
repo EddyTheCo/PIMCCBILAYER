@@ -1,0 +1,49 @@
+set output '.eps'
+set xlabel ''
+set ylabel ''
+Np= system("ls Print*|wc -l")
+
+set terminal postscript eps color size 50,50 solid enhanced font 'arial' 80 linewidth 4
+set output 'Config.eps'
+
+unset key 
+
+set style line 1 \
+    linecolor  rgb "#0072bd"\
+    linetype 1 linewidth 2 \
+    pointtype 7 pointsize 2
+
+
+set style line 2 \
+    linecolor rgb '#d95319' \
+    linetype 1 linewidth 2 \
+    pointtype 7 pointsize 2
+
+set style line 3 \
+    linecolor rgb '#edb120' \
+    linetype 1 linewidth 2 \
+    pointtype 7 pointsize 2
+
+set style line 4 \
+    linecolor rgb '#7e2f8e' \
+    linetype 1 linewidth 2 \
+    pointtype 7 pointsize 2
+
+set style line 5 \
+    linecolor rgb '#77ac30' \
+    linetype 1 linewidth 2 \
+    pointtype 7 pointsize 2
+set style line 6 \
+    linecolor rgb '#4dbeee' \
+    linetype 1 linewidth 2 \
+    pointtype 7 pointsize 2
+
+do for [t=1:Np] {
+name='Print'.t.'.conf'
+Tvar= system("head -n1 ".name."|awk '{print $9}'")
+set multiplot layout 1,1
+stats 'Print'.t.'.conf' using 3:2
+set title Tvar 
+plot [-1:STATS_max_x+1] [-1:STATS_max_y+1] 'Print'.t.'.conf' using ($3):($1==0?($2):1/0) w points pt 6 ps 8 title "",'Print'.t.'.conf' using ($3):($1==1?($2):1/0) w points pt 2 ps 8 title "",'Print'.t.'.conf' using 3:2:($5-$3<0?($5-$3):0):($5-$3<0?($4-$2):0) with vectors lc 1,'Print'.t.'.conf' using 3:2:($5-$3>0?($5-$3):0):($5-$3>0?($4-$2):0) with vectors lc 5, 'Print'.t.'.conf' u 3:($2):(sprintf("%.3f ",$6)) with labels tc rgb "black"  point   pt 7 offset char 5,-1 notitle,'Print'.t.'.conf' using 3:2:($5-$3>0?($5-$3):0):($5-$3>0?($4-$2):0) with vectors lc 5, 'Print'.t.'.conf' u 3:($2):(sprintf("%.3f ",$7)) with labels font "arial,66" tc rgb "black"  point   pt 7 offset char 5,-2 notitle,'Print'.t.'.conf' using 3:2:($5-$3>0?($5-$3):0):($5-$3>0?($4-$2):0) with vectors lc 5, 'Print'.t.'.conf' u 3:($2):(sprintf("%.3f ",$8)) with labels font "arial,66" tc rgb "black"  point   pt 7 offset char 5,-3 notitle,
+unset multiplot
+}
