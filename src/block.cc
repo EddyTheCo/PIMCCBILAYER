@@ -199,8 +199,8 @@ while(step<NSweeps)
 //cout<<"Lbead="<<start->Lbead->ParticleOnBead<<" "<<start->Lbead->TimeSliceOnBead<<endl;
                         vector<double> varVec;
 
-                        varVec.push_back(giveRanDNormal(0,position::L.TheX()));
-                        varVec.push_back(giveRanDNormal(0,position::L.TheY()));
+                        varVec.push_back(-position::L.TheX()/2.0+giveRanD(position::L.TheX()));
+                        varVec.push_back(-position::L.TheY()/2.0+giveRanD(position::L.TheY()));
                         varVec.push_back(0.);
 
                         const position p=position(varVec);
