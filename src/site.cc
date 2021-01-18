@@ -692,8 +692,7 @@ void Site::PrepareSwap(void)const
 
         const auto vae=giveRanI(MBar-2);
         Site* alpha, *zeta;
-        if ( giveRanI(1) )
-        {
+
             const auto NewRbead=oldLbead->searchBeadForced(true,vae);
             alpha=NewRbead->chooseTheBead(SumI,vae+1,oldLbead);
 
@@ -705,46 +704,21 @@ void Site::PrepareSwap(void)const
 
                 NewRbead->chooseTheBead(SumZ,vae+1,zeta);
                 Rbead=alpha;
-                if(Lbead->swap(zeta,SumI,SumZ,0,true))
+                if(Lbead->swap(zeta,SumI,SumZ,0))
                 {
                     Lbead=zeta;
                 }
                 Rbead=oldRbead;
 
-         }
-        else
-        {
-            const auto NewLbead=oldRbead->searchBeadForced(false,vae);
-            if(NewLbead==nullptr)return;
 
 
-            alpha=NewLbead->chooseTheBead(SumI,vae+1,oldRbead);
-
-            if(alpha==nullptr)return;
-
-
-            zeta=alpha->searchBead(true,vae);
-            if (zeta==nullptr||zeta==Rbead||zeta==Lbead)return;
-
-            NewLbead->chooseTheBead(SumZ,vae+1,zeta);
-            Lbead=alpha;
-            if(Rbead->swap(zeta,SumI,SumZ,0,false))
-            {
-                 Rbead=zeta;
-            }
-
-                    Lbead=oldLbead;
-
-        }
 
 
 }
-bool Site::swap(Site* const zeta, const double& SumI, const double& SumZ, double dU, const bool &isRight)
+bool Site::swap(Site* const zeta, const double& SumI, const double& SumZ, double dU)
 {
 
-if(isRight)
-{
-    static bool aParticleisInserted=false;
+  static bool aParticleisInserted=false;
     static Site* ri;
     if(this->TimeSliceOnBead!=Rbead->left->TimeSliceOnBead)
     {
@@ -775,7 +749,7 @@ if(isRight)
         right->ChangeInU(false,dU,Ualpha);
         zeta->right->ChangeInU(true,dU,Uzeta);
 
-        if(right->swap(zeta->right,SumI,SumZ,dU,true))
+        if(right->swap(zeta->right,SumI,SumZ,dU))
         {
             this->right->active=true;
             zeta->right->active=false;
@@ -835,103 +809,7 @@ if(isRight)
          return false;
     }
 
-}
-else {
-    static bool aParticleisInserted=false;
-    static Site* le;
-    if(this->TimeSliceOnBead!=Lbead->right->TimeSliceOnBead)
-    {
-        //cout<<"pos="<<pos<<endl;
-        if (left->active)
-        {
-            if(!isGrandCanonical)
-            {
-                theZeta=nullptr;
-                return false;
 
-            }
-            else {
-                insertParticle(pos.TheZ());
-                aParticleisInserted=true;
-                //cout<<"seinserto aparticle"<<endl;
-                le=left;
-                left=theParticles->at(TimeSliceOnBead).back().left;
-                auto var=left->right;
-                left->right=this;
-                le->right=var;
-                var->left=le;
-
-            }
-        }
-
-        left->pos=position(false,this,left->pos.TheZ());
-        double Ualpha=0,Uzeta=0;
-        theZeta=zeta->left;
-        left->ChangeInU(false,dU,Ualpha);
-        zeta->left->ChangeInU(true,dU,Uzeta);
-
-        if(left->swap(zeta->left,SumI,SumZ,dU,false))
-        {
-            this->left->active=true;
-            zeta->left->active=false;
-            const auto Dist1=pos-left->pos;
-            const auto Dist2=zeta->left->pos-zeta->pos;
-            TEnergy+=Dist1.normxy()-Dist2.normxy();
-
-            (pos.TheZ()>0)?TWindingUp=TWindingUp+Dist1+Dist2:TWindingDown=TWindingDown+Dist1+Dist2;
-            TPotential+=Ualpha;
-            TPotential-=Uzeta;
-
-            return true;
-        }
-
-        return false;
-    }
-    else
-    {
-
-
-         if(exp(dU)*SumI/SumZ>giveRanD(1.))
-        {
-             Site * const prev=this->left;
-             this->left=zeta->left;
-             const auto Dist1=pos-left->pos;
-             const auto Dist2=zeta->left->pos-zeta->pos;
-             TEnergy+=Dist1.normxy()-Dist2.normxy();
-
-             (pos.TheZ()>0)?TWindingUp=TWindingUp+Dist1+Dist2:TWindingDown=TWindingDown+Dist1+Dist2;
-            zeta->left=prev;
-            zeta->left->right=zeta;
-            this->left->right=this;
-            NSwap++;
-            if(aParticleisInserted)
-            {
-                NParti_++;
-                aParticleisInserted=false;
-
-
-            }
-            theZeta=nullptr;
-            return true;
-        }
-         if(aParticleisInserted)//but the move is not accepted
-         {
-
-             const auto var=&(theParticles->at(le->TimeSliceOnBead).back());
-             auto varRight=var->right;
-             var->right=le->right;
-             var->right->left=var;
-             le->right=varRight;
-             varRight->left=le;
-             removeLastParticle();
-             aParticleisInserted=false;
-
-         }
-         theZeta=nullptr;
-        return false;
-    }
-
-}
 
 
 
