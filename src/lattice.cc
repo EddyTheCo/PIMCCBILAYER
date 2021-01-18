@@ -234,7 +234,7 @@ if(!restart)thesweep<< left << setw(16) <<"KEnergy"<< left << setw(16) <<"PEnerg
 theratios<< left << setw(12)<<"Ropen"<<left << setw(12)<<"RClose"<<left << setw(12)<<"Rmove"<<left << setw(12)<<"Rswap"<<left << setw(12)<<"RInsert"<<left << setw(12)<<"RRmove"<<endl;
     for(size_t step=0;step<NRep;step++)
     {
-
+        grid->at(0).at(0).printLattice("");
         const auto myBlock=block(grid,NTimeSlices,NSweeps
 #ifdef USEROOT
                                  ,Greens

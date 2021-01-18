@@ -37,6 +37,7 @@ while(step<NSweeps)
 {
 
 
+
     if(!(h%1000)&&War&&isGrandCanonical)
     {
         if(start->NParti_<War)
@@ -68,6 +69,7 @@ while(step<NSweeps)
          if(start->ThereIsAWorm)
         {
 
+
              if(!Warmup)
              {
                 measureCounter1++;
@@ -80,6 +82,7 @@ while(step<NSweeps)
             case 0:
             {
 //               cout<<"closing worm"<<endl;
+                svar="closing";
                     start->NCloseP++;
 
 
@@ -98,12 +101,14 @@ while(step<NSweeps)
             case 1:
             {
 //               cout<<"MoveWorm"<<endl;
+                svar="MoveWorm";
                     start->MoveWorm();
                      break;
             }
             case 2:
             {
-//              cout<<"swap"<<endl;
+              //cout<<"swap"<<endl;
+                svar="swap";
                 start->NSwapP++;
                if(start->NParti_>1)
                start->PrepareSwap();
@@ -113,7 +118,8 @@ while(step<NSweeps)
             case 3:
             {
 
-        //        cout<<"removeWorm"<<endl;
+                //cout<<"removeWorm"<<endl;
+                svar="remove";
                 start->removeWorm();
                 break;
             }
@@ -142,7 +148,8 @@ while(step<NSweeps)
 
                if(start->NParti_)
                {
-//                 cout<<"OpenWorm"<<endl;
+                 //cout<<"OpenWorm"<<endl;
+                   svar="open";
                    const size_t posiTimes=giveRanI(NTimeSlices-1) ;
                    const size_t posiParti=giveRanI(particles->at(posiTimes).size()-1);
                    const size_t var2=  giveRanI(MBar-2);
@@ -158,7 +165,8 @@ while(step<NSweeps)
                  if(start->NParti_)
                  {
 
-//                  cout<<"wiggle"<<endl;
+                  //cout<<"wiggle"<<endl;
+                     svar="wiggle";
 
                      const size_t posiTimes=giveRanI(NTimeSlices-1) ; //Choose a random time slice
                      const size_t posiParti=giveRanI(start->NParti_-1); //Choose the particle
@@ -180,7 +188,8 @@ while(step<NSweeps)
 
               case 3:
              {
-              //   cout<<"insertworminclose "<<endl;
+                 //cout<<"insertworminclose "<<endl;
+                 svar="insert";
                  start->insertWorm();
                  break;
              }
@@ -189,7 +198,8 @@ while(step<NSweeps)
                  if(start->NParti_)
                  {
 
-//                 cout<<"ShiftParticle"<<endl;
+                 //cout<<"ShiftParticle"<<endl;
+                     svar="shift";
 
 
                      const size_t posiParti=giveRanI(start->NParti_-1); //Choose the particle

@@ -459,10 +459,12 @@ inline void ChangeInU(const bool & isRemove, double& dU ,double & U )const
 
         return var;
     }
-    void printLattice(void)const
+    void printLattice(const string svar)const
     {
 
+    static int step=1;
 
+    ofstream PrintConf(("Print" +to_string(step) +     ".conf").c_str());
         Site var;
         for(size_t j=0;j<NParti_;j++)
          {
@@ -470,17 +472,18 @@ inline void ChangeInU(const bool & isRemove, double& dU ,double & U )const
              {
                  var=theParticles->at(i).at(j);
                  if(var.active)
-                     cout<<var.right->ParticleOnBead<<" "<<var.right->TimeSliceOnBead<<"/"<<var.pos;
+                     PrintConf<<"1 "<<var.ParticleOnBead<<" "<<var.TimeSliceOnBead<<" "<<var.right->ParticleOnBead<<" "<<var.right->TimeSliceOnBead<<" "<<var.pos<<" "<<svar<<endl;
                  else {
-                     cout<<"#"<<var.right->ParticleOnBead<<" "<<var.right->TimeSliceOnBead<<"/"<<var;
+                     PrintConf<<"0 "<<var.ParticleOnBead<<" "<<var.TimeSliceOnBead<<" "<<var.right->ParticleOnBead<<" "<<var.right->TimeSliceOnBead<<" "<<var.pos<<" "<<svar<<endl;
                  }
-                 cout<<" ";
-                 //cout<<var.right<<"  ";
+
+
 
              }
-             cout<<endl;
 
          }
+        step++;
+        PrintConf.close();
     }
 
     bool active;
