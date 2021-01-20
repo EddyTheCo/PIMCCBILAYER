@@ -248,7 +248,7 @@ cout<<"finished block "<<step<<endl;
 #endif
   );
 
-
+        
 thesweep << left << setw(16) << myBlock.getKineticEnergy()<<" "<< left << setw(16) <<myBlock.SumOfPotential/(NTimeSlices)
          <<" "<< left << setw(16) << myBlock.getKineticEnergy()+myBlock.SumOfPotential/(NTimeSlices)
           <<" "<<left << setw(16)    << myBlock.Wormlenght/(NTimeSlices-1)<<" "<<left << setw(16)    << myBlock.getSuperfluidDensityUp()

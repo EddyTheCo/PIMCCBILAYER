@@ -10,12 +10,17 @@ if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release)
 endif()
 
-#if(USEROOT)
+if(WARMUP)
+    message( STATUS "This build include The WARMUP")
+add_definitions(-DWARMUP)
+endif()
+
+if(USEROOT)
     message( STATUS "This build is USING ROOT")
 add_definitions(-DUSEROOT)
 set(ROOT_INSTALL /home/camelud/GEANT4/ROOT/build)
 include_directories(${ROOT_INSTALL}/include)
-#endif()
+endif()
 
 
 if(SAVECONF)

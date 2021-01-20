@@ -52,13 +52,14 @@ if(GoodToGo)
 
     theLattice.setup();
 
-
+#ifdef WARMUP
 if(size_t Warmup=ReadFromInput<int>(22))
 {
     cout<<"Starting The WarmingUp"<<endl;
     theLattice.Warm();
     cout<<"Finishing The WarmingUp"<<endl;
 }
+#endif
     theLattice.move();
 }
 else

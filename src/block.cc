@@ -28,16 +28,17 @@ double TWindingUp=0,TWindingDown=0;
 Site* const start=&(particles->at(0).at(0));
 
 
+#ifdef WARMUP
 size_t h=0;
 size_t War=Warmup;
 static size_t CorrectNpart=0;
-
+#endif
 
 while(step<NSweeps)
 {
 
 
-
+#ifdef WARMUP
     if(!(h%1000)&&War&&isGrandCanonical)
     {
         if(start->NParti_<War)
@@ -64,13 +65,14 @@ while(step<NSweeps)
 
     }
     h++;
-
+#endif
 
          if(start->ThereIsAWorm)
         {
 
-
+#ifdef WARMUP
              if(!Warmup)
+#endif
              {
                 measureCounter1++;
                 TWormlenght+=start->NInactiveLinks();
@@ -82,7 +84,7 @@ while(step<NSweeps)
             case 0:
             {
 //               cout<<"closing worm"<<endl;
-                svar="closing";
+
                     start->NCloseP++;
 
 
@@ -101,14 +103,14 @@ while(step<NSweeps)
             case 1:
             {
 //               cout<<"MoveWorm"<<endl;
-                svar="MoveWorm";
+                    start->NMoveP++;
                     start->MoveWorm();
                      break;
             }
             case 2:
             {
               //cout<<"swap"<<endl;
-                svar="swap";
+
                 start->NSwapP++;
                if(start->NParti_>1)
                start->PrepareSwap();
@@ -119,8 +121,12 @@ while(step<NSweeps)
             {
 
                 //cout<<"removeWorm"<<endl;
-                svar="remove";
-                start->removeWorm();
+                start->NRemoP++;
+                if(start->removeWorm())
+                {
+                    step++;
+
+                }
                 break;
             }
 
@@ -131,7 +137,9 @@ while(step<NSweeps)
         }
         else
         {
+            #ifdef WARMUP
             if(!Warmup)
+            #endif
             {
                 TSumOfdisplacement+=start->TEnergy;
                 TSumOfPotential+=start->TPotential;
@@ -149,7 +157,7 @@ while(step<NSweeps)
                if(start->NParti_)
                {
                  //cout<<"OpenWorm"<<endl;
-                   svar="open";
+
                    const size_t posiTimes=giveRanI(NTimeSlices-1) ;
                    const size_t posiParti=giveRanI(particles->at(posiTimes).size()-1);
                    const size_t var2=  giveRanI(MBar-2);
@@ -166,7 +174,7 @@ while(step<NSweeps)
                  {
 
                   //cout<<"wiggle"<<endl;
-                     svar="wiggle";
+
 
                      const size_t posiTimes=giveRanI(NTimeSlices-1) ; //Choose a random time slice
                      const size_t posiParti=giveRanI(start->NParti_-1); //Choose the particle
@@ -176,7 +184,7 @@ while(step<NSweeps)
 
                         start->Rbead=start->Lbead->searchBead(true,var2);
                         start->Lbead->oldpos=start->Lbead->pos;
-
+                        start->NWiggleP++;
                         start->Lbead->Wiggle(0);
 
                         start->Lbead=nullptr;
@@ -189,24 +197,25 @@ while(step<NSweeps)
               case 3:
              {
                  //cout<<"insertworminclose "<<endl;
-                 svar="insert";
+                 start->NInsertP++;
                  start->insertWorm();
                  break;
              }
              case 2:
             {
+                 start->NShiftP++;
                  if(start->NParti_)
                  {
 
                  //cout<<"ShiftParticle"<<endl;
-                     svar="shift";
+
 
 
                      const size_t posiParti=giveRanI(start->NParti_-1); //Choose the particle
 
                         start->Lbead=&(particles->at(0).at(posiParti)); //LBEAD is proposed (but dosent mean theres is a worm)
 
-//cout<<"Lbead="<<start->Lbead->ParticleOnBead<<" "<<start->Lbead->TimeSliceOnBead<<endl;
+
                         vector<double> varVec;
 
                         varVec.push_back(-position::L.TheX()/2.0+giveRanD(position::L.TheX()));
@@ -214,7 +223,7 @@ while(step<NSweeps)
                         varVec.push_back(0.);
 
                         const position p=position(varVec);
-//cout<<"vectShift="<<p<<endl;
+
 
                         start->Lbead->shiftParticle(0,p);
 
@@ -232,8 +241,9 @@ while(step<NSweeps)
 
     }
 
-
+#ifdef WARMUP
 if(!Warmup)
+#endif
 {
         SumofDisplacement=TSumOfdisplacement/measureCounter;
         SumOfPotential=TSumOfPotential/measureCounter;
@@ -243,11 +253,12 @@ if(!Warmup)
         SumofWindingUp=TWindingUp/measureCounter;
         SumofWindingDown=TWindingDown/measureCounter;
 }
+#ifdef WARMUP
 if(!War&&Warmup)
 {
     Warmup=0;
 }
-
+#endif
 
 }
 

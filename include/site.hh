@@ -180,7 +180,7 @@ inline size_t  CalculateNoWormLenght(void)const
      }
      bool insertToRight(const size_t step, double dU);
      void insertWorm(void);
-     void removeWorm(void);
+     bool removeWorm(void);
      bool insertToLeft(const size_t step, double dU);
 
 
@@ -359,7 +359,7 @@ inline void ChangeInU(const bool & isRemove, double& dU ,double & U )const
     position pos,oldpos;
     Site* left,* right,* up,* down;
     const static potential ThePotential;
-    static size_t NParti_,Nparti_UpxNT,NClose,NOpen,NMove,NSwap,NInsert,NInsertP,NRemo,NRemoP,NCloseP,NOpenP,NMoveP,NSwapP;
+    static size_t NParti_,Nparti_UpxNT,NClose,NWiggle,NShift,NOpen,NMove,NSwap,NInsert,NInsertP,NRemo,NRemoP,NCloseP,NWiggleP,NShiftP,NOpenP,NMoveP,NSwapP;
 
 
  inline void restartRatios(void)const{

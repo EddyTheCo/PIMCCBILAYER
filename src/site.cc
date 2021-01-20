@@ -46,7 +46,7 @@ position Site::TWindingUp=position(0.);
 position Site::TWindingDown=position(0.);
 position Site::TWindingVarUp=position(0.);
 position Site::TWindingVarDown=position(0.);
-size_t Site::NClose=1,Site::NOpen=1,Site::NMove=1,Site::NSwap=1,Site::NCloseP=1,Site::NOpenP=1,Site::NMoveP=1,Site::NSwapP=1,Site::NInsertP=1,Site::NInsert=1,Site::NRemoP=1,Site::NRemo=1;
+size_t Site::NClose=1,Site::NWiggle=1,Site::NWiggleP=1,Site::NShift=1,Site::NShiftP=1,Site::NOpen=1,Site::NMove=1,Site::NSwap=1,Site::NCloseP=1,Site::NOpenP=1,Site::NMoveP=1,Site::NSwapP=1,Site::NInsertP=1,Site::NInsert=1,Site::NRemoP=1,Site::NRemo=1;
 Site::Site():pos(position(1.0))
 {
 
@@ -201,6 +201,7 @@ right->oldpos=right->pos;
             Rbead=nullptr;
             TPotentialVar=0;
             TEnergyVar=0;
+            NWiggle++;
             (pos.TheZ()>0)?TWindingVarUp=position(0.):TWindingVarDown=position(0.);
             return true;
         }
@@ -241,7 +242,7 @@ ChangeInU(true,dU,U);
 
             if(this==Lbead)dU+=mu*tao;
 
-            NMoveP++;
+
 
             if(exp(dU)>giveRanD(1.))
             {
@@ -469,12 +470,12 @@ dU+=mu*tao;
                 return false;
             }
 }
-void Site::removeWorm(void)
+bool Site::removeWorm(void)
 {
-    NRemoP++;
+
     const auto wormLenght=CalculateWormLenght();
     if(wormLenght>=MBar)
-        return;
+        return false;
 
 
 const bool isup=(Rbead->pos.TheZ()>0)?true:false;
@@ -537,10 +538,11 @@ const bool isup=(Rbead->pos.TheZ()>0)?true:false;
         Lbead=nullptr;
         Rbead=nullptr;
         ThereIsAWorm=false;
+        return true;
 
 
     }
-
+    return false;
 
 }
 void Site::insertWorm(void)
@@ -559,7 +561,7 @@ insertParticle();
 
 
         Rbead->active=true;
-    NInsertP++;
+
 
 
     double U=0,dU=0;
@@ -847,6 +849,7 @@ bool Site::shiftParticle(double dU, const position& shift)const
 
             if(exp(dU)>giveRanD(1.))
             {
+                NShift++;
                 TPotential+=U;
                 TPotential-=TPotentialVar;
                 TPotentialVar=0.;
