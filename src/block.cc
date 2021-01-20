@@ -28,44 +28,12 @@ double TWindingUp=0,TWindingDown=0;
 Site* const start=&(particles->at(0).at(0));
 
 
-#ifdef WARMUP
-size_t h=0;
-size_t War=Warmup;
-static size_t CorrectNpart=0;
-#endif
+
 
 while(step<NSweeps)
 {
 
 
-#ifdef WARMUP
-    if(!(h%1000)&&War&&isGrandCanonical)
-    {
-        if(start->NParti_<War)
-        {
-            Site::mu+=1;
-        }
-        if(start->NParti_>War)
-        {
-            Site::mu-=1;
-        }
-        if(start->NParti_==War)
-        {
-            CorrectNpart++;
-            if(CorrectNpart>=100&&start->Nparti_UpxNT/NTimeSlices==Warmup/2&&start->NParti_==Warmup)
-            {
-                War=0;
-                isGrandCanonical=0;
-
-            }
-        }
-
-        cout<<"mu="<<Site::mu<<" eta="<<Site::eta<<" Npar="<<start->NParti_<<" NPartUp="<<start->Nparti_UpxNT/NTimeSlices<<" C="<<CorrectNpart<<endl;
-
-
-    }
-    h++;
-#endif
 
          if(start->ThereIsAWorm)
         {
@@ -253,12 +221,6 @@ if(!Warmup)
         SumofWindingUp=TWindingUp/measureCounter;
         SumofWindingDown=TWindingDown/measureCounter;
 }
-#ifdef WARMUP
-if(!War&&Warmup)
-{
-    Warmup=0;
-}
-#endif
 
 }
 

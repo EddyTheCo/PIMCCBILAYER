@@ -167,59 +167,78 @@ cout<<"end Lattice Setup"<<endl;
 void lattice::Warm() const
 {
 
-
-    for(size_t step=0;step<NRep;step++)
+    double Np=0;
+    while(Np<Warmup&&isGrandCanonical)
     {
+        Site::mu++;
 
-        const auto myBlock=block(grid,NTimeSlices,NSweeps
+        const auto myBlock=block(grid,NTimeSlices,10
 #ifdef USEROOT
                                  ,nullptr
 #endif
                                      );
 
-
-
-
-
-
-
-        system(("sed -i 's/^.*\\#mu\\b.*$/" + to_string(Site::mu)   + "              \\#mu/' input").c_str());
-
-
-        ofstream RestartConf(".restartVAR.conf");
-        ofstream RestartPtrConf(".restartPtrVAR.conf");
-
-        RestartConf<<grid->at(0).at(0).NParti_<<" #Particles"<<endl;
-        RestartConf.precision(12);
-
-
-        for(size_t i=0;i<NTimeSlices;i++)
+        if(getOpenRatio()<getCloseRatio())
         {
-
-                for(size_t j = 0; j<grid->at(0).at(0).NParti_; j++)
-                {
-
-                    const auto var=grid->at(i).at(j);
-                    RestartConf<<var.pos;
-
-                    RestartPtrConf<<var.left->ParticleOnBead<<" "<<var.left->TimeSliceOnBead<<" "<<var.right->ParticleOnBead<<" "<<var.right->TimeSliceOnBead<<" ";
-                }
+            Site::eta*=2;
         }
-        RestartConf.close();
-        RestartPtrConf.close();
-        rename(".restartVAR.conf", ".restart.conf");
-        rename(".restartPtrVAR.conf", ".restartPtr.conf");
+        else
+        {
+            Site::eta/=2;
+        }
+
+        Np=grid->at(0).at(0).NParti_;
+        cout<<"Nparticles="<<Np<<" mu="<<Site::mu<<" eta="<<Site::eta<<endl;
+            system(("sed -i 's/^.*\\#mu\\b.*$/" + to_string(Site::mu)   + "              \\#mu/' input").c_str());
+    }
+
+    while((grid->at(0).at(0).NParti_!=Warmup||grid->at(0).at(0).Nparti_UpxNT/NTimeSlices!=Warmup/2)&&isGrandCanonical)
+    {
+        const auto myBlock=block(grid,NTimeSlices,1
+#ifdef USEROOT
+                                 ,nullptr
+#endif
+                                     );
+
+        cout<<"Nparticles="<<grid->at(0).at(0).NParti_<<" NPUP="<<grid->at(0).at(0).Nparti_UpxNT/NTimeSlices<<endl;
+
+    }
 
 
-if(!Warmup)
-{
+
+system(("sed -i 's/^.*\\#eta\\b.*$/" + to_string(Site::eta)   + "              \\#eta factor increase for more oppening/' input").c_str());
+
     system(("sed -i 's/^.*\\#Warmup\\b.*$/" +to_string(0) +     "              \\#Warmup/' input").c_str());
     system("sed -i '/Canonical/s/.*/Canonical       #GrandCanonical or Canonical/' input");
     system("sed -i '/start or restart/s/.*/restart           #start or restart/' input");
-    break;
-}
 
+
+    Warmup=0;
+    isGrandCanonical=false;
+    ofstream RestartConf(".restartVAR.conf");
+    ofstream RestartPtrConf(".restartPtrVAR.conf");
+
+    RestartConf<<grid->at(0).at(0).NParti_<<" #Particles"<<endl;
+    RestartConf.precision(12);
+
+
+    for(size_t i=0;i<NTimeSlices;i++)
+    {
+
+            for(size_t j = 0; j<grid->at(0).at(0).NParti_; j++)
+            {
+
+                const auto var=grid->at(i).at(j);
+                RestartConf<<var.pos;
+
+                RestartPtrConf<<var.left->ParticleOnBead<<" "<<var.left->TimeSliceOnBead<<" "<<var.right->ParticleOnBead<<" "<<var.right->TimeSliceOnBead<<" ";
+            }
     }
+    RestartConf.close();
+    RestartPtrConf.close();
+    rename(".restartVAR.conf", ".restart.conf");
+    rename(".restartPtrVAR.conf", ".restartPtr.conf");
+
 
 
 
@@ -241,6 +260,8 @@ theratios<< left << setw(12)<<"Ropen"<<left << setw(12)<<"RClose"<<left << setw(
                                  ,Greens
 #endif
                                  );
+
+
 cout<<"finished block "<<step<<endl;
             PrintConfiguration(
 #ifdef USEROOT
