@@ -254,9 +254,11 @@ thesweep << left << setw(16) << myBlock.getKineticEnergy()<<" "<< left << setw(1
           <<" "<<left << setw(16)    << myBlock.Wormlenght/(NTimeSlices-1)<<" "<<left << setw(16)    << myBlock.getSuperfluidDensityUp()
          <<" "<<left << setw(16)    << myBlock.getSuperfluidDensityDown()<<" "<<left << setw(16)    << myBlock.NumberOfParticlesUp<<" "<<right << setw(16)    <<myBlock.NumberOfParticles<</*" "<<right << setw(12)    <<StructureFactor<<*/endl;
 
-
-       theratios<< left << setw(12) <<getOpenRatio()<< left << setw(12) <<getCloseRatio()<< left << setw(12) <<getMoveRatio()<< left << setw(12)
+if(grid->at(0).size())
+{
+    theratios<< left << setw(12) <<getOpenRatio()<< left << setw(12) <<getCloseRatio()<< left << setw(12) <<getMoveRatio()<< left << setw(12)
                 <<getSwapRatio()<< left << setw(12) <<getWiggleRatio()<< left << setw(12) <<getShiftRatio()<< left << setw(12) <<getInsertRatio()<< left << setw(12) <<getRemoveRatio()<<endl;
+}
 
 
 
@@ -292,14 +294,19 @@ void lattice::PrintConfiguration (
        var=0;
    }
 #endif
-   RestartConf<<grid->at(0).at(0).NParti_<<" #Particles"<<endl;
+   size_t NP=0;
+   if(grid->at(0).size())
+   {
+       NP=grid->at(0).at(0).NParti_;
+
+   }
+   RestartConf<<NP<<" #Particles"<<endl;
    RestartConf.precision(12);
 
-
-   for(size_t i=0;i<NTimeSlices;i++)
+    if(NP)for(size_t i=0;i<NTimeSlices;i++)
    {
 
-           for(size_t j = 0; j<grid->at(0).at(0).NParti_; j++)
+           for(size_t j = 0; j<NP; j++)
            {
 
                const auto var=grid->at(i).at(j);
