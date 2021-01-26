@@ -27,13 +27,13 @@ size_t TWormlenght=0,step=0,measureCounter=0,measureCounter1=0;
 double TWindingUp=0,TWindingDown=0;
 Site* const start=&(particles->at(0).at(0));
 
-
+string svar="";
 
 
 while(step<NSweeps)
 {
 
-
+//start->printLattice(svar);
 
          if(start->ThereIsAWorm)
         {
@@ -51,29 +51,30 @@ while(step<NSweeps)
             switch ((!isGrandCanonical)?giveRanI(2):giveRanI(3)) {
             case 0:
             {
-//               cout<<"closing worm"<<endl;
+              // cout<<"closing worm"<<endl;
+              // svar="closing worm";
 
                     start->NCloseP++;
 
 
                     if(!(start->cantClose(MBar)))
                     {
-                        if(giveRanI(1))
+                       // if(giveRanI(1))
                         {
-                            if(start->Lbead->CloseWorm(0,true))
+                            if(start->Rbead->CloseWorm(0,true))
                             {
                                 step++;
 
                             }
                         }
-                        else
-                        {
-                            if(start->Rbead->CloseWorm(0,false))
-                            {
-                                step++;
+                        //else
+                        //{
+                          //  if(start->Rbead->CloseWorm(0,false))
+                           // {
+                             //   step++;
 
-                            }
-                        }
+                            //}
+                        //}
 
 
                     }
@@ -82,7 +83,8 @@ while(step<NSweeps)
             }
             case 1:
             {
-//               cout<<"MoveWorm"<<endl;
+              //cout<<"MoveWorm"<<endl;
+              //svar="MoveWorm";
                     start->NMoveP++;
                     start->MoveWorm();
                      break;
@@ -90,6 +92,7 @@ while(step<NSweeps)
             case 2:
             {
               //cout<<"swap"<<endl;
+             // svar="swap";
 
                 start->NSwapP++;
                if(start->NParti_>1)
@@ -100,7 +103,8 @@ while(step<NSweeps)
             case 3:
             {
 
-                //cout<<"removeWorm"<<endl;
+               // cout<<"removeWorm"<<endl;
+               // svar="removeWorm";
                 start->NRemoP++;
                 if(start->removeWorm())
                 {
@@ -137,13 +141,20 @@ while(step<NSweeps)
                if(start->NParti_)
                {
                  //cout<<"OpenWorm"<<endl;
-
+                   // svar="OpenWorm";
                    const size_t posiTimes=giveRanI(NTimeSlices-1) ;
                    const size_t posiParti=giveRanI(particles->at(posiTimes).size()-1);
                    const size_t var2=  giveRanI(MBar-2);
                    Site* const Ranbead=&(particles->at(posiTimes).at(posiParti));
                    start->NOpenP++;
-                   start->ThereIsAWorm= Ranbead->OpenWorm(var2,var2+1,0,Ranbead->pos);
+                   //if(giveRanI(1))
+                   {
+                           start->ThereIsAWorm= Ranbead->OpenWorm(var2,var2+1,0,Ranbead->pos,true);
+                   }
+                   //else
+                   //{
+                     //   start->ThereIsAWorm= Ranbead->OpenWorm(var2,var2+1,0,Ranbead->pos,false);
+                   //}
                }
 
                 break;
@@ -154,7 +165,7 @@ while(step<NSweeps)
                  {
 
                   //cout<<"wiggle"<<endl;
-
+        //svar="wiggle";
 
                      const size_t posiTimes=giveRanI(NTimeSlices-1) ; //Choose a random time slice
                      const size_t posiParti=giveRanI(start->NParti_-1); //Choose the particle
@@ -176,7 +187,8 @@ while(step<NSweeps)
 
               case 3:
              {
-                 //cout<<"insertworminclose "<<endl;
+          //       cout<<"insertworminclose "<<endl;
+            //     svar="insertworminclose";
                  start->NInsertP++;
                  start->insertWorm();
                  break;
@@ -187,7 +199,8 @@ while(step<NSweeps)
                  if(start->NParti_)
                  {
 
-                 //cout<<"ShiftParticle"<<endl;
+              //   cout<<"ShiftParticle"<<endl;
+                // svar="ShiftParticle";
 
 
 

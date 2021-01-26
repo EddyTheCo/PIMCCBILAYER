@@ -62,17 +62,18 @@ Site::Site(const size_t i,const size_t j,const string var):active(false),pos(pos
 
 
 }
-bool Site::OpenWorm(const size_t step, const size_t ab, double dU, const position& start )
+bool Site::OpenWorm(const size_t step, const size_t ab, double dU, const position& start,const bool is_right )
 {
 
     dU+=-mu*tao;
-
+if(is_right)
+{
     if(step>0)
     {
         double U=0;
         right->ChangeInU(true,dU,U);
 
-        if(right->OpenWorm(step-1,ab,dU,start))
+        if(right->OpenWorm(step-1,ab,dU,start,true))
         {            
             Lbead=this;
             right->active=false;
@@ -104,6 +105,48 @@ bool Site::OpenWorm(const size_t step, const size_t ab, double dU, const positio
         }
         return false;
     }
+}
+else
+{
+    if(step>0)
+    {
+        double U=0;
+        left->ChangeInU(true,dU,U);
+
+        if(left->OpenWorm(step-1,ab,dU,start,false))
+        {
+            Rbead=this;
+            left->active=false;
+            const auto Dist=pos-left->pos;
+            TEnergy-=Dist.normxy();
+
+            (pos.TheZ()>0)?TWindingUp=TWindingUp+Dist:TWindingDown=TWindingDown+Dist;
+            TPotential-=U;
+            return true;
+        }
+        return false;
+
+    }
+    else
+    {
+
+
+        if(eta*NParti_/(propagator(start,left->pos,ab,-dU)*position::volumen)>giveRanD(1.))
+        {
+
+            const auto Dist=pos-left->pos;
+            TEnergy-=Dist.normxy();
+            (pos.TheZ()>0)?TWindingUp=TWindingUp+Dist:TWindingDown=TWindingDown+Dist;
+            Lbead=this->left;
+            ThereIsAWorm=true;
+            Rbead=this;
+            NOpen++;
+            return true;
+        }
+        return false;
+    }
+
+}
 }
 bool Site::CloseWorm(double dU, const bool is_right)
 {
