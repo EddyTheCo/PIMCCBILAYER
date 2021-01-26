@@ -50,7 +50,9 @@ if(infinteWell)
 }
 if(triangular)
 {
-    cout<<"hey";
+    dU+=100*(pow(sin(k.x.at(0)*bead->pos.perio(0)*3.1415),2)+pow(sin(k.x.at(1)*bead->pos.perio(1)*3.1415),2));
+
+
 }
 //cout<<"##ERROR error in the potential"<<endl;
 }
