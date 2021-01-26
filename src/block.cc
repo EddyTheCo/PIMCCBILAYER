@@ -59,22 +59,13 @@ while(step<NSweeps)
 
                     if(!(start->cantClose(MBar)))
                     {
-                       // if(giveRanI(1))
-                        {
-                            if(start->Rbead->CloseWorm(0,true))
+
+                            if(start->Lbead->CloseWorm(0))
                             {
                                 step++;
 
                             }
-                        }
-                        //else
-                        //{
-                          //  if(start->Rbead->CloseWorm(0,false))
-                           // {
-                             //   step++;
 
-                            //}
-                        //}
 
 
                     }
@@ -147,14 +138,9 @@ while(step<NSweeps)
                    const size_t var2=  giveRanI(MBar-2);
                    Site* const Ranbead=&(particles->at(posiTimes).at(posiParti));
                    start->NOpenP++;
-                   //if(giveRanI(1))
-                   {
-                           start->ThereIsAWorm= Ranbead->OpenWorm(var2,var2+1,0,Ranbead->pos,true);
-                   }
-                   //else
-                   //{
-                     //   start->ThereIsAWorm= Ranbead->OpenWorm(var2,var2+1,0,Ranbead->pos,false);
-                   //}
+
+                           start->ThereIsAWorm= Ranbead->OpenWorm(var2,var2+1,0,Ranbead->pos);
+
                }
 
                 break;

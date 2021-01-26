@@ -156,8 +156,8 @@ inline size_t  CalculateNoWormLenght(void)const
      }
      return wormL;
  }
-     bool OpenWorm(const size_t, const size_t, double dU, const position & start, const bool is_right);
-     bool CloseWorm(double dU, const bool is_right);
+     bool OpenWorm(const size_t, const size_t, double dU, const position & start);
+     bool CloseWorm(double dU);
      bool Wiggle(double dU);
      bool shiftParticle(double dU, const position& shift)const;
      void PrepareSwap(void)const;

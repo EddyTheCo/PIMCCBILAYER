@@ -62,18 +62,17 @@ Site::Site(const size_t i,const size_t j,const string var):active(false),pos(pos
 
 
 }
-bool Site::OpenWorm(const size_t step, const size_t ab, double dU, const position& start,const bool is_right )
+bool Site::OpenWorm(const size_t step, const size_t ab, double dU, const position& start)
 {
 
     dU+=-mu*tao;
-if(is_right)
-{
+
     if(step>0)
     {
         double U=0;
         right->ChangeInU(true,dU,U);
 
-        if(right->OpenWorm(step-1,ab,dU,start,true))
+        if(right->OpenWorm(step-1,ab,dU,start))
         {            
             Lbead=this;
             right->active=false;
@@ -105,55 +104,13 @@ if(is_right)
         }
         return false;
     }
-}
-else
-{
-    if(step>0)
-    {
-        double U=0;
-        left->ChangeInU(true,dU,U);
-
-        if(left->OpenWorm(step-1,ab,dU,start,false))
-        {
-            Rbead=this;
-            left->active=false;
-            const auto Dist=pos-left->pos;
-            TEnergy-=Dist.normxy();
-
-            (pos.TheZ()>0)?TWindingUp=TWindingUp+Dist:TWindingDown=TWindingDown+Dist;
-            TPotential-=U;
-            return true;
-        }
-        return false;
-
-    }
-    else
-    {
-
-
-        if(eta*NParti_/(propagator(start,left->pos,ab,-dU)*position::volumen)>giveRanD(1.))
-        {
-
-            const auto Dist=pos-left->pos;
-            TEnergy-=Dist.normxy();
-            (pos.TheZ()>0)?TWindingUp=TWindingUp+Dist:TWindingDown=TWindingDown+Dist;
-            Lbead=this->left;
-            ThereIsAWorm=true;
-            Rbead=this;
-            NOpen++;
-            return true;
-        }
-        return false;
-    }
 
 }
-}
-bool Site::CloseWorm(double dU, const bool is_right)
+bool Site::CloseWorm(double dU)
 {
 
     dU+=mu*tao;
-if(is_right)
-{
+
     if(this->TimeSliceOnBead!=Rbead->left->TimeSliceOnBead)
     {
 
@@ -162,7 +119,7 @@ if(is_right)
         right->ChangeInU(false,dU,U);
 
 
-        if(right->CloseWorm(dU,true))
+        if(right->CloseWorm(dU))
         {
             right->active=true;
             const auto Dist=right->pos-pos;
@@ -193,50 +150,7 @@ if(is_right)
         }
         return false;
     }
-}
-else
-{
-    if(this->TimeSliceOnBead!=Lbead->right->TimeSliceOnBead)
-    {
 
-        left->pos=position(false,this,left->pos.TheZ());
-        double U=0;
-        left->ChangeInU(false,dU,U);
-
-
-        if(left->CloseWorm(dU,false))
-        {
-            left->active=true;
-            const auto Dist=left->pos-pos;
-            TEnergy+=Dist.normxy();
-            (pos.TheZ()>0)?TWindingUp=TWindingUp+Dist:TWindingDown=TWindingDown+Dist;
-            TPotential+=U;
-
-            return true;
-
-        }
-        return false;
-
-    }
-    else
-    {
-
-        if(propagator(Rbead->pos,Lbead->pos,NInactiveLinks(),dU)*position::getVolumen()/(eta*NParti_)>giveRanD(1.))
-        {
-
-            const auto Dist=left->pos-pos;
-            TEnergy+=Dist.normxy();
-           (pos.TheZ()>0)?TWindingUp=TWindingUp+Dist:TWindingDown=TWindingDown+Dist;
-            Rbead=nullptr;
-            Lbead=nullptr;
-            ThereIsAWorm=false;
-            NClose++;
-            return true;
-        }
-        return false;
-    }
-
-}
 
 }
 bool Site::Wiggle(double dU)
