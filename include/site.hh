@@ -161,7 +161,7 @@ inline size_t  CalculateNoWormLenght(void)const
      bool Wiggle(double dU);
      bool shiftParticle(double dU, const position& shift)const;
      void PrepareSwap(void)const;
-     bool swap(Site * const , const double& SumI, const double& SumZ, double dU);
+     bool swap(Site * const , const double& SumI, const double& SumZ, double dU, const bool &isRight);
 
 
 
@@ -300,20 +300,33 @@ inline size_t  CalculateNoWormLenght(void)const
     inline void MoveWorm(void)const
     {        
         const auto del=giveRanI(MBar-1);
-        switch ( giveRanI(1) ) {
-                case 0:
-            {
+        switch ( giveRanI(4) )
+        {
+        case 0:
+        {
+            if(NfindHead(del,true))
+                Rbead->deleteToRight(del,0);
+            break;
+        }
+        case 1:
+        {
 
-                    if(NfindHead(del,true))
-                    Rbead->deleteToRight(del,0);
-                    break;
-            }
-                case 1:
-            {
+            Rbead->insertToLeft(del,0);
+            break;
+        }
+        case 2:
+        {
 
-                    Rbead->insertToLeft(del,0);
-                    break;
-                }
+            if(NfindHead(del,false))
+                Lbead->deleteToLeft(del,0);
+            break;
+        }
+        case 3:
+        {
+            Lbead->insertToRight(del,0);
+            break;
+        }
+
 
 
         }
