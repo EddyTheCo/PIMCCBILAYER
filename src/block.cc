@@ -58,11 +58,23 @@ while(step<NSweeps)
 
                     if(!(start->cantClose(MBar)))
                     {
-                        if(start->Lbead->CloseWorm(0))
+                        if(giveRanI(1))
                         {
-                            step++;
+                            if(start->Lbead->CloseWorm(0,true))
+                            {
+                                step++;
 
+                            }
                         }
+                        else
+                        {
+                            if(start->Rbead->CloseWorm(0,false))
+                            {
+                                step++;
+
+                            }
+                        }
+
 
                     }
 
