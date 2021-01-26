@@ -172,20 +172,13 @@ void lattice::Warm() const
     {
         Site::mu++;
 
-        const auto myBlock=block(grid,NTimeSlices,10
+        const auto myBlock=block(grid,NTimeSlices,100
 #ifdef USEROOT
                                  ,nullptr
 #endif
                                      );
 
-        if(getOpenRatio()<getCloseRatio())
-        {
-            Site::eta*=2;
-        }
-        else
-        {
-            Site::eta/=2;
-        }
+
 
         Np=grid->at(0).at(0).NParti_;
         cout<<"Nparticles="<<Np<<" mu="<<Site::mu<<" eta="<<Site::eta<<endl;
