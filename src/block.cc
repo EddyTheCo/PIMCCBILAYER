@@ -51,7 +51,7 @@ while(step<NSweeps)
             switch ((!isGrandCanonical)?giveRanI(2):giveRanI(3)) {
             case 0:
             {
-              // cout<<"closing worm"<<endl;
+               //cout<<"closing worm"<<endl;
               // svar="closing worm";
 
                     start->NCloseP++;
@@ -94,7 +94,7 @@ while(step<NSweeps)
             case 3:
             {
 
-               // cout<<"removeWorm"<<endl;
+                //cout<<"removeWorm"<<endl;
                // svar="removeWorm";
                 start->NRemoP++;
                 if(start->removeWorm())
@@ -121,11 +121,12 @@ while(step<NSweeps)
                 TNumberOfParticles+=start->NParti_;
                 TNumberOfParticlesUp+=start->Nparti_UpxNT/NTimeSlices;
                 TWindingUp+=start->TWindingUp.normxy();
+
                 TWindingDown+=start->TWindingDown.normxy();
                 measureCounter++;
             }
 
-             switch ((isGrandCanonical)?giveRanI(3):giveRanI(2)) {
+             switch ((isGrandCanonical)?giveRanI(2):giveRanI(1)) {
              case 0:
              {
 
@@ -173,19 +174,19 @@ while(step<NSweeps)
 
               case 3:
              {
-          //       cout<<"insertworminclose "<<endl;
+                 //cout<<"insertworminclose "<<endl;
             //     svar="insertworminclose";
                  start->NInsertP++;
                  start->insertWorm();
                  break;
              }
-             case 2:
+             case 5:
             {
                  start->NShiftP++;
                  if(start->NParti_)
                  {
 
-              //   cout<<"ShiftParticle"<<endl;
+                 //cout<<"ShiftParticle"<<endl;
                 // svar="ShiftParticle";
 
 
@@ -197,8 +198,8 @@ while(step<NSweeps)
 
                         vector<double> varVec;
 
-                        varVec.push_back(-position::L.TheX()/2.0+giveRanD(position::L.TheX()));
-                        varVec.push_back(-position::L.TheY()/2.0+giveRanD(position::L.TheY()));
+                        varVec.push_back(-position::L.TheX()/1000+giveRanD(position::L.TheX()/500));
+                        varVec.push_back(-position::L.TheY()/1000+giveRanD(position::L.TheY()/500));
                         varVec.push_back(0.);
 
                         const position p=position(varVec);
@@ -218,6 +219,7 @@ while(step<NSweeps)
 
         }
 
+
     }
 
 #ifdef WARMUP
@@ -231,6 +233,7 @@ if(!Warmup)
         Wormlenght=1.*TWormlenght/measureCounter1;
         SumofWindingUp=TWindingUp/measureCounter;
         SumofWindingDown=TWindingDown/measureCounter;
+
 }
 
 }

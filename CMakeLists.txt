@@ -18,7 +18,7 @@ endif()
 if(USEROOT)
     message( STATUS "This build is USING ROOT")
 add_definitions(-DUSEROOT)
-set(ROOT_INSTALL /home/camelud/GEANT4/ROOT/build)
+set(ROOT_INSTALL USEROOT)
 include_directories(${ROOT_INSTALL}/include)
 endif()
 

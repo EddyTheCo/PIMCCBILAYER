@@ -286,7 +286,11 @@ inline size_t  CalculateNoWormLenght(void)const
     {
 
         TEnergy+=(right->pos-pos).normxy();
+
+
+
         (pos.TheZ()>0)?TWindingUp=TWindingUp+(right->pos-pos):TWindingDown=TWindingDown+(right->pos-pos);
+
         double U=0;
         position gU=position(0.);
         ThePotential.PairInteraction(this,U,gU);

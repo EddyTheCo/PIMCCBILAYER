@@ -295,8 +295,8 @@ void lattice::PrintConfiguration (
         ) const
 {
 
-   ofstream RestartConf(".restartVAR.conf");
-   ofstream RestartPtrConf(".restartPtrVAR.conf");
+   ofstream RestartConf(".restart.conf");
+   ofstream RestartPtrConf(".restartPtr.conf");
 #ifdef SAVECONF
    static size_t step=0;
    std::ofstream Data;
@@ -393,8 +393,6 @@ void lattice::PrintConfiguration (
 Constants::saveRandom();
    RestartConf.close();
    RestartPtrConf.close();
-   rename(".restartVAR.conf", ".restart.conf");
-   rename(".restartPtrVAR.conf", ".restartPtr.conf");
 
 
 
