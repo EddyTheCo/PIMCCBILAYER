@@ -1,22 +1,22 @@
-1           #OfParticles, doesnt do nothing if restart
-0.01         #Tao
-1              #beta
+2           #OfParticles, doesnt do nothing if restart
+0.03125         #Tao
+0.5              #beta
 0.5               #landa
-1000            #OfBlocks
-3               #dimension
-1 1 1            #L d numbers
+1000000            #OfBlocks
+2               #dimension
+1.6971 1.6971 1            #L d numbers
 1000            #NumberOfsweepsInABlock
-0.1             #mu
+0.0000             #mu
 start           #start or restart
 GrandCanonical       # GrandCanonical or Canonical
 1 1 1         #K d numbers from (k1*x1^2+..)/2
-1               #eta factor
+1               #eta factor increase for more oppening
 periodic        #free or periodic
-64               #MBar
+40000000               #MBar
 free           #free or harmonic or infinteWell
 Dipolar            #LiebLiniger or free or Dipolar or Softcore or Bonin
 0.018               #CLieb or CDip or V_0Softcore or SigmaBonin
-false               #FourOrderPotential true or false
+true               #FourOrderPotential true or false
 4                   #of Sampling
 0.1                   #dplanes distance between planes
-1                   #Warmup
+0                   #Warmup
