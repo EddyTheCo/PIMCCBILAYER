@@ -47,35 +47,35 @@ public:
 void initialize_histos(void);
 inline double getOpenRatio(void)const
 {
-    return grid->at(0).at(0).NOpen*1./grid->at(0).at(0).NOpenP;
+    return Site::NOpen*1./Site::NOpenP;
 }
 inline double getCloseRatio(void)const
 {
-    return grid->at(0).at(0).NClose*1./grid->at(0).at(0).NCloseP;
+    return Site::NClose*1./Site::NCloseP;
 }
 inline double getMoveRatio(void)const
 {
-    return grid->at(0).at(0).NMove*1./grid->at(0).at(0).NMoveP;
+    return Site::NMove*1./Site::NMoveP;
 }
 inline double getSwapRatio(void)const
 {
-    return grid->at(0).at(0).NSwap*1./grid->at(0).at(0).NSwapP;
+    return Site::NSwap*1./Site::NSwapP;
 }
 inline double getWiggleRatio(void)const
 {
-    return grid->at(0).at(0).NWiggle*1./grid->at(0).at(0).NWiggleP;
+    return Site::NWiggle*1./Site::NWiggleP;
 }
 inline double getShiftRatio(void)const
 {
-    return grid->at(0).at(0).NShift*1./grid->at(0).at(0).NShiftP;
+    return Site::NShift*1./Site::NShiftP;
 }
 inline double getInsertRatio(void)const
 {
-    return grid->at(0).at(0).NInsert*1./grid->at(0).at(0).NInsertP;
+    return Site::NInsert*1./Site::NInsertP;
 }
 inline double getRemoveRatio(void)const
 {
-    return grid->at(0).at(0).NRemo*1./grid->at(0).at(0).NRemoP;
+    return Site::NRemo*1./Site::NRemoP;
 }
   static array<vector<Site>,100000>*  const grid;
 

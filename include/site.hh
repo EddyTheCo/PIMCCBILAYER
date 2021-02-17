@@ -36,6 +36,217 @@ class Site
     {
         theParticles=particles;
     }
+    inline static int  getNParti_UP(void)
+    {
+        return Nparti_UpxNT/NTimeSlices;
+    }
+    inline  static int getNParti(void)
+    {
+        return NpartixNT/NTimeSlices;
+    }
+    void static PrepareSwap(void)
+    {
+
+        const auto oldRbead=Rbead;
+        double SumI=0,SumZ=0;
+        const auto oldLbead=Lbead;
+
+
+            const auto vae=giveRanI(MBar-2);
+            Site* alpha, *zeta;
+
+            if ( giveRanI(1) )
+            {
+
+
+                const auto NewRbead=oldLbead->searchBeadForced(true,vae);
+                alpha=NewRbead->chooseTheBead(SumI,vae+1,oldLbead);
+
+                if(alpha==nullptr)return;
+
+                zeta=alpha->searchBead(false,vae);
+                if (zeta==nullptr||zeta==Rbead||zeta==Lbead)return;
+
+
+                    NewRbead->chooseTheBead(SumZ,vae+1,zeta);
+                    Rbead=alpha;
+                    if(Lbead->swap(zeta,SumI,SumZ,0,true))
+                    {
+                        Lbead=zeta;
+                    }
+                    Rbead=oldRbead;
+
+
+            }
+            else
+            {
+                const auto NewLbead=oldRbead->searchBeadForced(false,vae);
+                if(NewLbead==nullptr)return;
+
+                alpha=NewLbead->chooseTheBead(SumI,vae+1,oldRbead);
+
+                if(alpha==nullptr)return;
+
+
+                zeta=alpha->searchBead(true,vae);
+                if (zeta==nullptr||zeta==Rbead||zeta==Lbead)return;
+
+                NewLbead->chooseTheBead(SumZ,vae+1,zeta);
+                Lbead=alpha;
+                if(Rbead->swap(zeta,SumI,SumZ,0,false))
+                {
+                    Rbead=zeta;
+                }
+                Lbead=oldLbead;
+
+            }
+
+
+
+    }
+    static bool removeWorm(void)
+    {
+
+        const auto wormLenght=CalculateWormLenght();
+        if(wormLenght>=MBar)
+            return false;
+
+
+
+
+        if(Rbead->deleteToRight(wormLenght,-log(eta)))
+        {
+            NRemo++;
+            Site* ptr=Rbead;
+            const Site* markPtr;
+            size_t step=0;
+            do
+            {
+                markPtr=ptr->right;
+                 Site* newPtr=ptr->left;
+                const auto timesl=ptr->TimeSliceOnBead;
+                const auto topParticle=&(theParticles->at(timesl).back());
+                if(newPtr==topParticle)newPtr=topParticle->left;
+                    topParticle->up->down=topParticle->down;
+                    topParticle->down->up=topParticle->up;
+
+                    if(topParticle!=ptr&&topParticle->active)
+                    {
+                        ptr->active=true;
+                        if(Rbead==topParticle)Rbead=ptr;
+                        if(Lbead==topParticle)Lbead=ptr;
+                        topParticle->left->right=ptr;
+                        topParticle->right->left=ptr;
+                        Site* const oldPtrLeft=ptr->left;
+                        Site* const oldPtrRight=ptr->right;
+                        ptr->left=topParticle->left;
+                        ptr->right=topParticle->right;
+                        ptr->pos=topParticle->pos;
+                        ptr->oldpos=topParticle->oldpos;
+                        topParticle->left=oldPtrLeft;
+                        topParticle->right=oldPtrRight;
+
+
+
+                    }
+                            if(!topParticle->right->active)
+                            {
+                                topParticle->right->left=topParticle->left;
+                                topParticle->left->right=topParticle->right;
+
+                            }
+
+                step++;
+
+                theParticles->at(timesl).pop_back();
+                if(ptr==markPtr)break;
+
+                ptr=newPtr;
+
+
+            }while(1);
+
+
+
+
+            Lbead=nullptr;
+            Rbead=nullptr;
+            ThereIsAWorm=false;
+            return true;
+
+
+        }
+        return false;
+
+    }
+    static void insertParticle(void)
+    {
+
+
+        for(size_t i=0;i<NTimeSlices;i++)
+        {
+
+            theParticles->at(i).push_back(Site(getNParti(),i,(giveRanI(1))?true:false,position(0.),false));
+
+
+            theParticles->at(i).back().up=&(theParticles->at(i).front());
+
+            if(theParticles->at(i).size()>1)
+                theParticles->at(i).back().down=&(theParticles->at(i).back())-1;
+            else {
+                theParticles->at(i).back().down=&(theParticles->at(i).back());
+            }
+            theParticles->at(i).back().down->up=&(theParticles->at(i).back());
+            theParticles->at(i).back().up->down=&(theParticles->at(i).back());
+
+            if(i)
+            {
+                theParticles->at(i).back().left=&(theParticles->at(i-1).back());
+                theParticles->at(i).back().left->right=&(theParticles->at(i).back());
+            }
+
+        }
+
+        theParticles->at(NTimeSlices-1).back().right=&(theParticles->at(0).back());
+        theParticles->at(0).back().left=&(theParticles->at(NTimeSlices-1).back());
+    }
+    static void insertWorm(void)
+    {
+
+    insertParticle();
+
+
+
+        const size_t posiTimes=giveRanI(NTimeSlices-1) ;
+
+        Rbead=&(theParticles->at(posiTimes).back());
+        Lbead=Rbead;
+            const auto var2=giveRanI(MBar-2);
+
+
+
+            Rbead->active=true;
+
+
+
+        double U=0,dU=0;
+        Rbead->ChangeInU(false,dU,U);
+
+            if(Rbead->insertToLeft(var2,dU+log(eta)))
+            {
+                NInsert++;
+
+                TPotential+=U;
+                ThereIsAWorm= true;
+            }
+            else
+            {
+
+                removeLastParticle();
+
+            }
+
+    }
     Site& operator=(const Site&& v) noexcept {
 
         pos = std::move(v.pos);
@@ -51,6 +262,7 @@ class Site
         {
             Nparti_UpxNT++;
         }
+        NpartixNT++;
         return *this;
       }
     Site(const Site& v):UPplane(v.UPplane),pos(v.pos){
@@ -66,6 +278,7 @@ class Site
         {
             Nparti_UpxNT++;
         }
+        NpartixNT++;
 
     }
     Site& operator=(const Site& v)
@@ -76,9 +289,10 @@ class Site
         {
             Nparti_UpxNT++;
         }
+        NpartixNT++;
         return *this;
     }
- inline size_t  CalculateWormLenght(void)const
+ inline static size_t  CalculateWormLenght(void)
  {
      size_t wormL=0;
 
@@ -91,7 +305,7 @@ class Site
      return wormL;
 
  }
- inline bool cantClose(size_t del)const
+ inline static bool cantClose(size_t del)
  {
 
 const Site*  ptr=Lbead->right;
@@ -106,7 +320,7 @@ while(del>1)
 return true;
  }
 
- inline bool NfindHead(size_t del,const bool &isRight)const
+ inline static bool NfindHead(size_t del,const bool &isRight)
  {
     if(isRight)
     {
@@ -172,27 +386,27 @@ inline size_t  CalculateNoWormLenght(void)const
      bool CloseWorm(double dU);
      bool Wiggle(double dU);
      bool shiftParticle(double dU, const position& shift)const;
-     void PrepareSwap(void)const;
+
      bool swap(Site * const , const double& SumI, const double& SumZ, double dU, const bool &isRight);
 
 
 
      bool deleteToRight(const size_t step, double dU);
      bool deleteToLeft(const size_t step, double dU);
-     inline double propagator(const position& a, const position& b,const double& ab)const
+     static inline double propagator(const position& a, const position& b,const double& ab)
      {
          return exp(-fact1(ab)-(a-b).norm()*fact2(ab));
 
      }
-     inline double propagator(const position& a, const position& b,const double& ab, const double& dU )const
+     static  inline double propagator(const position& a, const position& b,const double& ab, const double& dU )
      {
 
          return exp(-fact1(ab)-(a-b).norm()*fact2(ab)+dU);
 
      }
      bool insertToRight(const size_t step, double dU);
-     void insertWorm(void);
-     bool removeWorm(void);
+
+
      bool insertToLeft(const size_t step, double dU);
 
 
@@ -234,8 +448,8 @@ inline size_t  CalculateNoWormLenght(void)const
             right=&(theParticles->at((TimeSliceOnBead+1)%NTimeSlices).at(ParticleOnBead));
         }
 
-        up=&(theParticles->at(TimeSliceOnBead).at((ParticleOnBead+1)%NParti_));
-        down=&(theParticles->at(TimeSliceOnBead).at((ParticleOnBead-1+NParti_)%NParti_));
+        up=&(theParticles->at(TimeSliceOnBead).at((ParticleOnBead+1)%getNParti()));
+        down=&(theParticles->at(TimeSliceOnBead).at((ParticleOnBead-1+getNParti())%getNParti()));
 
 
 
@@ -259,7 +473,7 @@ inline size_t  CalculateNoWormLenght(void)const
 
     }
 
-    inline void MoveWorm(void)const
+    inline static void MoveWorm(void)
     {        
         const auto del=giveRanI(MBar-1);
         switch ( giveRanI(4) )
@@ -295,6 +509,37 @@ inline size_t  CalculateNoWormLenght(void)const
 
 
  }
+    static void insertParticle(const bool &UP)
+    {
+
+
+        for(size_t i=0;i<NTimeSlices;i++)
+        {
+
+            theParticles->at(i).push_back(Site(getNParti(),i,UP,position(0.),false));
+
+
+            theParticles->at(i).back().up=&(theParticles->at(i).front());
+
+            if(theParticles->at(i).size()>1)
+                theParticles->at(i).back().down=&(theParticles->at(i).back())-1;
+            else {
+                theParticles->at(i).back().down=&(theParticles->at(i).back());
+            }
+            theParticles->at(i).back().down->up=&(theParticles->at(i).back());
+            theParticles->at(i).back().up->down=&(theParticles->at(i).back());
+
+            if(i)
+            {
+                theParticles->at(i).back().left=&(theParticles->at(i-1).back());
+                theParticles->at(i).back().left->right=&(theParticles->at(i).back());
+            }
+
+        }
+
+        theParticles->at(NTimeSlices-1).back().right=&(theParticles->at(0).back());
+        theParticles->at(0).back().left=&(theParticles->at(NTimeSlices-1).back());
+    }
     const static bool fourthOrder;
 inline void ChangeInU(const bool & isRemove, double& dU ,double & U )const
 {
@@ -334,23 +579,23 @@ inline void ChangeInU(const bool & isRemove, double& dU ,double & U )const
     position pos,oldpos;
     Site* left,* right,* up,* down;
     const static potential ThePotential;
-    static size_t NParti_,NClose,NWiggle,NShift,NOpen,NMove,NSwap,NInsert,NInsertP,NRemo,NRemoP,NCloseP,NWiggleP,NShiftP,NOpenP,NMoveP,NSwapP;
-    static int Nparti_UpxNT;
+    static size_t NClose,NWiggle,NShift,NOpen,NMove,NSwap,NInsert,NInsertP,NRemo,NRemoP,NCloseP,NWiggleP,NShiftP,NOpenP,NMoveP,NSwapP;
+    static int Nparti_UpxNT,NpartixNT;
 
- inline void restartRatios(void)const{
+ static inline void restartRatios(void){
      NClose=1;
      NOpen=1;NMove=1;NSwap=1;NInsert=1;NInsertP=1;NRemo=1;NRemoP=1;NCloseP=1;NOpenP=1;NMoveP=1;NSwapP=1;
  }
-    inline double fact1(const double N=1)const
+    static inline double fact1(const double N=1)
     {
 
         return log(4*landa*tao*pi*N)*d/2;
     }
-    inline double fact2(const double N=1) const
+    static inline double fact2(const double N=1)
     {
         return 1/(4*landa*tao*N);
     }
-    inline size_t NInactiveLinks(void) const{
+    inline static size_t NInactiveLinks(void) {
         if(Rbead!=nullptr&&Lbead!=nullptr)
         {
             const int dis=Rbead->TimeSliceOnBead-Lbead->TimeSliceOnBead;
@@ -365,7 +610,7 @@ inline void ChangeInU(const bool & isRemove, double& dU ,double & U )const
             cout<<"#errorSite.hh"<<Rbead->TimeSliceOnBead<<" "<<Lbead->TimeSliceOnBead<<endl;
 
     }
-    inline size_t NActiveLinks(void)const{
+    inline static size_t NActiveLinks(void){
         if(Rbead!=nullptr&&Lbead!=nullptr)
         {
             const int dis=Rbead->TimeSliceOnBead-Lbead->TimeSliceOnBead;
@@ -381,9 +626,9 @@ inline void ChangeInU(const bool & isRemove, double& dU ,double & U )const
             cout<<"#errorSite.hh"<<Rbead->TimeSliceOnBead<<" "<<Lbead->TimeSliceOnBead<<endl;
 
     }
-    void insertParticle(void)const;
-    void insertParticle(const bool &UP)const;
-    inline void removeLastParticle(void)const
+
+
+    inline static void removeLastParticle(void)
     {
         size_t step=0;
         Site* ptr;
@@ -434,14 +679,14 @@ inline void ChangeInU(const bool & isRemove, double& dU ,double & U )const
 
         return var;
     }
-    void printLattice(const string svar)const
+    static void printLattice(const string svar)
     {
 
     static int step=1;
 
     ofstream PrintConf(("Print" +to_string(step) +     ".conf").c_str());
         Site *var;
-        for(size_t j=0;j<NParti_;j++)
+        for(size_t j=0;j<getNParti();j++)
          {
              for (size_t i=0;i<NTimeSlices;i++)
              {
@@ -464,9 +709,10 @@ inline void ChangeInU(const bool & isRemove, double& dU ,double & U )const
     bool active;
     static Site* theZeta;
     const bool UPplane;
+    static array<vector<Site>,100000>* theParticles;
 	private:
 
-    static array<vector<Site>,100000>* theParticles;
+
 
 
 

@@ -219,7 +219,7 @@ void lattice::Warm() const
     {
         Site::mu++;
 
-        const auto myBlock=block(grid,100
+        const auto myBlock=block(100
 #ifdef USEROOT
                                  ,nullptr
 #endif
@@ -227,20 +227,20 @@ void lattice::Warm() const
 
 
 
-        Np=grid->at(0).at(0).NParti_;
+        Np=grid->at(0).at(0).getNParti();
         cout<<"Nparticles="<<Np<<" mu="<<Site::mu<<" eta="<<Site::eta<<endl;
             system(("sed -i 's/^.*\\#mu\\b.*$/" + to_string(Site::mu)   + "              \\#mu/' input").c_str());
     }
 
-    while((grid->at(0).at(0).NParti_!=Warmup||grid->at(0).at(0).Nparti_UpxNT/NTimeSlices!=Warmup/2)&&isGrandCanonical)
+    while((grid->at(0).at(0).getNParti()!=Warmup||grid->at(0).at(0).getNParti_UP()!=Warmup/2)&&isGrandCanonical)
     {
-        const auto myBlock=block(grid,1
+        const auto myBlock=block(1
 #ifdef USEROOT
                                  ,nullptr
 #endif
                                      );
 
-        cout<<"Nparticles="<<grid->at(0).at(0).NParti_<<" NPUP="<<grid->at(0).at(0).Nparti_UpxNT/NTimeSlices<<endl;
+        cout<<"Nparticles="<<grid->at(0).at(0).getNParti()<<" NPUP="<<grid->at(0).at(0).getNParti_UP()<<endl;
 
     }
 
@@ -258,14 +258,14 @@ system(("sed -i 's/^.*\\#eta\\b.*$/" + to_string(Site::eta)   + "              \
     ofstream RestartConf(".restartVAR.conf");
     ofstream RestartPtrConf(".restartPtrVAR.conf");
 
-    RestartConf<<grid->at(0).at(0).NParti_<<" #Particles"<<endl;
+    RestartConf<<Site::getNParti()<<" #Particles"<<endl;
     RestartConf.precision(12);
 
 
     for(size_t i=0;i<NTimeSlices;i++)
     {
 
-            for(size_t j = 0; j<grid->at(0).at(0).NParti_; j++)
+            for(size_t j = 0; j<Site::getNParti(); j++)
             {
 
                 const auto var=grid->at(i).at(j);
@@ -294,8 +294,8 @@ if(!restart)thesweep<< left << setw(16) <<"KEnergy"<< left << setw(16) <<"PEnerg
 theratios<< left << setw(12)<<"Ropen"<<left << setw(12)<<"RClose"<<left << setw(12)<<"Rmove"<<left << setw(12)<<"Rswap"<<left << setw(12)<<"RWiggle"<<left << setw(12)<<"Rshift"<<left << setw(12)<<"RInsert"<<left << setw(12)<<"RRmove"<<endl;
     for(size_t step=0;step<NRep;step++)
     {
-       // grid->at(0).at(0).printLattice("");
-        const auto myBlock=block(grid,NSweeps
+
+        const auto myBlock=block(NSweeps
 #ifdef USEROOT
                                  ,Greens
 #endif
@@ -315,11 +315,10 @@ thesweep << left << setw(16) << myBlock.getKineticEnergy()<<" "<< left << setw(1
           <<" "<<left << setw(16)    << myBlock.Wormlenght/(NTimeSlices-1)<<" "<<left << setw(16)    << myBlock.getSuperfluidDensityUp()
          <<" "<<left << setw(16)    << myBlock.getSuperfluidDensityDown()<<" "<<left << setw(16)    << myBlock.NumberOfParticlesUp<<" "<<right << setw(16)    <<myBlock.NumberOfParticles<</*" "<<right << setw(12)    <<StructureFactor<<*/endl;
 
-if(grid->at(0).size())
-{
+
     theratios<< left << setw(12) <<getOpenRatio()<< left << setw(12) <<getCloseRatio()<< left << setw(12) <<getMoveRatio()<< left << setw(12)
                 <<getSwapRatio()<< left << setw(12) <<getWiggleRatio()<< left << setw(12) <<getShiftRatio()<< left << setw(12) <<getInsertRatio()<< left << setw(12) <<getRemoveRatio()<<endl;
-}
+
 
 
 
@@ -351,23 +350,18 @@ void lattice::PrintConfiguration (
    static int var=1;
    if(var)
    {
-       Data<<"#Beta="<<beta<<" Nparticles="<<grid->at(0).at(0).NParti_<<" NtimesLices="<<NTimeSlices<<endl;
+       Data<<"#Beta="<<beta<<" Nparticles="<<Site::getNParti()<<" NtimesLices="<<NTimeSlices<<endl;
        var=0;
    }
 #endif
-   size_t NP=0;
-   if(grid->at(0).size())
-   {
-       NP=grid->at(0).at(0).NParti_;
 
-   }
-   RestartConf<<NP<<" #Particles"<<endl;
+   RestartConf<<Site::getNParti()<<" #Particles"<<endl;
    RestartConf.precision(12);
 
-    if(NP)for(size_t i=0;i<NTimeSlices;i++)
+   for(size_t i=0;i<NTimeSlices;i++)
    {
 
-           for(size_t j = 0; j<NP; j++)
+           for(size_t j = 0; j<Site::getNParti(); j++)
            {
 
                const auto var=grid->at(i).at(j);
@@ -396,7 +390,7 @@ void lattice::PrintConfiguration (
                 }
 
 
-                for(size_t k = 0; k<grid->at(0).at(0).NParti_; k++)
+                for(size_t k = 0; k<Site::getNParti(); k++)
                 {
 
                     if(j!=k)

@@ -14,7 +14,7 @@ using namespace std;
 
 
 
-block::block(array<vector<Site>,100000>* particles,  const size_t &NSweeps
+block::block(const size_t &NSweeps
              #ifdef USEROOT
              , TH2D * const Greens
              #endif
@@ -25,7 +25,7 @@ block::block(array<vector<Site>,100000>* particles,  const size_t &NSweeps
 double TSumOfdisplacement=0,TSumOfPotential=0,TNumberOfParticles=0,TNumberOfParticlesUp=0;
 size_t TWormlenght=0,step=0,measureCounter=0,measureCounter1=0;
 double TWindingUp=0,TWindingDown=0;
-Site* const start=&(particles->at(0).at(0));
+
 
 
 
@@ -35,7 +35,7 @@ while(step<NSweeps)
 
 
 
-         if(start->ThereIsAWorm)
+         if(Site::ThereIsAWorm)
         {
 
 #ifdef WARMUP
@@ -43,9 +43,9 @@ while(step<NSweeps)
 #endif
              {
                 measureCounter1++;
-                TWormlenght+=start->NInactiveLinks();
+                TWormlenght+=Site::NInactiveLinks();
 #ifdef USEROOT
-                Greens->Fill(sqrt((start->Rbead->pos-start->Lbead->pos).norm()),abs(1.*start->Rbead->TimeSliceOnBead-1.*start->Lbead->TimeSliceOnBead));
+                Greens->Fill(sqrt((Site::Rbead->pos-Site::Lbead->pos).norm()),abs(1.*Site::Rbead->TimeSliceOnBead-1.*Site::Lbead->TimeSliceOnBead));
 #endif
              }
             switch ((!isGrandCanonical)?giveRanI(2):giveRanI(3)) {
@@ -54,13 +54,13 @@ while(step<NSweeps)
                //cout<<"closing worm"<<endl;
               // svar="closing worm";
 
-                    start->NCloseP++;
+                    Site::NCloseP++;
 
 
-                    if(!(start->cantClose(MBar)))
+                    if(!(Site::cantClose(MBar)))
                     {
 
-                            if(start->Lbead->CloseWorm(0))
+                            if(Site::Lbead->CloseWorm(0))
                             {
                                 step++;
 
@@ -76,8 +76,8 @@ while(step<NSweeps)
             {
               //cout<<"MoveWorm"<<endl;
               //svar="MoveWorm";
-                    start->NMoveP++;
-                    start->MoveWorm();
+                    Site::NMoveP++;
+                    Site::MoveWorm();
                      break;
             }
             case 2:
@@ -85,9 +85,9 @@ while(step<NSweeps)
               //cout<<"swap"<<endl;
              // svar="swap";
 
-                start->NSwapP++;
-               if(start->NParti_>1)
-               start->PrepareSwap();
+                Site::NSwapP++;
+               if(Site::getNParti()>1)
+               Site::PrepareSwap();
 
                break;
             }
@@ -96,8 +96,9 @@ while(step<NSweeps)
 
                 //cout<<"removeWorm"<<endl;
                // svar="removeWorm";
-                start->NRemoP++;
-                if(start->removeWorm())
+                Site::NRemoP++;
+
+                if(Site::removeWorm())
                 {
                     step++;
 
@@ -116,13 +117,12 @@ while(step<NSweeps)
             if(!Warmup)
             #endif
             {
-                TSumOfdisplacement+=start->TEnergy;
-                TSumOfPotential+=start->TPotential;
-                TNumberOfParticles+=start->NParti_;
-                TNumberOfParticlesUp+=start->Nparti_UpxNT/NTimeSlices;
-                TWindingUp+=start->TWindingUp.normxy();
-
-                TWindingDown+=start->TWindingDown.normxy();
+                TSumOfdisplacement+=Site::TEnergy;
+                TSumOfPotential+=Site::TPotential;
+                TNumberOfParticles+=Site::getNParti();
+                TNumberOfParticlesUp+=Site::getNParti_UP();
+                TWindingUp+=Site::TWindingUp.normxy();
+                TWindingDown+=Site::TWindingDown.normxy();
                 measureCounter++;
             }
 
@@ -130,17 +130,18 @@ while(step<NSweeps)
              case 0:
              {
 
-               if(start->NParti_)
+               if(Site::getNParti())
                {
                  //cout<<"OpenWorm"<<endl;
                    // svar="OpenWorm";
                    const size_t posiTimes=giveRanI(NTimeSlices-1) ;
-                   const size_t posiParti=giveRanI(particles->at(posiTimes).size()-1);
+                   const size_t posiParti=giveRanI(Site::getNParti()-1);
                    const size_t var2=  giveRanI(MBar-2);
-                   Site* const Ranbead=&(particles->at(posiTimes).at(posiParti));
-                   start->NOpenP++;
 
-                           start->ThereIsAWorm= Ranbead->OpenWorm(var2,var2+1,0,Ranbead->pos);
+                   Site* const Ranbead=&(Site::theParticles->at(posiTimes).at(posiParti));
+                   Site::NOpenP++;
+
+                           Site::ThereIsAWorm= Ranbead->OpenWorm(var2,var2+1,0,Ranbead->pos);
 
                }
 
@@ -148,42 +149,42 @@ while(step<NSweeps)
              }
              case 1:
             {
-                 if(start->NParti_)
+                 if(Site::getNParti())
                  {
 
                   //cout<<"wiggle"<<endl;
         //svar="wiggle";
 
                      const size_t posiTimes=giveRanI(NTimeSlices-1) ; //Choose a random time slice
-                     const size_t posiParti=giveRanI(start->NParti_-1); //Choose the particle
+                     const size_t posiParti=giveRanI(Site::getNParti()-1); //Choose the particle
 
-                        start->Lbead=&(particles->at(posiTimes).at(posiParti)); //LBEAD is proposed (but dosent mean theres is a worm)
+                        Site::Lbead=&(Site::theParticles->at(posiTimes).at(posiParti)); //LBEAD is proposed (but dosent mean theres is a worm)
                         const size_t var2= giveRanI(MBar-3)+1;
 
-                        start->Rbead=start->Lbead->searchBead(true,var2);
-                        start->Lbead->oldpos=start->Lbead->pos;
-                        start->NWiggleP++;
-                        start->Lbead->Wiggle(0);
+                        Site::Rbead=Site::Lbead->searchBead(true,var2);
+                        Site::Lbead->oldpos=Site::Lbead->pos;
+                        Site::NWiggleP++;
+                        Site::Lbead->Wiggle(0);
 
-                        start->Lbead=nullptr;
-                        start->Rbead=nullptr;
+                        Site::Lbead=nullptr;
+                        Site::Rbead=nullptr;
 
                 }
                 break;
             }
 
-              case 3:
+              case 2:
              {
                  //cout<<"insertworminclose "<<endl;
             //     svar="insertworminclose";
-                 start->NInsertP++;
-                 start->insertWorm();
+                 Site::NInsertP++;
+                 Site::insertWorm();
                  break;
              }
              case 5:
             {
-                 start->NShiftP++;
-                 if(start->NParti_)
+                 Site::NShiftP++;
+                 if(Site::getNParti())
                  {
 
                  //cout<<"ShiftParticle"<<endl;
@@ -191,9 +192,9 @@ while(step<NSweeps)
 
 
 
-                     const size_t posiParti=giveRanI(start->NParti_-1); //Choose the particle
+                     const size_t posiParti=giveRanI(Site::getNParti()-1); //Choose the particle
 
-                        start->Lbead=&(particles->at(0).at(posiParti)); //LBEAD is proposed (but dosent mean theres is a worm)
+                        Site::Lbead=&(Site::theParticles->at(0).at(posiParti)); //LBEAD is proposed (but dosent mean theres is a worm)
 
 
                         vector<double> varVec;
@@ -205,9 +206,9 @@ while(step<NSweeps)
                         const position p=position(varVec);
 
 
-                        start->Lbead->shiftParticle(0,p);
+                        Site::Lbead->shiftParticle(0,p);
 
-                        start->Lbead=nullptr;
+                        Site::Lbead=nullptr;
 
 
                 }

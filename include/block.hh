@@ -19,7 +19,7 @@ using namespace std;
 class block
 {
     public:
-    block(array<vector<Site>,100000>* particles,  const size_t &NSweeps
+    block(  const size_t &NSweeps
       #ifdef USEROOT
       ,  TH2D * const Greens
       #endif
@@ -34,9 +34,11 @@ class block
         return (NumberOfParticles*d*0.5/tao-SumofDisplacement/(4*landa*tao*tao*NTimeSlices));
         }
     inline double getSuperfluidDensityUp(void)const{
+
         return SumofWindingUp/(d*2*landa*beta*NumberOfParticlesUp);
         }
     inline double getSuperfluidDensityDown(void)const{
+
         return SumofWindingDown/(d*2*landa*beta*(NumberOfParticles-NumberOfParticlesUp));
         }
 

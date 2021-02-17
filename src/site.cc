@@ -11,8 +11,9 @@ using namespace Constants;
 
 
 const bool Site::fourthOrder=ReadFromInput<string>(19)=="true";
-size_t Site::NParti_=(restart)?ReadFromInput<size_t>(1,".restart.conf"):ReadFromInput<size_t>(1);
+
 int Site::Nparti_UpxNT=0;
+int Site::NpartixNT=0;
 
 const double landa=ReadFromInput<double>(4);
 const double tao=ReadFromInput<double>(2);
@@ -52,13 +53,14 @@ Site::Site(const size_t i, const size_t j, const bool UP, const position var, co
 {
 
 if(UP)Nparti_UpxNT++;
-
+NpartixNT++;
 }
 
 
 
 Site::~Site(){
     if(UPplane)Nparti_UpxNT--;
+    NpartixNT--;
 }
 
 bool Site::OpenWorm(const size_t step, const size_t ab, double dU, const position& start)
@@ -89,7 +91,7 @@ bool Site::OpenWorm(const size_t step, const size_t ab, double dU, const positio
     {
 
 
-        if(eta*NParti_/(propagator(start,right->pos,ab,-dU)*position::volumen)>giveRanD(1.))
+        if(eta*getNParti()/(propagator(start,right->pos,ab,-dU)*position::volumen)>giveRanD(1.))
         {
 
             const auto Dist=pos-right->pos;
@@ -137,7 +139,7 @@ bool Site::CloseWorm(double dU)
     else
     {
 
-        if(propagator(Lbead->pos,Rbead->pos,NInactiveLinks(),dU)*position::getVolumen()/(eta*NParti_)>giveRanD(1.))
+        if(propagator(Lbead->pos,Rbead->pos,NInactiveLinks(),dU)*position::getVolumen()/(eta*getNParti())>giveRanD(1.))
         {
 
             const auto Dist=right->pos-pos;
@@ -381,7 +383,6 @@ right->ChangeInU(false,dU,U);
                     Lbead=this->right;
                     if(aParticleisInserted)
                     {
-                        NParti_++;
                         aParticleisInserted=false;
                     }
                     NMove++;
@@ -473,7 +474,7 @@ dU+=mu*tao;
                     Rbead=this->left;
                     if(aParticleisInserted)
                     {
-                        NParti_++;
+
                         aParticleisInserted=false;
                     }
 
@@ -494,181 +495,11 @@ dU+=mu*tao;
                 return false;
             }
 }
-bool Site::removeWorm(void)
-{
-
-    const auto wormLenght=CalculateWormLenght();
-    if(wormLenght>=MBar)
-        return false;
 
 
 
 
-    if(Rbead->deleteToRight(wormLenght,-log(eta)))
-    {
-        NRemo++;
-        Site* ptr=Rbead;
-        const Site* markPtr;
-        size_t step=0;
-        do
-        {
-            markPtr=ptr->right;
-             Site* newPtr=ptr->left;
-            const auto timesl=ptr->TimeSliceOnBead;
-            const auto topParticle=&(theParticles->at(timesl).back());
-            if(newPtr==topParticle)newPtr=topParticle->left;
-                topParticle->up->down=topParticle->down;
-                topParticle->down->up=topParticle->up;
 
-                if(topParticle!=ptr&&topParticle->active)
-                {
-                    ptr->active=true;
-                    if(Rbead==topParticle)Rbead=ptr;
-                    if(Lbead==topParticle)Lbead=ptr;
-                    topParticle->left->right=ptr;
-                    topParticle->right->left=ptr;
-                    Site* const oldPtrLeft=ptr->left;
-                    Site* const oldPtrRight=ptr->right;
-                    ptr->left=topParticle->left;
-                    ptr->right=topParticle->right;
-                    ptr->pos=topParticle->pos;
-                    ptr->oldpos=topParticle->oldpos;
-                    topParticle->left=oldPtrLeft;
-                    topParticle->right=oldPtrRight;
-
-
-
-                }
-                        if(!topParticle->right->active)
-                        {
-                            topParticle->right->left=topParticle->left;
-                            topParticle->left->right=topParticle->right;
-
-                        }
-
-            step++;
-
-            theParticles->at(timesl).pop_back();
-            if(ptr==markPtr)break;
-
-            ptr=newPtr;
-
-
-        }while(1);
-
-        NParti_-=step/NTimeSlices;
-
-
-        Lbead=nullptr;
-        Rbead=nullptr;
-        ThereIsAWorm=false;
-        return true;
-
-
-    }
-    return false;
-
-}
-void Site::insertWorm(void)
-{
-
-insertParticle();
-
-
-
-    const size_t posiTimes=giveRanI(NTimeSlices-1) ;
-
-    Rbead=&(theParticles->at(posiTimes).back());
-    Lbead=Rbead;
-        const auto var2=giveRanI(MBar-2);
-
-
-
-        Rbead->active=true;
-
-
-
-    double U=0,dU=0;
-    Rbead->ChangeInU(false,dU,U);
-
-        if(Rbead->insertToLeft(var2,dU+log(eta)))
-        {
-            NInsert++;
-            NParti_++;
-            TPotential+=U;
-            ThereIsAWorm= true;
-        }
-        else
-        {
-
-            removeLastParticle();
-
-        }
-
-}
-void Site::insertParticle(void)const
-{
-
-
-    for(size_t i=0;i<NTimeSlices;i++)
-    {
-
-        theParticles->at(i).push_back(Site(NParti_,i,(giveRanI(1))?true:false,position(0.),false));
-
-
-        theParticles->at(i).back().up=&(theParticles->at(i).front());
-
-        if(theParticles->at(i).size()>1)
-            theParticles->at(i).back().down=&(theParticles->at(i).back())-1;
-        else {
-            theParticles->at(i).back().down=&(theParticles->at(i).back());
-        }
-        theParticles->at(i).back().down->up=&(theParticles->at(i).back());
-        theParticles->at(i).back().up->down=&(theParticles->at(i).back());
-
-        if(i)
-        {
-            theParticles->at(i).back().left=&(theParticles->at(i-1).back());
-            theParticles->at(i).back().left->right=&(theParticles->at(i).back());
-        }
-
-    }
-
-    theParticles->at(NTimeSlices-1).back().right=&(theParticles->at(0).back());
-    theParticles->at(0).back().left=&(theParticles->at(NTimeSlices-1).back());
-}
-
-void Site::insertParticle(const bool &UP)const
-{
-
-
-    for(size_t i=0;i<NTimeSlices;i++)
-    {
-
-        theParticles->at(i).push_back(Site(NParti_,i,UP,position(0.),false));
-
-
-        theParticles->at(i).back().up=&(theParticles->at(i).front());
-
-        if(theParticles->at(i).size()>1)
-            theParticles->at(i).back().down=&(theParticles->at(i).back())-1;
-        else {
-            theParticles->at(i).back().down=&(theParticles->at(i).back());
-        }
-        theParticles->at(i).back().down->up=&(theParticles->at(i).back());
-        theParticles->at(i).back().up->down=&(theParticles->at(i).back());
-
-        if(i)
-        {
-            theParticles->at(i).back().left=&(theParticles->at(i-1).back());
-            theParticles->at(i).back().left->right=&(theParticles->at(i).back());
-        }
-
-    }
-
-    theParticles->at(NTimeSlices-1).back().right=&(theParticles->at(0).back());
-    theParticles->at(0).back().left=&(theParticles->at(NTimeSlices-1).back());
-}
 
 Site* Site::chooseTheBead(double &SumI, const size_t& vae, const Site * const startBead)const
 {
@@ -708,66 +539,7 @@ Site* Site::chooseTheBead(double &SumI, const size_t& vae, const Site * const st
 
         }
 }
-void Site::PrepareSwap(void)const
-{
 
-    const auto oldRbead=Rbead;
-    double SumI=0,SumZ=0;
-    const auto oldLbead=Lbead;
-
-
-        const auto vae=giveRanI(MBar-2);
-        Site* alpha, *zeta;
-
-        if ( giveRanI(1) )
-        {
-
-
-            const auto NewRbead=oldLbead->searchBeadForced(true,vae);
-            alpha=NewRbead->chooseTheBead(SumI,vae+1,oldLbead);
-
-            if(alpha==nullptr)return;
-
-            zeta=alpha->searchBead(false,vae);
-            if (zeta==nullptr||zeta==Rbead||zeta==Lbead)return;
-
-
-                NewRbead->chooseTheBead(SumZ,vae+1,zeta);
-                Rbead=alpha;
-                if(Lbead->swap(zeta,SumI,SumZ,0,true))
-                {
-                    Lbead=zeta;
-                }
-                Rbead=oldRbead;
-
-
-        }
-        else
-        {
-            const auto NewLbead=oldRbead->searchBeadForced(false,vae);
-            if(NewLbead==nullptr)return;
-
-            alpha=NewLbead->chooseTheBead(SumI,vae+1,oldRbead);
-
-            if(alpha==nullptr)return;
-
-
-            zeta=alpha->searchBead(true,vae);
-            if (zeta==nullptr||zeta==Rbead||zeta==Lbead)return;
-
-            NewLbead->chooseTheBead(SumZ,vae+1,zeta);
-            Lbead=alpha;
-            if(Rbead->swap(zeta,SumI,SumZ,0,false))
-            {
-                Rbead=zeta;
-            }
-            Lbead=oldLbead;
-
-        }
-
-
-
-}
 bool Site::swap(Site* const zeta, const double& SumI, const double& SumZ, double dU, const bool &isRight)
 {
 
@@ -844,9 +616,7 @@ if(isRight)
             NSwap++;
             if(aParticleisInserted)
             {
-                NParti_++;
                 aParticleisInserted=false;
-
             }
             theZeta=nullptr;
             return true;
@@ -944,7 +714,7 @@ else {
             if(aParticleisInserted)
             {
 
-                NParti_++;
+
                 aParticleisInserted=false;
             }
             theZeta=nullptr;
