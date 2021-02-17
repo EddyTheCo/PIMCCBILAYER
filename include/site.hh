@@ -36,11 +36,11 @@ class Site
     {
         theParticles=particles;
     }
-    inline static int  getNParti_UP(void)
+    inline static size_t  getNParti_UP(void)
     {
         return Nparti_UpxNT/NTimeSlices;
     }
-    inline  static int getNParti(void)
+    inline  static size_t getNParti(void)
     {
         return NpartixNT/NTimeSlices;
     }
@@ -182,11 +182,16 @@ class Site
     static void insertParticle(void)
     {
 
-
+        const bool var=giveRanI(1);
+        vector<double> x;
+        for(size_t k=0;k<d;k++)
+        {
+            x.push_back(Constants::giveRanD(position::L.x.at(k))-position::L.x.at(k)/2);
+        }
         for(size_t i=0;i<NTimeSlices;i++)
         {
 
-            theParticles->at(i).push_back(Site(getNParti(),i,(giveRanI(1))?true:false,position(0.),false));
+            theParticles->at(i).push_back(Site(getNParti(),i,(var)?true:false,position(x),false));
 
 
             theParticles->at(i).back().up=&(theParticles->at(i).front());
