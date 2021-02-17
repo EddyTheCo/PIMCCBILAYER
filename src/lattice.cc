@@ -18,7 +18,8 @@ const bool restart=ReadFromInput<string>(10)=="restart";
 
 
 TFile *lattice::RootFile = (restart)?new TFile("RootFile.root","UPDATE"):new TFile("RootFile.root","RECREATE");
-TH1* lattice::hpos = nullptr;
+TH1* lattice::hpos1 = nullptr;
+TH1* lattice::hpos2 = nullptr;
 TH1D* lattice::PCFUp = nullptr;
 TH1D* lattice::PCFDown = nullptr;
 TH1D* lattice::PCFMix = nullptr;
@@ -58,7 +59,44 @@ cout<<"init Lattice"<<endl;
 
             for(size_t j = 0; j<NPartiIni; j++)
             {
-                 grid->at(i).push_back(Site(j,i));
+                if(restart)
+                {
+                    double var;
+                    vector<double> x;
+                    for(size_t k=0;k<d;k++)
+                    {
+                        (* position::inFile)>>var;
+                        x.push_back(var);
+
+                    }
+                    (* position::inFile)>>var;
+
+
+
+
+                     grid->at(i).push_back(Site(j,i,var,position(x),true));
+                }
+                else
+                {
+
+
+                    if(i==0)
+                    {
+                        vector<double> x;
+                        for(size_t k=0;k<d;k++)
+                        {
+                            x.push_back(Constants::giveRanD(position::L.x.at(k))-position::L.x.at(k)/2);
+                        }
+                        grid->at(i).push_back(Site(j,i,((j%2)?true:false),position(x),true));
+                    }
+                    else
+                    {
+                        grid->at(i).push_back(Site(j,i,((j%2)?true:false),grid->at(0).at(j).pos,true));
+                    }
+
+
+
+                }
 
             }
 
@@ -94,9 +132,9 @@ TVectorD *lattice::v=nullptr;
 
 
         if(!Greens)Greens=new TH2D("Greens","",5000,0,sqrt((position::L).norm()),NTimeSlices,-0.5,NTimeSlices-0.5);
-        if(!PCFUp)PCFUp=new TH1D("PCFUp","",5000,0,sqrt((position::L).norm()-(position::L).TheZ()*(position::L).TheZ()));
-        if(!PCFDown)PCFDown=new TH1D("PCFDown","",5000,0,sqrt((position::L).norm()-(position::L).TheZ()*(position::L).TheZ()));
-        if(!PCFMix)PCFMix=new TH1D("PCFMix","",5000,0,sqrt((position::L).norm()-(position::L).TheZ()*(position::L).TheZ()));
+        if(!PCFUp)PCFUp=new TH1D("PCFUp","",5000,0,sqrt((position::L).norm()));
+        if(!PCFDown)PCFDown=new TH1D("PCFDown","",5000,0,sqrt((position::L).norm()));
+        if(!PCFMix)PCFMix=new TH1D("PCFMix","",5000,0,sqrt((position::L).norm()));
         v = (TVectorD*)gDirectory->Get("v");
         if(!v)
         {
@@ -109,9 +147,9 @@ TVectorD *lattice::v=nullptr;
     else
     {
         Greens=new TH2D("Greens","",5000,0,sqrt((position::L).norm()),NTimeSlices,-0.5,NTimeSlices-0.5);
-        PCFUp=new TH1D("PCFUp","",5000,0,sqrt((position::L).norm()-(position::L).TheZ()*(position::L).TheZ()));
-        PCFDown=new TH1D("PCFDown","",5000,0,sqrt((position::L).norm()-(position::L).TheZ()*(position::L).TheZ()));
-        PCFMix=new TH1D("PCFMix","",5000,0,sqrt((position::L).norm()-(position::L).TheZ()*(position::L).TheZ()));
+        PCFUp=new TH1D("PCFUp","",5000,0,sqrt((position::L).norm()));
+        PCFDown=new TH1D("PCFDown","",5000,0,sqrt((position::L).norm()));
+        PCFMix=new TH1D("PCFMix","",5000,0,sqrt((position::L).norm()));
 
         TVectorD v(1);
         v[0]=0.;
@@ -122,11 +160,20 @@ TVectorD *lattice::v=nullptr;
     v = (TVectorD*)gDirectory->Get("v");
 
     if(d==3)
-    hpos=new TH3D("pos","",100,-position::L.x.at(0)/2,position::L.x.at(0)/2,100,-position::L.x.at(1)/2,position::L.x.at(1)/2,100,-position::L.x.at(2)/2,position::L.x.at(2)/2);
+    {
+        hpos1=new TH3D("pos1","",100,-position::L.x.at(0)/2,position::L.x.at(0)/2,100,-position::L.x.at(1)/2,position::L.x.at(1)/2,100,-position::L.x.at(2)/2,position::L.x.at(2)/2);
+        hpos2=new TH3D("pos2","",100,-position::L.x.at(0)/2,position::L.x.at(0)/2,100,-position::L.x.at(1)/2,position::L.x.at(1)/2,100,-position::L.x.at(2)/2,position::L.x.at(2)/2);
+    }
     if(d==2)
-    hpos=new TH2D("pos","",1000,-position::L.x.at(0)/2,position::L.x.at(0)/2,1000,-position::L.x.at(1)/2,position::L.x.at(1)/2);
+    {
+        hpos1=new TH2D("pos1","",1000,-position::L.x.at(0)/2,position::L.x.at(0)/2,1000,-position::L.x.at(1)/2,position::L.x.at(1)/2);
+        hpos2=new TH2D("pos2","",1000,-position::L.x.at(0)/2,position::L.x.at(0)/2,1000,-position::L.x.at(1)/2,position::L.x.at(1)/2);
+    }
     if(d==1)
-    hpos=new TH1D("pos","",10000,-position::L.x.at(0)/2,position::L.x.at(0)/2);
+    {
+        hpos1=new TH1D("pos1","",10000,-position::L.x.at(0)/2,position::L.x.at(0)/2);
+        hpos2=new TH1D("pos2","",10000,-position::L.x.at(0)/2,position::L.x.at(0)/2);
+    }
 
 }
 #endif
@@ -172,7 +219,7 @@ void lattice::Warm() const
     {
         Site::mu++;
 
-        const auto myBlock=block(grid,NTimeSlices,100
+        const auto myBlock=block(grid,100
 #ifdef USEROOT
                                  ,nullptr
 #endif
@@ -187,7 +234,7 @@ void lattice::Warm() const
 
     while((grid->at(0).at(0).NParti_!=Warmup||grid->at(0).at(0).Nparti_UpxNT/NTimeSlices!=Warmup/2)&&isGrandCanonical)
     {
-        const auto myBlock=block(grid,NTimeSlices,1
+        const auto myBlock=block(grid,1
 #ifdef USEROOT
                                  ,nullptr
 #endif
@@ -247,8 +294,8 @@ if(!restart)thesweep<< left << setw(16) <<"KEnergy"<< left << setw(16) <<"PEnerg
 theratios<< left << setw(12)<<"Ropen"<<left << setw(12)<<"RClose"<<left << setw(12)<<"Rmove"<<left << setw(12)<<"Rswap"<<left << setw(12)<<"RWiggle"<<left << setw(12)<<"Rshift"<<left << setw(12)<<"RInsert"<<left << setw(12)<<"RRmove"<<endl;
     for(size_t step=0;step<NRep;step++)
     {
-        //grid->at(0).at(0).printLattice("");
-        const auto myBlock=block(grid,NTimeSlices,NSweeps
+       // grid->at(0).at(0).printLattice("");
+        const auto myBlock=block(grid,NSweeps
 #ifdef USEROOT
                                  ,Greens
 #endif
@@ -324,7 +371,7 @@ void lattice::PrintConfiguration (
            {
 
                const auto var=grid->at(i).at(j);
-               RestartConf<<var.pos;
+               RestartConf<<var.pos<<var.UPplane<<" ";
 #ifdef SAVECONF
                if(!(step%SAMPLING)&&step!=0)Data<<var.pos;
 #endif
@@ -333,32 +380,44 @@ void lattice::PrintConfiguration (
 #ifdef USEROOT
 
                 if(d==3)
-                ((TH3D*)hpos)->Fill(grid->at(i).at(j).pos.perio(0),grid->at(i).at(j).pos.perio(1),grid->at(i).at(j).pos.perio(2));
+                {
+                    (grid->at(i).at(j).UPplane)?((TH3D*)hpos1)->Fill(grid->at(i).at(j).pos.perio(0),grid->at(i).at(j).pos.perio(1),grid->at(i).at(j).pos.perio(2)):
+                                                    ((TH3D*)hpos2)->Fill(grid->at(i).at(j).pos.perio(0),grid->at(i).at(j).pos.perio(1),grid->at(i).at(j).pos.perio(2));
+                }
                 if(d==2)
-                ((TH2D*)hpos)->Fill(grid->at(i).at(j).pos.perio(0),grid->at(i).at(j).pos.perio(1));
+                {
+                    (grid->at(i).at(j).UPplane)?((TH2D*)hpos1)->Fill(grid->at(i).at(j).pos.perio(0),grid->at(i).at(j).pos.perio(1)):
+                                                ((TH2D*)hpos2)->Fill(grid->at(i).at(j).pos.perio(0),grid->at(i).at(j).pos.perio(1));
+                }
                 if(d==1)
-                ((TH1D*)hpos)->Fill(grid->at(i).at(j).pos.perio(0));
-                if(Site::NParti_>4)
+                {
+                    (grid->at(i).at(j).UPplane)?((TH1D*)hpos1)->Fill(grid->at(i).at(j).pos.perio(0)):
+                                                ((TH1D*)hpos2)->Fill(grid->at(i).at(j).pos.perio(0));
+                }
+
+
                 for(size_t k = 0; k<grid->at(0).at(0).NParti_; k++)
                 {
+
                     if(j!=k)
                     {
 
 
-                    if(((grid->at(i).at(j).pos.TheZ()>0.)&&(grid->at(i).at(k).pos.TheZ()<0.))||((grid->at(i).at(j).pos.TheZ()<0.)&&(grid->at(i).at(k).pos.TheZ()>0.)))
+                    if(((grid->at(i).at(j).UPplane)&&(!(grid->at(i).at(k).UPplane)))||((!(grid->at(i).at(j).UPplane))&&(grid->at(i).at(k).UPplane)))
                     {
-                        const double dis=sqrt((grid->at(i).at(j).pos-grid->at(i).at(k).pos).norm()-dplanes*dplanes);
+                        const double dis=sqrt((grid->at(i).at(j).pos-grid->at(i).at(k).pos).norm());
                         PCFMix->Fill(dis);
                     }
                     else
                     {
                         const double dis=sqrt((grid->at(i).at(j).pos-grid->at(i).at(k).pos).norm());
-                        if(grid->at(i).at(j).pos.TheZ()>0)
+                        if(grid->at(i).at(j).UPplane)
                         {
                             PCFUp->Fill(dis);
                         }
                         else
                         {
+
                             PCFDown->Fill(dis);
                         }
                     }
@@ -383,8 +442,10 @@ void lattice::PrintConfiguration (
 
        (*v).Write("v",TObject::kOverwrite);
 
-       hpos->Write(("pos" + to_string(step%1000)).c_str(),TObject::kOverwrite);
-        hpos->Reset("ICESM");
+       hpos1->Write(("p1os" + to_string(step%1000)).c_str(),TObject::kOverwrite);
+       hpos2->Write(("p2os" + to_string(step%1000)).c_str(),TObject::kOverwrite);
+        hpos1->Reset("ICESM");
+        hpos2->Reset("ICESM");
 
    gDirectory->Write("", TObject::kOverwrite);
 #endif

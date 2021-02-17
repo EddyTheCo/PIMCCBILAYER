@@ -14,7 +14,7 @@ using namespace std;
 
 
 
-block::block(array<vector<Site>,100000>* particles, const size_t &NTimeSlices, const size_t &NSweeps
+block::block(array<vector<Site>,100000>* particles,  const size_t &NSweeps
              #ifdef USEROOT
              , TH2D * const Greens
              #endif
@@ -27,13 +27,13 @@ size_t TWormlenght=0,step=0,measureCounter=0,measureCounter1=0;
 double TWindingUp=0,TWindingDown=0;
 Site* const start=&(particles->at(0).at(0));
 
-string svar="";
+
 
 
 while(step<NSweeps)
 {
 
-//start->printLattice(svar);
+
 
          if(start->ThereIsAWorm)
         {

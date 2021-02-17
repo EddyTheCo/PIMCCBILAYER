@@ -112,18 +112,24 @@ inline void potential::LiebLini(double & dU,position& graddU,const Site* const b
 inline void potential::Dipolar(double & dU, position& graddU, const Site * const bead, const Site * const ptr)const
 {
     const position dif=bead->pos-ptr->pos;
-
-    if(bead->pos.TheZ()!=ptr->pos.TheZ())
+    const double dnorm=dif.norm();
+    if(bead->UPplane!=ptr->UPplane)
     {
-        dU+=(-3*dplanes*dplanes)/pow((dif).norm(),2.5);
+        dU+=(dnorm-2*dplanes*dplanes)/pow(dnorm+dplanes*dplanes,2.5);
     }
-        dU+= 1./pow(dif.norm(),1.5);
+    else
+    {
+        dU+= 1./pow(dnorm,1.5);
+    }
 
-   if(bead->pos.TheZ()!=ptr->pos.TheZ())
+   if(bead->UPplane!=ptr->UPplane)
    {
-       graddU=graddU+dif*(15*dplanes*dplanes)/pow(dif.norm(),3.5);
+       graddU=graddU+dif*(2/(pow(dnorm+dplanes*dplanes,2.5)) - 5*(dnorm-2*dplanes*dplanes)/(pow(dnorm+dplanes*dplanes,3.5)));
    }
-       graddU=graddU+(dif)*(-3./pow((dif).norm(),2.5)) ;
+   else
+   {
+       graddU=graddU+(dif)*(-3./pow(dnorm,2.5)) ;
+   }
 
 }
 inline void potential::Softcore(double & dU, position& graddU, const Site * const bead, const Site * const ptr)const

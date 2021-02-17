@@ -23,7 +23,7 @@ class position
 {
 	public:
 
-   position(const bool & isRight, const Site *const bead, const double &posZ);
+   position(const bool & isRight, const Site *const bead);
 static  ifstream PosiConf;
 static  ifstream RestartConf;
 static  ifstream *inFile;
@@ -81,19 +81,14 @@ position(const vector<double> &a)
     }
 }
 position(const double &a);
-position(const position& prevPos, const double &var, const double & posZ)
+position(const position& prevPos, const double &var)
 {
 
     for(size_t i=0;i<d;i++)
     {
-        if(i!=2)
-        {
+
             x.push_back(prevPos.x.at(i)+Constants::giveRanDNormal(0,sqrt(var)));
-        }
-        else
-        {
-            x.push_back(posZ);
-        }
+
     }
 
 }

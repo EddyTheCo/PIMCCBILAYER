@@ -19,7 +19,7 @@ using namespace std;
 class block
 {
     public:
-    block(array<vector<Site>,100000>* particles, const size_t &NTimeSlices,  const size_t &NSweeps
+    block(array<vector<Site>,100000>* particles,  const size_t &NSweeps
       #ifdef USEROOT
       ,  TH2D * const Greens
       #endif

@@ -86,7 +86,7 @@ inline double getRemoveRatio(void)const
     static const size_t NRep,NSweeps;
 #ifdef USEROOT
     static TFile *RootFile;
-    static TH1* hpos;
+    static TH1* hpos1,*hpos2;
     static TH1D * PCFUp,*PCFDown,*PCFMix;
     static TH2D *Greens;
 

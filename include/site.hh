@@ -20,10 +20,10 @@ extern const bool restart;
 class Site
 {
 	public:
-    Site();
-    ~Site(){}
-    Site(const size_t i,const size_t j);
-    Site(const size_t i, const size_t j, const string var);
+
+    ~Site();
+    Site(const size_t i,const size_t j,const bool UP,const position var,const bool act );
+
     static Site* Lbead;
     static Site* Rbead;
     friend ostream & operator << (ostream &out, const Site & obj)
@@ -47,10 +47,13 @@ class Site
         right=std::move(v.right);
         up=std::move(v.up);
         down=std::move(v.down);
+        if(v.UPplane)
+        {
+            Nparti_UpxNT++;
+        }
         return *this;
       }
-    Site(const Site& v){
-        pos = v.pos;
+    Site(const Site& v):UPplane(v.UPplane),pos(v.pos){
         oldpos = v.oldpos;
         ParticleOnBead=v.ParticleOnBead;
         TimeSliceOnBead=v.TimeSliceOnBead;
@@ -59,11 +62,20 @@ class Site
         right=v.right;
         up=v.up;
         down=v.down;
+        if(v.UPplane)
+        {
+            Nparti_UpxNT++;
+        }
+
     }
     Site& operator=(const Site& v)
     {
         auto tmp = v;
         (*this) = std::move(tmp);
+        if(v.UPplane)
+        {
+            Nparti_UpxNT++;
+        }
         return *this;
     }
  inline size_t  CalculateWormLenght(void)const
@@ -215,65 +227,11 @@ inline size_t  CalculateNoWormLenght(void)const
             left=&(theParticles->at(LeftTi).at(LeftPa));
             right=&(theParticles->at(RightTi).at(RightPa));
 
-            double var;
-            vector<double> x;
-            for(size_t i=0;i<d;i++)
-            {
-                (* position::inFile)>>var;
-                x.push_back(var);
-                if(i==2&&var>0)
-                {
-                    Site::Nparti_UpxNT++;
-                }
-            }
-            pos=position(x);
-            oldpos=pos;
-
-
         }
         else
         {
             left=&(theParticles->at((TimeSliceOnBead-1+NTimeSlices)%NTimeSlices).at(ParticleOnBead));
             right=&(theParticles->at((TimeSliceOnBead+1)%NTimeSlices).at(ParticleOnBead));
-
-
-            double var;
-            vector<double> x;
-            for(size_t i=0;i<d;i++)
-            {
-                if(TimeSliceOnBead==0)
-                {
-                    if(i!=2)
-                    {
-                         x.push_back(Constants::giveRanD(position::L.x.at(i))-position::L.x.at(i)/2);
-
-                    }
-                    else
-                    {
-                        if(ParticleOnBead%2)
-                        {
-                            x.push_back(dplanes/2);
-                            Site::Nparti_UpxNT++;
-
-                        }
-                        else
-                        {
-                             x.push_back(-dplanes/2);
-                        }
-                    }
-
-                }
-                else
-                {
-                    x.push_back(left->pos.x.at(i));
-                    if(i==2&&left->pos.x.at(i)>0)
-                    {
-                       Site::Nparti_UpxNT++;
-                    }
-                }
-                            }
-            pos=position(x);
-            oldpos=pos;
         }
 
         up=&(theParticles->at(TimeSliceOnBead).at((ParticleOnBead+1)%NParti_));
@@ -289,7 +247,7 @@ inline size_t  CalculateNoWormLenght(void)const
 
 
 
-        (pos.TheZ()>0)?TWindingUp=TWindingUp+(right->pos-pos):TWindingDown=TWindingDown+(right->pos-pos);
+        (UPplane)?TWindingUp=TWindingUp+(right->pos-pos):TWindingDown=TWindingDown+(right->pos-pos);
 
         double U=0;
         position gU=position(0.);
@@ -376,8 +334,8 @@ inline void ChangeInU(const bool & isRemove, double& dU ,double & U )const
     position pos,oldpos;
     Site* left,* right,* up,* down;
     const static potential ThePotential;
-    static size_t NParti_,Nparti_UpxNT,NClose,NWiggle,NShift,NOpen,NMove,NSwap,NInsert,NInsertP,NRemo,NRemoP,NCloseP,NWiggleP,NShiftP,NOpenP,NMoveP,NSwapP;
-
+    static size_t NParti_,NClose,NWiggle,NShift,NOpen,NMove,NSwap,NInsert,NInsertP,NRemo,NRemoP,NCloseP,NWiggleP,NShiftP,NOpenP,NMoveP,NSwapP;
+    static int Nparti_UpxNT;
 
  inline void restartRatios(void)const{
      NClose=1;
@@ -424,12 +382,12 @@ inline void ChangeInU(const bool & isRemove, double& dU ,double & U )const
 
     }
     void insertParticle(void)const;
-    void insertParticle(const double &)const;
+    void insertParticle(const bool &UP)const;
     inline void removeLastParticle(void)const
     {
         size_t step=0;
         Site* ptr;
-        const bool v=(theParticles->at(0).back().pos.TheZ()>0)?true:false;
+
         while(step<NTimeSlices)
         {
             ptr=&theParticles->at(step).back();
@@ -438,7 +396,7 @@ inline void ChangeInU(const bool & isRemove, double& dU ,double & U )const
             theParticles->at(ptr->TimeSliceOnBead).pop_back();
             step++;
         }
-        if(v)Nparti_UpxNT-=NTimeSlices;
+
     }
     inline Site* searchBead(const bool & isRight, size_t step)const
     {
@@ -482,16 +440,16 @@ inline void ChangeInU(const bool & isRemove, double& dU ,double & U )const
     static int step=1;
 
     ofstream PrintConf(("Print" +to_string(step) +     ".conf").c_str());
-        Site var;
+        Site *var;
         for(size_t j=0;j<NParti_;j++)
          {
              for (size_t i=0;i<NTimeSlices;i++)
              {
-                 var=theParticles->at(i).at(j);
-                 if(var.active)
-                     PrintConf<<"1 "<<var.ParticleOnBead<<" "<<var.TimeSliceOnBead<<" "<<var.right->ParticleOnBead<<" "<<var.right->TimeSliceOnBead<<" "<<var.pos<<" "<<svar<<endl;
+                 var=&(theParticles->at(i).at(j));
+                 if(var->active)
+                     PrintConf<<"1 "<<var->ParticleOnBead<<" "<<var->TimeSliceOnBead<<" "<<var->right->ParticleOnBead<<" "<<var->right->TimeSliceOnBead<<" "<<var->pos<<" "<<var->UPplane<<" "<<svar<<endl;
                  else {
-                     PrintConf<<"0 "<<var.ParticleOnBead<<" "<<var.TimeSliceOnBead<<" "<<var.right->ParticleOnBead<<" "<<var.right->TimeSliceOnBead<<" "<<var.pos<<" "<<svar<<endl;
+                     PrintConf<<"0 "<<var->ParticleOnBead<<" "<<var->TimeSliceOnBead<<" "<<var->right->ParticleOnBead<<" "<<var->right->TimeSliceOnBead<<" "<<var->pos<<" "<<var->UPplane<<" "<<svar<<endl;
                  }
 
 
@@ -505,6 +463,7 @@ inline void ChangeInU(const bool & isRemove, double& dU ,double & U )const
 
     bool active;
     static Site* theZeta;
+    const bool UPplane;
 	private:
 
     static array<vector<Site>,100000>* theParticles;

@@ -85,7 +85,7 @@ position::position(const string str)
 
 
 
-position::position(const bool & isRight, const Site * const bead, const double &posZ)
+position::position(const bool & isRight, const Site * const bead)
 {
     const Site* edge;
     double ab;
@@ -111,14 +111,8 @@ position::position(const bool & isRight, const Site * const bead, const double &
 
     for(size_t i=0;i<d;i++)
     {
-        if(i!=2)
-        {
+
             x.push_back(edge->pos.x.at(i)+mult*(aveVect.x.at(i))+Constants::giveRanDNormal(0,sqrt(var)));
-        }
-        else
-        {
-           x.push_back(posZ);
-        }
 
     }
 

@@ -21,7 +21,7 @@ bool CheckRestartFiles(void)
     system("tail -n1 .restart.conf| tr -cd [:space:]| wc|awk '{print $3 \"   NPArti_*NTImeSlices*D\"}'>.GoodTogo");
     system("tail -n1 .restartPtr.conf| tr -cd [:space:]| wc|awk '{print $3  \"   NPArti_*NTImeSlices*4+1\"}'>>.GoodTogo");
 
-    if(ReadFromInput<size_t>(1,".GoodTogo")!=NPArti_*NTImeSlices*D)
+    if(ReadFromInput<size_t>(1,".GoodTogo")!=NPArti_*NTImeSlices*(D+1))
         return false;
     if(ReadFromInput<size_t>(2,".GoodTogo")!=NPArti_*NTImeSlices*4)
         return false;

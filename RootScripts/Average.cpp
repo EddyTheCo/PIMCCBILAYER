@@ -56,7 +56,7 @@ void XYProj (TH1 * hist, string Title)
     return xyProj;
 }
 
-void Average ()
+void Average (string pp)
 {
 gROOT->SetBatch(kTRUE);
         TH1 * Ave =nullptr;
@@ -78,7 +78,7 @@ gROOT->SetBatch(kTRUE);
         {
 
 
-            hist=(TH1* )gDirectory->Get(("pos" + to_string(i)).c_str());
+            hist=(TH1* )gDirectory->Get((pp + to_string(i)).c_str());
             if(hist!=nullptr)
             {
 
@@ -103,7 +103,7 @@ gROOT->SetBatch(kTRUE);
 
         }
 
-    hist=(TH1* )gDirectory->Get(("pos" + to_string(stp)).c_str());
+    hist=(TH1* )gDirectory->Get((pp + to_string(stp)).c_str());
     hist->GetXaxis()->SetTitle("X");
     hist->GetYaxis()->SetTitle("Y");
     hist->GetZaxis()->SetTitle("Z");
@@ -111,12 +111,12 @@ gROOT->SetBatch(kTRUE);
     hist->GetZaxis()->CenterTitle(true);
     hist->GetXaxis()->CenterTitle(true);
     hist->Draw();
-    c1->Print("AverageLast.png");
+    c1->Print(("AverageLast" + pp + ".png").c_str());
 
-    XYProj(hist,"Last");
+    XYProj(hist,"Last"+pp);
     if(hist->GetZaxis()->GetNbins()>1)
     {
-        XZProj(hist,"Last");
+        XZProj(hist,"Last"+pp);
     }
 
     TCanvas* c2 = new TCanvas("c2", "c2", 1200,1000);
@@ -130,16 +130,13 @@ gROOT->SetBatch(kTRUE);
     Ave->Draw();
     cout<<"Full NEntries="<<Ave->GetEntries()<<endl;
 
-    c2->Print("Average.png");
+    c2->Print(("Average"+pp+".png").c_str());
 
-    XYProj(Ave,"Average");
+    XYProj(Ave,"Average"+pp);
     if(hist->GetZaxis()->GetNbins()>1)
     {
-            XZProj(Ave,"Average");
+            XZProj(Ave,"Average"+pp);
     }
-    Ave->Scale(1.0/stp);
-    Ave->Write("Average",TObject::kOverwrite);
-    gDirectory->Write("", TObject::kOverwrite);
 
 
 
