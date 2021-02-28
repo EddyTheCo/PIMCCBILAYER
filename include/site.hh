@@ -143,6 +143,9 @@ class Site
                         ptr->right=topParticle->right;
                         ptr->pos=topParticle->pos;
                         ptr->oldpos=topParticle->oldpos;
+                        const bool vi=ptr->UPplane;
+                        ptr->UPplane=topParticle->UPplane;
+                        topParticle->UPplane=vi;
                         topParticle->left=oldPtrLeft;
                         topParticle->right=oldPtrRight;
 
@@ -222,7 +225,7 @@ class Site
 
 
 
-        const size_t posiTimes=giveRanI(NTimeSlices-1) ;
+        const size_t posiTimes=giveRanI(NTimeSlices-1);
 
         Rbead=&(theParticles->at(posiTimes).back());
         Lbead=Rbead;
@@ -466,7 +469,7 @@ inline static size_t  CalculateNoWormLenght(void)
 
 
 
-        (UPplane)?TWindingUp=TWindingUp+(right->pos-pos):TWindingDown=TWindingDown+(right->pos-pos);
+        (UPplane)?(TWindingUp=TWindingUp+(right->pos-pos)):(TWindingDown=TWindingDown+(right->pos-pos));
 
         double U=0;
         position gU=position(0.);
@@ -713,7 +716,7 @@ inline void ChangeInU(const bool & isRemove, double& dU ,double & U )const
 
     bool active;
     static Site* theZeta;
-    const bool UPplane;
+    bool UPplane;
     static array<vector<Site>,100000>* theParticles;
 	private:
 
