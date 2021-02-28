@@ -375,7 +375,7 @@ return true;
      }
      return wormL;
  }
-inline size_t  CalculateNoWormLenght(void)const
+inline static size_t  CalculateNoWormLenght(void)
  {
      size_t wormL=0;
 

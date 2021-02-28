@@ -644,7 +644,7 @@ else {
     static Site* le;
     if(this->TimeSliceOnBead!=Lbead->right->TimeSliceOnBead)
     {
-        //cout<<"pos="<<pos<<endl;
+
         if (left->active)
         {
             if(!isGrandCanonical)
@@ -656,7 +656,7 @@ else {
             else {
                 insertParticle(UPplane);
                 aParticleisInserted=true;
-                //cout<<"seinserto aparticle"<<endl;
+
                 le=left;
                 left=theParticles->at(TimeSliceOnBead).back().left;
                 auto var=left->right;

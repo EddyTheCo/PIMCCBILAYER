@@ -28,13 +28,13 @@ double TWindingUp=0,TWindingDown=0;
 
 
 
-//string svar;
+string svar;
 
 while(step<NSweeps)
 {
 
 
-//Site::printLattice(svar);
+
          if(Site::ThereIsAWorm)
         {
 
@@ -44,6 +44,7 @@ while(step<NSweeps)
              {
                 measureCounter1++;
                 TWormlenght+=Site::NInactiveLinks();
+
 #ifdef USEROOT
                 Greens->Fill(sqrt((Site::Rbead->pos-Site::Lbead->pos).norm()),abs(1.*Site::Rbead->TimeSliceOnBead-1.*Site::Lbead->TimeSliceOnBead));
 #endif
@@ -66,10 +67,7 @@ while(step<NSweeps)
 
                             }
 
-
-
                     }
-
                 break;
             }
             case 1:
@@ -87,7 +85,9 @@ while(step<NSweeps)
 
                 Site::NSwapP++;
                if(Site::getNParti()>1)
-               Site::PrepareSwap();
+               {
+                    Site::PrepareSwap();
+               }
 
                break;
             }
@@ -133,7 +133,7 @@ while(step<NSweeps)
                if(Site::getNParti())
                {
                  //cout<<"OpenWorm"<<endl;
-                  //  svar="OpenWorm";
+                   // svar="OpenWorm";
                    const size_t posiTimes=giveRanI(NTimeSlices-1) ;
                    const size_t posiParti=giveRanI(Site::getNParti()-1);
                    const size_t var2=  giveRanI(MBar-2);
@@ -153,7 +153,7 @@ while(step<NSweeps)
                  {
 
                   //cout<<"wiggle"<<endl;
-  //      svar="wiggle";
+        //svar="wiggle";
 
                      const size_t posiTimes=giveRanI(NTimeSlices-1) ; //Choose a random time slice
                      const size_t posiParti=giveRanI(Site::getNParti()-1); //Choose the particle
@@ -175,10 +175,10 @@ while(step<NSweeps)
 
               case 2:
              {
-                 //cout<<"insertworminclose "<<endl;
-    //            svar="insertworminclose";
+          //       cout<<"insertworminclose "<<endl;
+            //    svar="insertworminclose";
                  Site::NInsertP++;
-                 Site::insertWorm();
+                Site::insertWorm();
                  break;
              }
 

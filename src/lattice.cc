@@ -206,6 +206,7 @@ cout<<"init Lattice Setup"<<endl;
 
 
     }
+
 cout<<"end Lattice Setup"<<endl;
 }
 
@@ -294,7 +295,7 @@ if(!restart)thesweep<< left << setw(16) <<"KEnergy"<< left << setw(16) <<"PEnerg
 theratios<< left << setw(12)<<"Ropen"<<left << setw(12)<<"RClose"<<left << setw(12)<<"Rmove"<<left << setw(12)<<"Rswap"<<left << setw(12)<<"RWiggle"<<left << setw(12)<<"Rshift"<<left << setw(12)<<"RInsert"<<left << setw(12)<<"RRmove"<<endl;
     for(size_t step=0;step<NRep;step++)
     {
-
+//Site::printLattice("");
         const auto myBlock=block(NSweeps
 #ifdef USEROOT
                                  ,Greens

@@ -103,7 +103,7 @@ gROOT->SetBatch(kTRUE);
 
         }
 
-    hist=(TH1* )gDirectory->Get((pp + to_string(stp)).c_str());
+   hist=(TH1* )gDirectory->Get((pp + to_string(stp-1)).c_str());
     hist->GetXaxis()->SetTitle("X");
     hist->GetYaxis()->SetTitle("Y");
     hist->GetZaxis()->SetTitle("Z");
@@ -120,12 +120,12 @@ gROOT->SetBatch(kTRUE);
     }
 
     TCanvas* c2 = new TCanvas("c2", "c2", 1200,1000);
-    cout<<"Last NEntries="<<hist->GetEntries()<<endl;
+
     Ave->GetXaxis()->SetTitle("X");
     Ave->GetYaxis()->SetTitle("Y");
-    Ave ->GetZaxis()->SetTitle("Z");
+
     Ave->GetYaxis()->CenterTitle(true);
-    Ave->GetZaxis()->CenterTitle(true);
+
     Ave->GetXaxis()->CenterTitle(true);
     Ave->Draw();
     cout<<"Full NEntries="<<Ave->GetEntries()<<endl;
